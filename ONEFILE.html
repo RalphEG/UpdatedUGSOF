@@ -13,6 +13,36 @@
             display: flex;
         }
 
+.tab-bar {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: nowrap;
+}
+
+
+.tab-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+
+  /* 🔧 important fixes */
+  white-space: nowrap;
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+
+.tab-btn.active {
+  background: rgb(89, 134, 218);
+}
+
+
         .sidebar {
             position: fixed;
             left: 0;
@@ -223,6 +253,11 @@
         </h2>
 
         <!-- Search -->
+       <div class="tab-bar">
+  <button class="tab-btn active" data-tab="ugs">UGS</button>
+  <button class="tab-btn" data-tab="custom">My Files</button>
+</div>
+
         <div class="search-wrapper">
             <input id="search-input" class="search-input" type="text" placeholder="Search games (starts-with)..." />
         </div>
@@ -234,11 +269,11 @@
 /*
   Behavior:
   - Files that start with "cl" use the name after "cl" for grouping & search.
-  - Search is "starts-with" (user chose A) and ignores the "cl" prefix for matching.
+  - Files that start with "ud" (on custom tab) use the name after "ud" for grouping & search.
+  - Search is "starts-with" (user chose A) and ignores the "cl"/"ud" prefix for matching.
   - Search filters sidebar letters and main sections (everything).
   - When opening a file we normalize filename (add .html if missing) and encode URI components.
 */
-
 const files = [
   'cl1',
   'cl1',
@@ -464,7 +499,6 @@ const files = [
 'clbottlecracks',
 'clbottleflip3d',
 'clbounceback',
-'clbouncemasters',
 'clbouncymotors',
 'clBountyOfOne',
 'clbowlalt',
@@ -1335,7 +1369,7 @@ const files = [
 'clofflineparadise',
 'clomeganuggetclicker',
 'clonebitadventure',
-'clonenightasfreddy',
+'cloneightasfreddy',
 'clonepiece',
 'clonepiecefighting',
 'clonlyup',
@@ -2177,18 +2211,38 @@ const files = [
   'vvvvvv',
   'wilywars'
 ];
-
-// If you have large file array above, it's fine — code handles it.
-
+const myFiles = [
+  // add your own HTML filenames here (NO .html needed)
+  'UDslope',
+];
+const BASE_URLS = {
+  ugs: 'https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile/UGS-Files/',
+  custom: 'https://cdn.jsdelivr.net/gh/RalphEG/Ultimate-Game-Stash-One-File-UPDATED@main/Untitled%20Document%20Files/'
+};
+   
+// Unified normalization for display, search, and grouping (removes prefix based on tab)
 function normalizeDisplayName(file) {
-  // The "meaningful" name for sorting/searching: ignore "cl" prefix if present
   const lower = String(file).toLowerCase();
-  if (lower.startsWith('cl') && lower.length > 2) {
-    return file.substring(2);
+  if (activeTab === 'ugs' && lower.startsWith('cl') && lower.length > 2) {
+    return file.slice(2);
+  } else if (activeTab === 'custom' && lower.startsWith('ud') && lower.length > 2) {
+    return file.slice(2);
   }
   return file;
 }
 
+// Simplified display name (uses the above)
+function getDisplayName(file) {
+  return normalizeDisplayName(file);
+}
+let activeTab = 'ugs';
+function getActiveFiles() {
+  return activeTab === 'ugs' ? files : myFiles;
+}
+function getActiveBaseURL() {
+  return BASE_URLS[activeTab];
+}
+   
 function normalizeForFetch(file) {
   // If the file already has an extension (a dot after the first char), leave it;
   // otherwise append .html
@@ -2196,7 +2250,6 @@ function normalizeForFetch(file) {
   if (idx > 0) return file;
   return file + '.html';
 }
-
 function getFirstCharKey(file) {
   const display = normalizeDisplayName(file);
   const ch = display && display[0] ? display[0].toUpperCase() : '';
@@ -2204,69 +2257,57 @@ function getFirstCharKey(file) {
   if (/^[0-9A-Z]$/.test(ch)) return ch;
   return null;
 }
-
 function generateAllSections() {
   const allChars = ['0','1','2','3','4','5','6','7','8','9',
                     'A','B','C','D','E','F','G','H','I','J','K','L','M',
                     'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-
   // Prepare filesByChar map
   const filesByChar = {};
   allChars.forEach(char => filesByChar[char] = []);
-
-  // Fill filesByChar grouping by meaningful first character (ignore cl prefix)
-  files.forEach(file => {
+  // Fill filesByChar grouping by meaningful first character (ignore cl/ud prefix)
+ getActiveFiles().forEach(file => {
     const key = getFirstCharKey(file);
     if (key && filesByChar[key]) {
       filesByChar[key].push(file);
     }
   });
-
   // Render sections
   const container = document.getElementById('sections-container');
   container.innerHTML = ''; // clear for re-rendering
-
   allChars.forEach(char => {
     const section = document.createElement('div');
     section.className = 'letter-section';
     section.id = `section-${char}`;
-
     const header = document.createElement('div');
     header.className = 'letter-header';
     header.textContent = char;
     section.appendChild(header);
-
     const buttonsContainer = document.createElement('div');
     buttonsContainer.className = 'buttons-container';
-
     if (filesByChar[char].length > 0) {
       // Sort files for nicer order (optional)
       filesByChar[char].sort((a, b) => {
-        // Compare their normalized display names (ignore cl)
+        // Compare their normalized display names (ignore cl/ud)
         const na = normalizeDisplayName(a).toLowerCase();
         const nb = normalizeDisplayName(b).toLowerCase();
         if (na < nb) return -1;
         if (na > nb) return 1;
         return 0;
       });
-
       filesByChar[char].forEach(file => {
         const btn = document.createElement('input');
         btn.type = 'button';
         btn.className = 'game-btn';
-        btn.value = file;
-
+        btn.value = normalizeDisplayName(file); // Use de-prefixed name for button label
         // store normalized values for searching
         const normalizedDisplay = normalizeDisplayName(file).toLowerCase();
         btn.dataset.normalized = normalizedDisplay;
         btn.dataset.firstChar = char;
-
         btn.addEventListener('click', () => {
           const toFetch = normalizeForFetch(file);
           const encoded = encodeURIComponent(toFetch);
           // If your files live inside a folder on the CDN, keep it here; else remove the UGS-Files/ part.
-          const url = `https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile/UGS-Files/${encoded}?t=${Date.now()}`;
-
+          const url = `${getActiveBaseURL()}${encoded}?t=${Date.now()}`;
           fetch(url)
             .then(response => {
               if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -2287,7 +2328,6 @@ function generateAllSections() {
               alert(`⚠️ Failed to load "${file}".\nThe file may not exist at the expected location or is currently offline.`);
             });
         });
-
         btn.style.width = '100%';
         buttonsContainer.appendChild(btn);
       });
@@ -2298,39 +2338,31 @@ function generateAllSections() {
       emptyMsg.textContent = 'No files';
       buttonsContainer.appendChild(emptyMsg);
     }
-
     section.appendChild(buttonsContainer);
     container.appendChild(section);
   });
-
   // After sections are rendered, create the sidebar
   generateSidebar(allChars);
 }
-
 function generateSidebar(allChars) {
   const sidebar = document.getElementById('sidebar');
   sidebar.innerHTML = '';
-
   allChars.forEach(char => {
     const btn = document.createElement('button');
     btn.className = 'sidebar-btn';
     btn.textContent = char;
     btn.dataset.letter = char;
-
     btn.addEventListener('click', () => {
       const section = document.getElementById(`section-${char}`);
       if (section && section.offsetParent !== null) { // visible check
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
-
     sidebar.appendChild(btn);
   });
-
   // Run an initial update to hide sidebar letters that have no files
   updateSidebarVisibility();
 }
-
 function updateSidebarVisibility() {
   const letters = document.querySelectorAll('.sidebar-btn');
   letters.forEach(btn => {
@@ -2353,7 +2385,6 @@ function updateSidebarVisibility() {
     }
   });
 }
-
 function updateSectionsVisibility() {
   // Hide sections with no visible game buttons
   const sections = document.querySelectorAll('.letter-section');
@@ -2367,20 +2398,16 @@ function updateSectionsVisibility() {
     }
   });
 }
-
 function setupSearch() {
   const input = document.getElementById('search-input');
-
   input.addEventListener('input', (e) => {
     const query = String(e.target.value || '').trim().toLowerCase();
-
     const allButtons = document.querySelectorAll('.game-btn');
-
     if (query === '') {
       // show all
       allButtons.forEach(b => b.style.display = 'block');
     } else {
-      // starts-with search ignoring "cl" prefix (we stored normalized text)
+      // starts-with search ignoring "cl"/"ud" prefix (we stored normalized text)
       allButtons.forEach(b => {
         const normalized = b.dataset.normalized || '';
         // starts-with search
@@ -2391,18 +2418,28 @@ function setupSearch() {
         }
       });
     }
-
+     
     // update section & sidebar visibility based on filtered buttons
     updateSectionsVisibility();
     updateSidebarVisibility();
   });
 }
-
 // Initialize page
 window.addEventListener('DOMContentLoaded', () => {
   generateAllSections();
   setupSearch();
 });
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTab = btn.dataset.tab;
+    generateAllSections();
+  });
+});
+   
+</script>
+    
 </script>
 </body>
 </html>
