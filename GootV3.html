@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Home</title>
+<title>Classes</title>
 <link rel="icon" type="image/svg+xml" href="https://www.gstatic.com/classroom/logo_square_rounded.svg">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
@@ -21,7 +21,7 @@
     --md-sys-color-background: #060809;
     --md-sys-color-on-background: #e2e2e6;
     --motion-standard: cubic-bezier(0.2, 0, 0, 1);
-    --nav-height: 0px; /* Updated by media query */
+    --nav-height: 0px;
 }
 [data-theme="light"] {
     --md-sys-color-primary: #d32f2f;
@@ -199,7 +199,6 @@ body.playing .play-btn { animation: heartbeat 2.4s infinite ease-in-out; }
 input:checked + .slider { background-color: var(--md-sys-color-primary); }
 input:checked + .slider:before { transform: translateX(26px); }
 
-/* MOBILE PLAYER OVERLAY */
 .mobile-player-overlay {
     position: fixed; inset: 0; background: var(--md-sys-color-background);
     z-index: 2500; display: flex; flex-direction: column; padding: 24px 32px;
@@ -224,7 +223,6 @@ input:checked + .slider:before { transform: translateX(26px); }
     box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 
-/* MOBILE RESPONSIVE STYLES */
 .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: var(--md-sys-color-surface); border-top: 1px solid var(--md-sys-color-outline); z-index: 1000; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); }
 .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; height: 100%; color: var(--md-sys-color-on-surface); opacity: 0.6; transition: all 0.3s ease; }
 .mobile-nav-item.active { opacity: 1; color: var(--md-sys-color-primary); }
@@ -243,7 +241,6 @@ input:checked + .slider:before { transform: translateX(26px); }
     .side-sheet.collapsed { transform: translateY(100%); width: 100%; }
     .side-sheet:not(.collapsed) { transform: translateY(0); }
 
-    /* Mobile Player Bar (Mini Player) */
     .player-bar {
         bottom: var(--nav-height); left: 0; right: 0; height: 68px; padding: 0 12px; position: fixed;
         border-top: 1px solid var(--md-sys-color-outline); background: var(--md-sys-color-surface-variant);
@@ -268,7 +265,7 @@ input:checked + .slider:before { transform: translateX(26px); }
         position: absolute; top: -4px; left: 0; right: 0; width: 100%; max-width: none !important;
         height: 4px; background: transparent; margin: 0;
     }
-    .player-bar > div:nth-child(2) > div:last-child > div:nth-child(2) { /* ProgFill container */
+    .player-bar > div:nth-child(2) > div:last-child > div:nth-child(2) {
         border-radius: 0; background: rgba(255,255,255,0.1);
     }
     #progFill { border-radius: 0; box-shadow: none; }
@@ -363,9 +360,7 @@ input:checked + .slider:before { transform: translateX(26px); }
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
                 <h1 id="viewTitle" style="font-size:48px;margin:0;">Library</h1>
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-                    <button id="loadAllBtn" class="action-btn" onclick="loadAllTrackInfo()" style="background:var(--md-sys-color-primary);border:none;color:white;">
-                        <i class="fa-solid fa-download"></i> Load All Track Info
-                    </button>
+                    
                     <div id="progressContainer" class="progress-container">
                         <div id="progressBar" class="progress-bar"></div>
                     </div>
@@ -433,7 +428,7 @@ input:checked + .slider:before { transform: translateX(26px); }
                 <input type="color" id="accentPicker" oninput="updateTheme(this.value)" style="width:60px;height:60px;cursor:pointer;border-radius:12px;">
                 <h3 style="margin:32px 0 12px 0;">Appearance</h3>
                 <div class="theme-toggle-container">
-                    <span class="theme-toggle-label">Light Mode</span>
+                    <span class="theme-toggle-label">Dark Mode</span>
                     <label class="theme-switch">
                         <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
                         <span class="slider"></span>
@@ -514,7 +509,6 @@ input:checked + .slider:before { transform: translateX(26px); }
 <audio id="player" crossorigin="anonymous"></audio>
 <script>
 const WORKER_URL = "https://gootapimask.jpm333678.workers.dev/";
-const DRIVE_KEY = "AIzaSyBi2cvmJYslrUkBNU3U577IDwvToUQqCQo";
 const ROOT_ID = "1kje6wQMhMxvuI-2eYsAMVvs09JYLDo2s";
 let stack = [{id: ROOT_ID, name: "Home"}];
 let queue = [], originalQueue = [];
@@ -523,6 +517,7 @@ let currentPlaylistName = "";
 let currentQueueSource = null;
 let trackMetadata = JSON.parse(localStorage.getItem('goot_meta_cache') || '{}');
 let tempArtCache = {};
+let albumArtCache = {};
 let playlists = JSON.parse(localStorage.getItem('goot_playlists') || '{}');
 let shuffleMode = false;
 let repeatMode = 0;
@@ -534,7 +529,17 @@ let processedFiles = 0;
 let logModalOpen = false;
 let playlistSortable = null;
 let currentAlbumMap = {};
+let pendingMetadataLoads = new Set();
 const player = document.getElementById("player");
+
+async function getFolderContents(parentId) {
+    const res = await fetch(`${WORKER_URL}?list=${parentId}`);
+    if (!res.ok) {
+        throw new Error(`Failed to fetch folder contents (status ${res.status})`);
+    }
+    const json = await res.json();
+    return json.files || json || [];
+}
 
 function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
@@ -598,7 +603,6 @@ function initPlaylistSortable() {
 
 async function init() {
     updateTheme(localStorage.getItem('goot_accent') || '#ff0000');
-    // Mobile check: Default sidebar to collapsed if screen is small
     if (window.innerWidth <= 768) {
         document.getElementById("sidebar").classList.add("collapsed");
     }
@@ -613,41 +617,69 @@ async function init() {
             renderQueue();
         }
     });
-    await loadFolders(ROOT_ID);
     renderPlaylists();
+    await loadFolders(ROOT_ID);
 }
 
 async function loadFolders(id) {
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(`'${id}' in parents and trashed=false`)}&key=${DRIVE_KEY}`).then(r => r.json());
-    let files = (res.files || []).sort((a,b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
-    const grid = document.getElementById("folderGrid"); grid.innerHTML = "";
-    files.filter(f => f.mimeType === 'application/vnd.google-apps.folder').forEach(f => {
-        const card = document.createElement("div");
-        card.className = "folder-card";
-        card.innerHTML = `<div class="folder-art" id="f-art-${f.id}"><i class="fa-solid fa-folder" style="opacity:0.2;font-size:40px;"></i></div><div class="folder-info"><span>${f.name}</span></div>`;
-        card.onclick = () => { stack.push({id:f.id,name:f.name}); loadFolders(f.id); };
-        grid.appendChild(card);
-        fetchFolderArt(f.id);
-    });
-    document.querySelectorAll('.folder-card').forEach((c,i) => setTimeout(() => c.classList.add('loaded'), 60*i));
-    const tracks = files.filter(f => f.mimeType.includes('audio'));
-    renderTrackTable(tracks, document.getElementById("libSongBody"));
-    document.getElementById("viewTitle").innerText = stack[stack.length-1].name;
-    updateBreadcrumbs();
+    const grid = document.getElementById("folderGrid");
+    const listBody = document.getElementById("libSongBody");
+    
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;opacity:0.6;"><i class="fa-solid fa-circle-notch fa-spin" style="font-size:32px;margin-bottom:12px;"></i><br>Loading Library...</div>';
+    listBody.innerHTML = ''; 
+
+    let files = [];
+    try {
+        files = await getFolderContents(id);
+        files = files.sort((a,b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+        
+        grid.innerHTML = "";
+        
+        if (files.length === 0) {
+            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;opacity:0.5;">Folder is empty</div>';
+        }
+
+        files.filter(f => f.mimeType === 'application/vnd.google-apps.folder').forEach(f => {
+            const card = document.createElement("div");
+            card.className = "folder-card";
+            card.innerHTML = `<div class="folder-art" id="f-art-${f.id}"><i class="fa-solid fa-folder" style="opacity:0.2;font-size:40px;"></i></div><div class="folder-info"><span>${f.name}</span></div>`;
+            card.onclick = () => { stack.push({id:f.id,name:f.name}); loadFolders(f.id); };
+            grid.appendChild(card);
+            fetchFolderArt(f.id);
+        });
+        
+        document.querySelectorAll('.folder-card').forEach((c,i) => setTimeout(() => c.classList.add('loaded'), 60*i));
+        
+        const tracks = files.filter(f => f.mimeType.includes('audio'));
+        renderTrackTable(tracks, listBody);
+        
+        document.getElementById("viewTitle").innerText = stack[stack.length-1].name;
+        updateBreadcrumbs();
+    } catch(e) {
+        console.error('Error loading folders:', e);
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#ff4444;"><i class="fa-solid fa-triangle-exclamation" style="font-size:32px;margin-bottom:12px;"></i><br>Error loading content.<br><small>${e.message || "Network Error"}</small><br><button class="action-btn" style="margin-top:16px;" onclick="loadFolders('${id}')">Retry</button></div>`;
+    }
 }
 
 async function fetchFolderArt(fid) {
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(`'${fid}' in parents and name contains 'cover' and trashed=false`)}&key=${DRIVE_KEY}`).then(r => r.json());
-    const cover = res.files?.find(f => f.name.toLowerCase().includes('cover'));
-    if (cover) {
-        const container = document.getElementById(`f-art-${fid}`);
-        const img = new Image();
-        img.src = `${WORKER_URL}?id=${cover.id}`;
-        img.onload = () => {
-            img.classList.add('loaded');
-            if(container.querySelector('i')) container.querySelector('i').style.opacity = "0";
-        };
-        container.appendChild(img);
+    const container = document.getElementById(`f-art-${fid}`);
+    if (!container) return;
+    
+    try {
+        const files = await getFolderContents(fid);
+        const cover = files.find(f => f.name.toLowerCase().includes('cover'));
+        if (cover) {
+            const img = new Image();
+            img.src = `${WORKER_URL}?id=${cover.id}`;
+            img.onload = () => {
+                img.classList.add('loaded');
+                const icon = container.querySelector('i');
+                if (icon) icon.style.opacity = "0";
+            };
+            container.appendChild(img);
+        }
+    } catch(e) {
+        console.error('Error fetching folder art:', e);
     }
 }
 
@@ -680,9 +712,29 @@ function renderTrackTable(tracks, container, isPlaylist = false, pName = "") {
 }
 
 async function loadMetaAndArt(id, name) {
-    if (tempArtCache[id]) return applyArtToUI(id, tempArtCache[id]);
+    if (pendingMetadataLoads.has(id)) return;
+    
+    const album = trackMetadata[id]?.album;
+    if (album && albumArtCache[album]) {
+        applyArtToUI(id, albumArtCache[album]);
+        return;
+    }
+    
+    if (tempArtCache[id]) {
+        applyArtToUI(id, tempArtCache[id]);
+        return;
+    }
+    
+    pendingMetadataLoads.add(id);
+    
     try {
-        const res = await fetch(`${WORKER_URL}?id=${id}`, {headers:{'Range':'bytes=0-4000000'}});
+        const res = await fetch(`${WORKER_URL}?id=${id}`, {
+            mode: 'cors',
+            credentials: 'omit',
+            cache: 'no-store',
+            headers: { 'Range': 'bytes=0-4194303' }  // First 4 MB
+        });
+        if(!res.ok) throw new Error("Fetch failed");
         const buf = await res.arrayBuffer();
         jsmediatags.read(new Blob([buf]), {
             onSuccess: tag => {
@@ -710,8 +762,17 @@ async function loadMetaAndArt(id, name) {
                     let s = ""; for(let i=0;i<data.length;i++) s+=String.fromCharCode(data[i]);
                     const base64 = `data:${format};base64,${btoa(s)}`;
                     tempArtCache[id] = base64;
+                    
+                    if (m.album && m.album !== "Unknown") {
+                        albumArtCache[m.album] = base64;
+                        Object.keys(trackMetadata).forEach(otherId => {
+                            if (trackMetadata[otherId].album === m.album && otherId !== id) {
+                                applyArtToUI(otherId, base64);
+                            }
+                        });
+                    }
+                    
                     applyArtToUI(id, base64);
-                    // Update playlist cover art if applicable
                     document.querySelectorAll('.playlist-card, #playlistCover').forEach(el => {
                         if (el.classList.contains('playlist-card')) {
                             const plName = el.dataset.name;
@@ -726,9 +787,15 @@ async function loadMetaAndArt(id, name) {
                         }
                     });
                 }
+                pendingMetadataLoads.delete(id);
+            },
+            onError: () => {
+                pendingMetadataLoads.delete(id);
             }
         });
-    } catch(e) {}
+    } catch(e) {
+        pendingMetadataLoads.delete(id);
+    }
 }
 
 function applyArtToUI(id, base64) {
@@ -745,12 +812,21 @@ function renderQueue() {
     const qList = document.getElementById("queueList");
     qList.innerHTML = "";
     queue.forEach((t,i) => {
-        const m = trackMetadata[t.id] || {title:"...",artist:"..."};
+        const m = trackMetadata[t.id] || {title:"...",artist:"...",album:"..."};
         const item = document.createElement("div");
         item.className = `queue-item ${i===qIndex?'active':''}`;
+        
+        const album = m.album;
+        let artHTML = '<i class="fa-solid fa-music" style="opacity:0.2"></i>';
+        if (tempArtCache[t.id]) {
+            artHTML = `<img src="${tempArtCache[t.id]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
+        } else if (album && album !== "Unknown" && albumArtCache[album]) {
+            artHTML = `<img src="${albumArtCache[album]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
+        }
+        
         item.innerHTML = `
             <div style="width:40px;height:40px;border-radius:6px;background:var(--md-sys-color-surface-variant);overflow:hidden;display:flex;align-items:center;justify-content:center;" class="track-art-${t.id}">
-                ${tempArtCache[t.id] ? `<img src="${tempArtCache[t.id]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">` : '<i class="fa-solid fa-music" style="opacity:0.2"></i>'}
+                ${artHTML}
             </div>
             <div class="truncate" style="flex:1">
                 <div style="font-weight:600;font-size:13px;">${m.title}</div>
@@ -761,7 +837,9 @@ function renderQueue() {
             currentQueueSource = null;
         };
         qList.appendChild(item);
-        if (!tempArtCache[t.id]) loadMetaAndArt(t.id, '');
+        if (!tempArtCache[t.id] && !(album && albumArtCache[album])) {
+            loadMetaAndArt(t.id, '');
+        }
     });
     document.querySelectorAll('#queueList .queue-item').forEach((el,i) => setTimeout(()=>el.classList.add('visible'),50*i));
 }
@@ -773,27 +851,32 @@ function play(idx) {
     player.src = WORKER_URL + "?id=" + t.id;
     player.play().catch(()=>{});
     
-    // Update both mini player and full screen player
     const m = trackMetadata[t.id] || {title:"Unknown",artist:"Unknown",album:"Unknown"};
     
-    // Mini Player
     document.getElementById("npTitle").innerText = m.title;
     document.getElementById("npArtist").innerText = m.artist;
     document.getElementById("npAlbum").innerText = m.album;
     
-    // Full Screen Player
     document.getElementById("fsTitle").innerText = m.title;
     document.getElementById("fsArtist").innerText = m.artist;
     document.getElementById("fsAlbum").innerText = m.album;
 
+    const album = m.album;
+    let artHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-music" style="opacity:0.35;font-size:28px;"></i></div>';
+    let fsArtHTML = '<i class="fa-solid fa-music"></i>';
+    
     if (tempArtCache[t.id]) {
         const imgTag = `<img src="${tempArtCache[t.id]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
-        document.getElementById("npArt").innerHTML = imgTag;
-        document.getElementById("fsArt").innerHTML = imgTag;
-    } else {
-        document.getElementById("npArt").innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-music" style="opacity:0.35;font-size:28px;"></i></div>';
-        document.getElementById("fsArt").innerHTML = '<i class="fa-solid fa-music"></i>';
+        artHTML = imgTag;
+        fsArtHTML = imgTag;
+    } else if (album && album !== "Unknown" && albumArtCache[album]) {
+        const imgTag = `<img src="${albumArtCache[album]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
+        artHTML = imgTag;
+        fsArtHTML = imgTag;
     }
+    
+    document.getElementById("npArt").innerHTML = artHTML;
+    document.getElementById("fsArt").innerHTML = fsArtHTML;
 
     document.body.classList.add('playing');
     renderQueue();
@@ -865,8 +948,13 @@ function renderPlaylists() {
             artContainer.innerHTML = `<img src="${playlists[name].customCover}" class="loaded" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">`;
         } else if (Array.isArray(playlists[name]) && playlists[name].length > 0) {
             const firstId = playlists[name][0].id;
+            const firstMeta = trackMetadata[firstId];
+            const album = firstMeta?.album;
+            
             if (tempArtCache[firstId]) {
                 artContainer.innerHTML = `<img src="${tempArtCache[firstId]}" class="loaded" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">`;
+            } else if (album && album !== "Unknown" && albumArtCache[album]) {
+                artContainer.innerHTML = `<img src="${albumArtCache[album]}" class="loaded" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">`;
             }
         }
         card.onclick = () => {
@@ -885,8 +973,13 @@ function renderPlaylists() {
                 coverEl.innerHTML = `<img src="${playlists[name].customCover}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
             } else if (Array.isArray(playlists[name]) && playlists[name].length > 0) {
                 const firstId = playlists[name][0].id;
+                const firstMeta = trackMetadata[firstId];
+                const album = firstMeta?.album;
+                
                 if (tempArtCache[firstId]) {
                     coverEl.innerHTML = `<img src="${tempArtCache[firstId]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
+                } else if (album && album !== "Unknown" && albumArtCache[album]) {
+                    coverEl.innerHTML = `<img src="${albumArtCache[album]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
                 } else {
                     loadMetaAndArt(firstId, '');
                 }
@@ -943,8 +1036,12 @@ function searchSongsToAdd(query) {
             }
             currentAlbumMap[alb].tracks.push({id, meta: m});
             currentAlbumMap[alb].artists.add(m.artist || "Unknown");
-            if (!currentAlbumMap[alb].artId && tempArtCache[id]) {
-                currentAlbumMap[alb].artId = id;
+            if (!currentAlbumMap[alb].artId) {
+                if (tempArtCache[id]) {
+                    currentAlbumMap[alb].artId = id;
+                } else if (alb !== "Unknown Album" && albumArtCache[alb]) {
+                    currentAlbumMap[alb].artId = id;
+                }
             }
         }
     });
@@ -959,7 +1056,12 @@ function searchSongsToAdd(query) {
     const sortedAlbums = Object.keys(currentAlbumMap).sort((a, b) => a.localeCompare(b));
     div.innerHTML = sortedAlbums.map(alb => {
         const group = currentAlbumMap[alb];
-        const art = group.artId ? tempArtCache[group.artId] : null;
+        let art = null;
+        if (group.artId && tempArtCache[group.artId]) {
+            art = tempArtCache[group.artId];
+        } else if (alb !== "Unknown Album" && albumArtCache[alb]) {
+            art = albumArtCache[alb];
+        }
         const artistsStr = Array.from(group.artists).join(', ') || "Unknown Artist";
         const albEsc = alb.replace(/'/g, "\\'");
         return `
@@ -987,19 +1089,29 @@ function openAlbumChecklist(album) {
     list.innerHTML = "";
     const tracks = currentAlbumMap[album].tracks;
     tracks.forEach(tr => {
-        const art = tempArtCache[tr.id] ? `<img src="${tempArtCache[tr.id]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">` : '<i class="fa-solid fa-music" style="opacity:0.2"></i>';
+        const m = tr.meta;
+        const alb = m.album;
+        let artHTML = '<i class="fa-solid fa-music" style="opacity:0.2"></i>';
+        if (tempArtCache[tr.id]) {
+            artHTML = `<img src="${tempArtCache[tr.id]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
+        } else if (alb && alb !== "Unknown" && albumArtCache[alb]) {
+            artHTML = `<img src="${albumArtCache[alb]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
+        }
+        
         const label = document.createElement("label");
         label.style.cssText = "display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;";
         label.innerHTML = `
             <input type="checkbox" checked data-id="${tr.id}">
-            <div style="width:40px;height:40px;border-radius:6px;overflow:hidden;background:var(--md-sys-color-surface-variant);display:flex;align-items:center;justify-content:center;">${art}</div>
+            <div style="width:40px;height:40px;border-radius:6px;overflow:hidden;background:var(--md-sys-color-surface-variant);display:flex;align-items:center;justify-content:center;">${artHTML}</div>
             <div style="flex:1;">
                 <div style="font-weight:600;">${tr.meta.title || "Unknown Title"}</div>
                 <div style="opacity:0.7;font-size:13px;">${tr.meta.artist || "Unknown Artist"}</div>
             </div>
         `;
         list.appendChild(label);
-        if (!tempArtCache[tr.id]) loadMetaAndArt(tr.id, '');
+        if (!tempArtCache[tr.id] && !(alb && albumArtCache[alb])) {
+            loadMetaAndArt(tr.id, '');
+        }
     });
     document.getElementById("albumModalOverlay").style.display = "flex";
 }
@@ -1072,8 +1184,13 @@ function removeFromPlaylist(e, playlistName, trackId) {
         coverEl.innerHTML = `<img src="${playlists[playlistName].customCover}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
     } else if (playlists[playlistName].length > 0) {
         const firstId = playlists[playlistName][0].id;
+        const firstMeta = trackMetadata[firstId];
+        const album = firstMeta?.album;
+        
         if (tempArtCache[firstId]) {
             coverEl.innerHTML = `<img src="${tempArtCache[firstId]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
+        } else if (album && album !== "Unknown" && albumArtCache[album]) {
+            coverEl.innerHTML = `<img src="${albumArtCache[album]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
         }
     }
     if (currentQueueSource === `playlist:${playlistName}`) {
@@ -1213,34 +1330,42 @@ async function loadAllTrackInfo() {
 
 async function countFilesRecursive(folderId) {
     if (shouldCancelLoad) return;
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(`'${folderId}' in parents and trashed=false`)}&key=${DRIVE_KEY}`).then(r => r.json());
-    const files = res.files || [];
-    totalFilesToLoad += files.filter(f => f.mimeType.includes('audio')).length;
-    const folders = files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
-    for (const f of folders) {
-        await countFilesRecursive(f.id);
+    try {
+        const files = await getFolderContents(folderId);
+        totalFilesToLoad += files.filter(f => f.mimeType.includes('audio')).length;
+        const folders = files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
+        for (const f of folders) {
+            await countFilesRecursive(f.id);
+        }
+    } catch(e) {
+        console.error('Error counting files:', e);
+        addToLog(`Error counting in folder ${folderId}`);
     }
 }
 
 async function processFilesRecursive(folderId) {
     if (shouldCancelLoad) return;
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(`'${folderId}' in parents and trashed=false`)}&key=${DRIVE_KEY}`).then(r => r.json());
-    const files = res.files || [];
-    const tracks = files.filter(f => f.mimeType.includes('audio'));
-    for (const t of tracks) {
-        if (shouldCancelLoad) break;
-        addToLog(`Processing: ${t.name} (ID: ${t.id})`);
-        await loadMetaAndArt(t.id, t.name);
-        processedFiles++;
-        const percent = Math.round((processedFiles / totalFilesToLoad) * 100);
-        document.getElementById("progressBar").style.width = percent + "%";
-        document.getElementById("progressText").textContent = `${processedFiles} / ${totalFilesToLoad} (${percent}%)`;
-        updateLogDisplay();
-    }
-    const folders = files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
-    for (const f of folders) {
-        if (shouldCancelLoad) break;
-        await processFilesRecursive(f.id);
+    try {
+        const files = await getFolderContents(folderId);
+        const tracks = files.filter(f => f.mimeType.includes('audio'));
+        for (const t of tracks) {
+            if (shouldCancelLoad) break;
+            addToLog(`Processing: ${t.name} (ID: ${t.id})`);
+            await loadMetaAndArt(t.id, t.name);
+            processedFiles++;
+            const percent = Math.round((processedFiles / totalFilesToLoad) * 100);
+            document.getElementById("progressBar").style.width = percent + "%";
+            document.getElementById("progressText").textContent = `${processedFiles} / ${totalFilesToLoad} (${percent}%)`;
+            updateLogDisplay();
+        }
+        const folders = files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
+        for (const f of folders) {
+            if (shouldCancelLoad) break;
+            await processFilesRecursive(f.id);
+        }
+    } catch(e) {
+        console.error('Error processing files:', e);
+        addToLog(`Error processing folder ${folderId}`);
     }
 }
 
@@ -1293,6 +1418,7 @@ function clearAllCache() {
         localStorage.removeItem('goot_meta_cache');
         trackMetadata = {};
         tempArtCache = {};
+        albumArtCache = {};
         alert("Cache cleared! Refresh the page to see full effect.");
     }
 }
@@ -1436,21 +1562,24 @@ function toggleRepeat() {
     const mini = document.getElementById("btnRepeat");
     const fs = document.getElementById("fsBtnRepeat");
     
-    // 0=off, 1=one, 2=all. We can style them similarly.
     mini.style.opacity = repeatMode > 0 ? "1" : "0.5";
     mini.style.color = repeatMode > 0 ? "var(--md-sys-color-primary)" : "inherit";
     
     fs.style.opacity = repeatMode > 0 ? "1" : "0.5";
     fs.style.color = repeatMode > 0 ? "var(--md-sys-color-primary)" : "inherit";
     
-    // Add small '1' icon for repeat 1 if you want, but simple color toggle is fine for now
     if(repeatMode === 1) {
-        mini.className = "fa-solid fa-repeat"; // could be fa-repeat-1 if available
-        fs.className = "fa-solid fa-repeat";
+        mini.innerHTML = '<i class="fa-solid fa-repeat-1"></i>';
+        fs.innerHTML = '<i class="fa-solid fa-repeat-1"></i>';
+    } else if(repeatMode === 2) {
+        mini.innerHTML = '<i class="fa-solid fa-repeat"></i>';
+        fs.innerHTML = '<i class="fa-solid fa-repeat"></i>';
+    } else {
+        mini.innerHTML = '<i class="fa-solid fa-repeat"></i>';
+        fs.innerHTML = '<i class="fa-solid fa-repeat"></i>';
     }
 }
 
-// Volume Controls
 function setVolume(val) {
     player.volume = val;
     if (player.muted && val > 0) player.muted = false;
@@ -1461,7 +1590,6 @@ function toggleMute() {
     player.muted = !player.muted;
     updateVolIcon(player.muted ? 0 : player.volume);
     
-    // If unmuting and volume is 0, reset to 50%
     if (!player.muted && player.volume === 0) {
         player.volume = 0.5;
         document.getElementById('volSlider').value = 0.5;
@@ -1490,15 +1618,15 @@ function updateVolIcon(val) {
 
 player.ontimeupdate = () => {
     const p = player.duration ? (player.currentTime / player.duration) * 100 : 0;
-    // Update Mini Player
     document.getElementById("progFill").style.width = p + "%";
     document.getElementById("curTime").textContent = Math.floor(player.currentTime/60) + ":" + Math.floor(player.currentTime%60).toString().padStart(2,'0');
     document.getElementById("durTime").textContent = Math.floor(player.duration/60||0) + ":" + Math.floor(player.duration%60||0).toString().padStart(2,'0');
     
-    // Update Full Screen Player
     document.getElementById("fsProgFill").style.width = p + "%";
     document.getElementById("fsCurTime").textContent = document.getElementById("curTime").textContent;
     document.getElementById("fsDurTime").textContent = document.getElementById("durTime").textContent;
+    document.getElementById("fsProgScrub").value = p;
+    document.getElementById("progScrub").value = p;
 };
 
 player.onplay = () => {
@@ -1518,11 +1646,11 @@ player.onended = () => {
     else skip(1);
 };
 
-document.getElementById("progScrub").oninput = function(){
-    if(player.duration) player.currentTime = (this.value/100)*player.duration;
-};
-
-init();
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+} else {
+    init();
+}
 </script>
 </body>
 </html>
