@@ -334,8 +334,9 @@ input:checked + .slider:before { transform: translateX(26px); }
     <div class="mp-progress-container">
         <span id="fsCurTime" style="font-size:12px;font-variant-numeric:tabular-nums;opacity:0.7;">0:00</span>
         <div style="flex:1;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;position:relative;">
-            <div id="fsProgFill" style="position:absolute;height:100%;width:0%;background:var(--md-sys-color-primary);border-radius:2px;"></div>
-            <input type="range" id="fsProgScrub" value="0" step="0.1" oninput="scrub(this.value)" style="width:100%;position:absolute;top:-10px;height:24px;opacity:0;cursor:pointer;">
+            <div id="fsBuffFill" style="position:absolute;height:100%;width:0%;background:rgba(255,255,255,0.25);border-radius:2px;"></div>
+            <div id="fsProgFill" style="position:absolute;height:100%;width:0%;background:var(--md-sys-color-primary);border-radius:2px;z-index:2;"></div>
+            <input type="range" id="fsProgScrub" value="0" step="0.1" oninput="scrub(this.value)" style="width:100%;position:absolute;top:-10px;height:24px;opacity:0;cursor:pointer;z-index:3;">
         </div>
         <span id="fsDurTime" style="font-size:12px;font-variant-numeric:tabular-nums;opacity:0.7;">0:00</span>
     </div>
@@ -492,8 +493,9 @@ input:checked + .slider:before { transform: translateX(26px); }
         <div style="width:100%;max-width:700px;display:flex;align-items:center;gap:14px;">
             <span id="curTime" style="font-size:12px;min-width:40px;">0:00</span>
             <div style="flex:1;height:6px;background:rgba(255,255,255,0.15);border-radius:3px;position:relative;overflow:hidden;">
-                <div id="progFill" style="position:absolute;height:100%;width:0%;background:linear-gradient(90deg,var(--md-sys-color-primary),color-mix(in srgb,var(--md-sys-color-primary) 70%,white));border-radius:3px;box-shadow:0 0 12px var(--md-sys-color-primary);transition:width 0.18s linear;"></div>
-                <input type="range" id="progScrub" value="0" step="0.1" oninput="event.stopPropagation(); scrub(this.value)" onclick="event.stopPropagation()" style="width:100%;position:absolute;top:-8px;opacity:0;cursor:pointer;z-index:2;">
+                <div id="buffFill" style="position:absolute;height:100%;width:0%;background:rgba(255,255,255,0.25);border-radius:3px;"></div>
+                <div id="progFill" style="position:absolute;height:100%;width:0%;background:linear-gradient(90deg,var(--md-sys-color-primary),color-mix(in srgb,var(--md-sys-color-primary) 70%,white));border-radius:3px;box-shadow:0 0 12px var(--md-sys-color-primary);transition:width 0.18s linear;z-index:2;"></div>
+                <input type="range" id="progScrub" value="0" step="0.1" oninput="event.stopPropagation(); scrub(this.value)" onclick="event.stopPropagation()" style="width:100%;position:absolute;top:-8px;opacity:0;cursor:pointer;z-index:3;">
             </div>
             <span id="durTime" style="font-size:12px;min-width:40px;">0:00</span>
         </div>
@@ -506,7 +508,7 @@ input:checked + .slider:before { transform: translateX(26px); }
     </div>
 </footer>
 <input type="file" id="coverFileInput" accept="image/*" style="display:none">
-<audio id="player" crossorigin="anonymous"></audio>
+<audio id="player" crossorigin="anonymous" preload="auto"></audio>
 <script>
 const WORKER_URL = "https://gootapimask.jpm333678.workers.dev/";
 const ROOT_ID = "1kje6wQMhMxvuI-2eYsAMVvs09JYLDo2s";
@@ -530,6 +532,10 @@ let logModalOpen = false;
 let playlistSortable = null;
 let currentAlbumMap = {};
 let pendingMetadataLoads = new Set();
+let metadataQueue = [];
+let activeMetadataFetches = 0;
+const MAX_CONCURRENT_FETCHES = 3;
+
 const player = document.getElementById("player");
 
 async function getFolderContents(parentId) {
@@ -625,6 +631,9 @@ async function loadFolders(id) {
     const grid = document.getElementById("folderGrid");
     const listBody = document.getElementById("libSongBody");
     
+    // Clear pending metadata queue for previous folder
+    metadataQueue = [];
+    
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;opacity:0.6;"><i class="fa-solid fa-circle-notch fa-spin" style="font-size:32px;margin-bottom:12px;"></i><br>Loading Library...</div>';
     listBody.innerHTML = ''; 
 
@@ -711,90 +720,123 @@ function renderTrackTable(tracks, container, isPlaylist = false, pName = "") {
     });
 }
 
-async function loadMetaAndArt(id, name) {
-    if (pendingMetadataLoads.has(id)) return;
+function loadMetaAndArt(id, name) {
+    if (pendingMetadataLoads.has(id)) return Promise.resolve();
     
     const album = trackMetadata[id]?.album;
     if (album && albumArtCache[album]) {
         applyArtToUI(id, albumArtCache[album]);
-        return;
+        return Promise.resolve();
     }
     
     if (tempArtCache[id]) {
         applyArtToUI(id, tempArtCache[id]);
-        return;
+        return Promise.resolve();
     }
     
-    pendingMetadataLoads.add(id);
+    // Check if ID is already in metadataQueue
+    if(metadataQueue.some(task => task.id === id)) return Promise.resolve();
+
+    return new Promise((resolve, reject) => {
+        metadataQueue.push({id, name, resolve, reject});
+        processMetadataQueue();
+    });
+}
+
+function processMetadataQueue() {
+    if (activeMetadataFetches >= MAX_CONCURRENT_FETCHES || metadataQueue.length === 0) return;
     
+    activeMetadataFetches++;
+    const task = metadataQueue.shift();
+    pendingMetadataLoads.add(task.id);
+
+    fetchMetadata(task.id, task.name)
+        .then(() => {
+            if(task.resolve) task.resolve();
+        })
+        .catch((e) => {
+            if(task.reject) task.reject(e);
+        })
+        .finally(() => {
+            activeMetadataFetches--;
+            pendingMetadataLoads.delete(task.id);
+            processMetadataQueue();
+        });
+}
+
+async function fetchMetadata(id, name) {
     try {
         const res = await fetch(`${WORKER_URL}?id=${id}`, {
             mode: 'cors',
             credentials: 'omit',
             cache: 'no-store',
-            headers: { 'Range': 'bytes=0-4194303' }  // First 4 MB
+            headers: { 'Range': 'bytes=0-524288' }  // 512KB Chunks for speed
         });
         if(!res.ok) throw new Error("Fetch failed");
         const buf = await res.arrayBuffer();
-        jsmediatags.read(new Blob([buf]), {
-            onSuccess: tag => {
-                const m = {
-                    title: tag.tags.title || name || "Unknown",
-                    artist: tag.tags.artist || "Unknown",
-                    album: tag.tags.album || "Unknown",
-                    genre: tag.tags.genre || "",
-                    year: tag.tags.year || "",
-                    composer: tag.tags.composer || "",
-                    track: tag.tags.track || ""
-                };
-                trackMetadata[id] = m;
-                localStorage.setItem('goot_meta_cache', JSON.stringify(trackMetadata));
-                document.querySelectorAll(`tr#row-${id}`).forEach(r => {
-                    r.querySelector('.meta-title').innerText = m.title;
-                    r.querySelector('.meta-artist').innerText = m.artist;
-                    r.querySelector('.meta-album').innerText = m.album;
-                });
-                if (document.getElementById("searchResults")?.style.display === "block") {
-                    searchSongsToAdd(document.querySelector(".search-input")?.value || "");
-                }
-                if (tag.tags.picture) {
-                    const {data, format} = tag.tags.picture;
-                    let s = ""; for(let i=0;i<data.length;i++) s+=String.fromCharCode(data[i]);
-                    const base64 = `data:${format};base64,${btoa(s)}`;
-                    tempArtCache[id] = base64;
-                    
-                    if (m.album && m.album !== "Unknown") {
-                        albumArtCache[m.album] = base64;
-                        Object.keys(trackMetadata).forEach(otherId => {
-                            if (trackMetadata[otherId].album === m.album && otherId !== id) {
-                                applyArtToUI(otherId, base64);
+        
+        return new Promise((resolve, reject) => {
+             jsmediatags.read(new Blob([buf]), {
+                onSuccess: tag => {
+                    const m = {
+                        title: tag.tags.title || name || "Unknown",
+                        artist: tag.tags.artist || "Unknown",
+                        album: tag.tags.album || "Unknown",
+                        genre: tag.tags.genre || "",
+                        year: tag.tags.year || "",
+                        composer: tag.tags.composer || "",
+                        track: tag.tags.track || ""
+                    };
+                    trackMetadata[id] = m;
+                    localStorage.setItem('goot_meta_cache', JSON.stringify(trackMetadata));
+                    document.querySelectorAll(`tr#row-${id}`).forEach(r => {
+                        r.querySelector('.meta-title').innerText = m.title;
+                        r.querySelector('.meta-artist').innerText = m.artist;
+                        r.querySelector('.meta-album').innerText = m.album;
+                    });
+                    if (document.getElementById("searchResults")?.style.display === "block") {
+                        searchSongsToAdd(document.querySelector(".search-input")?.value || "");
+                    }
+                    if (tag.tags.picture) {
+                        const {data, format} = tag.tags.picture;
+                        let s = ""; for(let i=0;i<data.length;i++) s+=String.fromCharCode(data[i]);
+                        const base64 = `data:${format};base64,${btoa(s)}`;
+                        tempArtCache[id] = base64;
+                        
+                        if (m.album && m.album !== "Unknown") {
+                            albumArtCache[m.album] = base64;
+                            Object.keys(trackMetadata).forEach(otherId => {
+                                if (trackMetadata[otherId].album === m.album && otherId !== id) {
+                                    applyArtToUI(otherId, base64);
+                                }
+                            });
+                        }
+                        
+                        applyArtToUI(id, base64);
+                        document.querySelectorAll('.playlist-card, #playlistCover').forEach(el => {
+                            if (el.classList.contains('playlist-card')) {
+                                const plName = el.dataset.name;
+                                if (!playlists[plName]?.customCover && playlists[plName]?.[0]?.id === id) {
+                                    const art = el.querySelector('.folder-art');
+                                    if (art) art.innerHTML = `<img src="${base64}" class="loaded" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">`;
+                                }
+                            } else if (el.id === 'playlistCover' && currentPlaylistName && !playlists[currentPlaylistName]?.customCover) {
+                                if (playlists[currentPlaylistName]?.[0]?.id === id) {
+                                    el.innerHTML = `<img src="${base64}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
+                                }
                             }
                         });
                     }
-                    
-                    applyArtToUI(id, base64);
-                    document.querySelectorAll('.playlist-card, #playlistCover').forEach(el => {
-                        if (el.classList.contains('playlist-card')) {
-                            const plName = el.dataset.name;
-                            if (!playlists[plName]?.customCover && playlists[plName]?.[0]?.id === id) {
-                                const art = el.querySelector('.folder-art');
-                                if (art) art.innerHTML = `<img src="${base64}" class="loaded" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">`;
-                            }
-                        } else if (el.id === 'playlistCover' && currentPlaylistName && !playlists[currentPlaylistName]?.customCover) {
-                            if (playlists[currentPlaylistName]?.[0]?.id === id) {
-                                el.innerHTML = `<img src="${base64}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
-                            }
-                        }
-                    });
+                    resolve();
+                },
+                onError: (e) => {
+                    resolve(); // Resolve anyway to keep queue moving
                 }
-                pendingMetadataLoads.delete(id);
-            },
-            onError: () => {
-                pendingMetadataLoads.delete(id);
-            }
+            });
         });
     } catch(e) {
-        pendingMetadataLoads.delete(id);
+        // Fail silently to keep queue moving
+        return Promise.resolve();
     }
 }
 
@@ -1095,7 +1137,7 @@ function openAlbumChecklist(album) {
         if (tempArtCache[tr.id]) {
             artHTML = `<img src="${tempArtCache[tr.id]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
         } else if (alb && alb !== "Unknown" && albumArtCache[alb]) {
-            artHTML = `<img src="${albumArtCache[alb]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
+            artHTML = `<img src="${albumArtCache[album]}" class="loaded" style="width:100%;height:100%;object-fit:cover;">`;
         }
         
         const label = document.createElement("label");
@@ -1616,6 +1658,19 @@ function updateVolIcon(val) {
     }
 }
 
+function updateBuffer() {
+    if (player.duration > 0) {
+        for (let i = 0; i < player.buffered.length; i++) {
+            if (player.buffered.start(i) <= player.currentTime && player.buffered.end(i) >= player.currentTime) {
+                const p = (player.buffered.end(i) / player.duration) * 100;
+                document.getElementById("buffFill").style.width = p + "%";
+                document.getElementById("fsBuffFill").style.width = p + "%";
+                break;
+            }
+        }
+    }
+}
+
 player.ontimeupdate = () => {
     const p = player.duration ? (player.currentTime / player.duration) * 100 : 0;
     document.getElementById("progFill").style.width = p + "%";
@@ -1627,7 +1682,11 @@ player.ontimeupdate = () => {
     document.getElementById("fsDurTime").textContent = document.getElementById("durTime").textContent;
     document.getElementById("fsProgScrub").value = p;
     document.getElementById("progScrub").value = p;
+    
+    updateBuffer();
 };
+
+player.addEventListener('progress', updateBuffer);
 
 player.onplay = () => {
     document.getElementById("playIcon").className = "fa-solid fa-pause";
