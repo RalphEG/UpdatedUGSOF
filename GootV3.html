@@ -336,7 +336,7 @@ input:checked + .slider:before { transform: translateX(26px); }
         <div style="flex:1;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;position:relative;">
             <div id="fsBuffFill" style="position:absolute;height:100%;width:0%;background:rgba(255,255,255,0.25);border-radius:2px;"></div>
             <div id="fsProgFill" style="position:absolute;height:100%;width:0%;background:var(--md-sys-color-primary);border-radius:2px;z-index:2;"></div>
-            <input type="range" id="fsProgScrub" value="0" step="0.1" oninput="scrub(this.value)" style="width:100%;position:absolute;top:-10px;height:24px;opacity:0;cursor:pointer;z-index:3;">
+            <input type="" id="fsProgScrub" value="0" step="0.1" oninput="scrub(this.value)" style="width:100%;position:absolute;top:-10px;height:24px;opacity:0;cursor:pointer;z-index:3;">
         </div>
         <span id="fsDurTime" style="font-size:12px;font-variant-numeric:tabular-nums;opacity:0.7;">0:00</span>
     </div>
@@ -495,7 +495,7 @@ input:checked + .slider:before { transform: translateX(26px); }
             <div style="flex:1;height:6px;background:rgba(255,255,255,0.15);border-radius:3px;position:relative;overflow:hidden;">
                 <div id="buffFill" style="position:absolute;height:100%;width:0%;background:rgba(255,255,255,0.25);border-radius:3px;"></div>
                 <div id="progFill" style="position:absolute;height:100%;width:0%;background:linear-gradient(90deg,var(--md-sys-color-primary),color-mix(in srgb,var(--md-sys-color-primary) 70%,white));border-radius:3px;box-shadow:0 0 12px var(--md-sys-color-primary);transition:width 0.18s linear;z-index:2;"></div>
-                <input type="range" id="progScrub" value="0" step="0.1" oninput="event.stopPropagation(); scrub(this.value)" onclick="event.stopPropagation()" style="width:100%;position:absolute;top:-8px;opacity:0;cursor:pointer;z-index:3;">
+                <input type="" id="progScrub" value="0" step="0.1" oninput="event.stopPropagation(); scrub(this.value)" onclick="event.stopPropagation()" style="width:100%;position:absolute;top:-8px;opacity:0;cursor:pointer;z-index:3;">
             </div>
             <span id="durTime" style="font-size:12px;min-width:40px;">0:00</span>
         </div>
@@ -503,7 +503,7 @@ input:checked + .slider:before { transform: translateX(26px); }
     <div style="width:200px;display:flex;align-items:center;justify-content:flex-end;gap:12px;padding-right:20px;">
         <i id="volIcon" class="fa-solid fa-volume-high" onclick="event.stopPropagation(); toggleMute()" style="cursor:pointer;width:24px;text-align:center;font-size:16px;opacity:0.8;"></i>
         <div style="width:100px;display:flex;align-items:center;">
-            <input type="range" id="volSlider" min="0" max="1" step="0.01" value="1" oninput="event.stopPropagation(); setVolume(this.value)" onclick="event.stopPropagation()" style="width:100%;cursor:pointer;height:4px;accent-color:var(--md-sys-color-primary);">
+            <input type="" id="volSlider" min="0" max="1" step="0.01" value="1" oninput="event.stopPropagation(); setVolume(this.value)" onclick="event.stopPropagation()" style="width:100%;cursor:pointer;height:4px;accent-color:var(--md-sys-color-primary);">
         </div>
     </div>
 </footer>
@@ -770,7 +770,7 @@ async function fetchMetadata(id, name) {
             mode: 'cors',
             credentials: 'omit',
             cache: 'no-store',
-            headers: { 'Range': 'bytes=0-524288' }  // 512KB Chunks for speed
+            headers: { '': 'bytes=0-4194304' }  // 512KB Chunks for speed
         });
         if(!res.ok) throw new Error("Fetch failed");
         const buf = await res.arrayBuffer();
