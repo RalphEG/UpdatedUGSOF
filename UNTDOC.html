@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title> UntDoc | The Fun Never Ends</title>
+   <link rel="icon" type="image/svg+xml" href="https://www.gstatic.com/classroom/logo_square_rounded.svg">
+   <style>
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+       :root { --bg: #000000; --accent: #ff2b9e; --text: #ff2b9e; --card-bg: #000000; --border: #1a1a1a; --accent-rgb: 255, 43, 158; }
+       body { font-family: 'Courier New', monospace; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+      
+       /* Matrix background */
+       #matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.3; pointer-events: none; }
+      
+       .scanline { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 50%, rgba(255, 43, 158, 0.02) 51%); background-size: 100% 4px; pointer-events: none; z-index: 9999; }
+       header { padding: 2rem; text-align: center; border-bottom: 2px solid var(--accent); background: #000000; position: relative; z-index: 1; }
+       h1 { font-size: clamp(2rem, 8vw, 4rem); color: var(--accent); text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent); letter-spacing: 0.5em; transition: transform 0.1s ease-out; display: inline-block; }
+       .tagline { color: var(--text); margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8; }
+
+
+
+
+       nav { display: flex; justify-content: center; gap: 20px; background: #000000; padding: 10px; border-bottom: 1px solid var(--border); position: relative; z-index: 1; }
+       nav button { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 10px 20px; cursor: pointer; font-family: inherit; transition: 0.3s; position: relative; z-index: 2; }
+       nav button.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent); }
+       .section-indicator { position: absolute; bottom: -2px; height: 3px; background: var(--accent); transition: left 0.3s ease, width 0.3s ease; box-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent); z-index: 3; border-radius: 2px; }
+
+
+
+
+       .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; position: relative; z-index: 1; }
+       .tabs-wrapper { position: relative; min-height: 400px; }
+       .tab-content {
+           position: absolute;
+           top: 0;
+           left: 0;
+           width: 100%;
+           opacity: 0;
+           visibility: hidden;
+           transition: opacity 0.35s ease, visibility 0.35s ease;
+       }
+       .tab-content.active {
+           opacity: 1;
+           visibility: visible;
+       }
+
+
+
+
+       .search-container { margin-bottom: 2rem; display: flex; justify-content: center; }
+       #gameSearch {
+           width: 100%;
+           max-width: 600px;
+           background: #000;
+           border: 1px solid var(--border);
+           padding: 15px;
+           color: var(--accent);
+           font-family: inherit;
+           outline: none;
+           transition: 0.3s;
+           text-align: center;
+       }
+       #gameSearch:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
+
+
+
+
+       .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+       .game-card { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
+       .game-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px; background: var(--accent); transition: left 0.3s ease; }
+       .game-card:hover::before { left: 100%; }
+       .game-card:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3); transform: translateY(-5px); }
+       .game-card h3 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1.2rem; }
+
+
+
+
+       .compiler-container { display: flex; flex-direction: column; gap: 15px; }
+       #editor { width: 100%; height: 60vh; background: #000; color: var(--accent); border: 1px solid var(--border); padding: 15px; font-family: monospace; resize: vertical; outline: none; scrollbar-width: thin; scrollbar-color: var(--accent) var(--border); }
+#editor::-webkit-scrollbar { width: 8px; height: 8px; }
+#editor::-webkit-scrollbar-track { background: #000; border: 1px solid var(--border); }
+#editor::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 0; }
+#editor::-webkit-scrollbar-thumb:hover { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+#editor::-webkit-scrollbar-corner { background: var(--border); }
+       .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+       .control-btn { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; color: var(--accent); font-family: 'Courier New', monospace; font-size: 1rem; font-weight: bold; }
+       .control-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px; background: var(--accent); transition: left 0.3s ease; }
+       .control-btn:hover::before { left: 100%; }
+       .control-btn:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3); transform: translateY(-5px); }
+       #fileInput { display: none; }
+
+
+
+
+       #loader { display: none; position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: #000; padding: 10px; font-weight: bold; z-index: 10000; }
+
+
+
+
+       /* Color Picker Styles */
+       .settings-container { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+       .settings-group { display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.8); padding: 10px 15px; border: 1px solid var(--border); border-radius: 5px; }
+       .settings-group label { color: var(--text); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; user-select: none; }
+       #accentColorPicker { -webkit-appearance: none; appearance: none; width: 30px; height: 30px; border: 2px solid var(--accent); border-radius: 50%; cursor: pointer; overflow: hidden; }
+       #accentColorPicker::-webkit-color-swatch-wrapper { padding: 0; }
+       #accentColorPicker::-webkit-color-swatch { border: none; border-radius: 50%; }
+       #accentColorPicker::-moz-color-swatch { border: none; border-radius: 50%; }
+       .toggle-switch { position: relative; width: 40px; height: 20px; }
+       .toggle-switch input { opacity: 0; width: 0; height: 0; }
+       .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: 0.3s; border-radius: 20px; border: 1px solid var(--border); }
+       .toggle-slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: #888; transition: 0.3s; border-radius: 50%; }
+       .toggle-switch input:checked + .toggle-slider { background-color: var(--accent); border-color: var(--accent); }
+       .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); background-color: #000; }
+
+
+
+
+       /* Reduced Motion / No Animations Mode */
+       .no-animations * { animation: none !important; transition: none !important; }
+       .no-animations .scanline { display: none !important; }
+       .no-animations #matrixCanvas { display: none !important; }
+       .no-animations h1 { text-shadow: none !important; transform: none !important; filter: none !important; }
+       .no-animations .game-card { transition: none !important; transform: none !important; }
+       .no-animations .game-card::before { display: none !important; }
+       .no-animations .tab-content { transition: none !important; }
+       .no-animations nav button { transition: none !important; }
+       .no-animations .section-indicator { transition: none !important; }
+       .no-animations #gameSearch { transition: none !important; }
+       .no-animations .control-btn { transition: none !important; }
+   </style>
+</head>
+<body>
+
+
+
+
+<canvas id="matrixCanvas"></canvas>
+<div class="scanline"></div>
+<div id="loader">STATUS: PROCESSING...</div>
+
+
+
+
+<div class="settings-container">
+   <div class="settings-group">
+       <label for="accentColorPicker">Accent</label>
+       <input type="color" id="accentColorPicker" value="#ff2b9e">
+   </div>
+   <div class="settings-group">
+       <label for="animationsToggle">Animations</label>
+       <label class="toggle-switch">
+           <input type="checkbox" id="animationsToggle" checked>
+           <span class="toggle-slider"></span>
+       </label>
+   </div>
+</div>
+
+
+
+
+<header>
+   <h1 id="zaddyTitle">UNTDOC</h1>
+   <p class="tagline">dont make him sing make him sing</p>
+</header>
+
+
+
+
+<nav>
+   <button class="nav-btn active" onclick="showTab('games')">GAMES</button>
+   <button class="nav-btn" onclick="showTab('compiler')">HTML COMPILER</button>
+   <div class="section-indicator" id="sectionIndicator"></div>
+</nav>
+
+
+
+
+<div class="container">
+   <div class="tabs-wrapper">
+       <div id="games" class="tab-content active">
+           <div class="search-container">
+               <input type="text" id="gameSearch" placeholder="SEARCH GAMES..." onkeyup="filterGames()">
+           </div>
+           <div class="games-grid" id="gameGrid"></div>
+       </div>
+
+
+
+
+       <div id="compiler" class="tab-content">
+           <div class="compiler-container">
+               <textarea id="editor" placeholder="Paste HTML code here..."></textarea>
+               <div class="controls">
+                   <button class="control-btn" onclick="document.getElementById('fileInput').click()">UPLOAD .HTML</button>
+                   <input type="file" id="fileInput" accept=".html" onchange="handleFileUpload(event)">
+                   <button class="control-btn" onclick="exportHTML()">EXPORT AS HTML</button>
+                   <button class="control-btn" onclick="runInFullscreen()">OPEN IN FULLSCREEN</button>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+
+
+
+
+<script>
+   // Matrix Rain Effect
+   const canvas = document.getElementById('matrixCanvas');
+   const ctx = canvas.getContext('2d');
+  
+   function resizeCanvas() {
+       canvas.width = window.innerWidth;
+       canvas.height = window.innerHeight;
+   }
+   resizeCanvas();
+  
+   const chars = 'goog';
+   const fontSize = 16;
+   const columns = Math.floor(canvas.width / fontSize);
+   const drops = [];
+  
+   function initDrops() {
+       drops.length = 0;
+       for (let i = 0; i < columns; i++) {
+           drops.push(Math.floor(Math.random() * canvas.height / fontSize));
+       }
+   }
+   initDrops();
+  
+   function drawMatrix() {
+       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+
+
+       const accentColor = getComputedStyle(root).getPropertyValue('--accent').trim() || DEFAULT_ACCENT_COLOR;
+       ctx.fillStyle = accentColor;
+       ctx.font = fontSize + 'px Courier New';
+      
+       for (let i = 0; i < drops.length; i++) {
+           const charIndex = Math.floor(Math.random() * chars.length);
+           const text = chars[charIndex];
+           ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+          
+           if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+               drops[i] = 0;
+           }
+           drops[i]++;
+       }
+   }
+  
+   setInterval(drawMatrix, 3000);
+  
+   window.addEventListener('resize', () => {
+       resizeCanvas();
+       initDrops();
+   });
+  
+   setInterval(drawMatrix, 30);
+  
+   window.addEventListener('resize', () => {
+       canvas.width = window.innerWidth;
+       canvas.height = window.innerHeight;
+   });
+
+
+
+
+   const BASE_URL = "https://raw.githubusercontent.com/RalphEG/Ultimate-Game-Stash-One-File-UPDATED/refs/heads/main/Untitled%20Document%20Files/";
+
+
+
+
+   const rawGames = [
+       { name: "Snow Rider 3D", file: "SnowRider3D.html" },
+       { name: "Paper.io 2", file: "Paper.io2.html" },
+       { name: "Slope", file: "Slope.html" },
+       { name: "Cookie Clicker", file: "CoockieClicker-2.052.html" },
+       { name: "Retro Bowl", file: "RetroBowl.html" },
+       { name: "A Dance of Fire and Ice", file: "ADanceOfFireAndIce.html" },
+       { name: "Baldi's Basics", file: "Baldi'sBasics.html" },
+       { name: "Basket Random", file: "BasketRandom.html" },
+       { name: "Circloo 2", file: "Circloo2.html" },
+       { name: "Stock Invest", file: "StockInvest.html" },
+       { name: "Subway Surfers", file: "SubwaySurfers.html" },
+       { name: "Crazy Cattle 3D", file: "CrazyCattle3D.html" },
+       { name: "Tiny Fishing", file: "TinyFishing.html" },
+       { name: "Drift Boss", file: "DriftBoss.html" },
+       { name: "Tomb of the Mask", file: "TombOfTheMask.html" },
+       { name: "EaglercraftX1.8", file: "EaglercraftX1.8.html" },
+       { name: "Idle Breakout", file: "IdleBreakout.html" },
+       { name: "Idle Dice", file: "IdleDice.html" },
+       { name: "Off Brand Idle Dice", file: "OffBrandIdleDice.html" },
+       { name: "Drive Mad", file: "DriveMad.html" },
+       { name: "Doom", file: "Doom.html" },
+       { name: "World’s Hardest Game", file: "WorldsHardestGame.html" },
+       { name: "OVO", file: "OVO.html" },
+       { name: "Ublxy", file: "Ublxy.html" },
+       { name: "Space Waves", file: "SpaceWaves.html" },
+       { name: "Monkey Mart", file: "MonkeyMart.html" },
+       { name: "Russian Car Game", file: "RussianCarGame.html" },
+       { name: "Mystery", file: "Mystery.html" },
+       { name: "Infinite Craft", file: "InfiniteCraft.html" },
+       { name: "Freedom Launcher", file: "FreedomLauncher.html" },
+       { name: "(Ralph's) Html Compiler", file: "HtmlCompiler.html" },
+       { name: "1v1.LOL", file: "1v1.lol.html" },
+       { name: "BitLife", file: "Bitlife.html" },
+       { name: "Geometry Dash Lite", file: "GeometryDashLite.html" }
+   ];
+
+
+
+
+   const sortedGames = rawGames.sort((a, b) => {
+       return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+   });
+
+
+
+
+   const grid = document.getElementById('gameGrid');
+
+
+
+
+   function renderGames(gameList) {
+       grid.innerHTML = '';
+       gameList.forEach(game => {
+           const card = document.createElement('div');
+           card.className = 'game-card';
+           card.innerHTML = `<h3>> ${game.name}</h3><span style="font-size:0.7rem; opacity:0.5;">SOURCE: GITHUB</span>`;
+           card.onclick = () => launchGame(game.file);
+           grid.appendChild(card);
+       });
+   }
+
+
+
+
+   renderGames(sortedGames);
+
+
+
+
+   function filterGames() {
+       const query = document.getElementById('gameSearch').value.toLowerCase();
+       const filtered = sortedGames.filter(game =>
+           game.name.toLowerCase().includes(query)
+       );
+       renderGames(filtered);
+   }
+
+
+
+
+   function handleFileUpload(event) {
+       const file = event.target.files[0];
+       if (!file) return;
+       const reader = new FileReader();
+       reader.onload = (e) => document.getElementById('editor').value = e.target.result;
+       reader.readAsText(file);
+   }
+
+
+
+
+   function runInFullscreen() {
+       const code = document.getElementById('editor').value;
+       if (!code) return alert("Editor is empty!");
+       const win = window.open('about:blank', '_blank');
+       win.document.open();
+       win.document.write(code);
+       win.document.close();
+   }
+
+
+
+
+   function exportHTML() {
+       const code = document.getElementById('editor').value;
+       if (!code) return alert("Nothing to export!");
+       const blob = new Blob([code], { type: "text/html" });
+       const a = document.createElement("a");
+       a.href = URL.createObjectURL(blob);
+       a.download = "compiled_game.html";
+       a.click();
+   }
+
+
+
+
+   function showTab(tabId) {
+       const newTab = document.getElementById(tabId);
+       const navBtns = document.querySelectorAll('.nav-btn');
+       const clickedBtn = event.currentTarget;
+      
+       // Update indicator immediately
+       updateSectionIndicatorImmediate(clickedBtn);
+      
+       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+       navBtns.forEach(btn => btn.classList.remove('active'));
+      
+       newTab.classList.add('active');
+       clickedBtn.classList.add('active');
+   }
+  
+   function updateSectionIndicatorImmediate(btn) {
+       if (sectionIndicator && btn) {
+           const btnRect = btn.getBoundingClientRect();
+           const navRect = btn.parentElement.getBoundingClientRect();
+           sectionIndicator.style.left = (btnRect.left - navRect.left + 1) + 'px';
+           sectionIndicator.style.width = (btnRect.width - 2) + 'px';
+       }
+   }
+
+
+
+
+   async function launchGame(fileName) {
+       document.getElementById('loader').style.display = 'block';
+       const win = window.open('about:blank', '_blank');
+       try {
+           const response = await fetch(BASE_URL + fileName);
+           const html = await response.text();
+           win.document.open();
+           win.document.write(html);
+           win.document.close();
+       } catch (e) { win.location.href = BASE_URL + fileName; }
+       finally { document.getElementById('loader').style.display = 'none'; }
+   }
+
+
+
+
+   const title = document.getElementById('zaddyTitle');
+   document.addEventListener('mousemove', (e) => {
+       const rect = title.getBoundingClientRect();
+       title.style.transform = `translate(${(e.clientX - (rect.left + rect.width / 2)) / 80}px, ${(e.clientY - (rect.top + rect.height / 2)) / 80}px)`;
+   });
+
+
+
+
+   // Subtle logo flicker (90-100% brightness, frequent)
+   function flickerLogo() {
+       const brightness = 0.9 + Math.random() * 0.1;
+       title.style.filter = `brightness(${brightness})`;
+   }
+   setInterval(flickerLogo, 100);
+  
+   // Section Indicator Logic
+   const sectionIndicator = document.getElementById('sectionIndicator');
+  
+   function updateSectionIndicator() {
+       const activeBtn = document.querySelector('.nav-btn.active');
+       if (activeBtn && sectionIndicator) {
+           const btnRect = activeBtn.getBoundingClientRect();
+           const navRect = activeBtn.parentElement.getBoundingClientRect();
+           sectionIndicator.style.left = (btnRect.left - navRect.left + 1) + 'px';
+           sectionIndicator.style.width = (btnRect.width - 2) + 'px';
+       }
+   }
+  
+   // Initialize indicator on page load
+   setTimeout(updateSectionIndicator, 100);
+  
+   // Update indicator on window resize
+   window.addEventListener('resize', updateSectionIndicator);
+
+
+
+
+   // Custom Accent Color Picker with LocalStorage
+   const STORAGE_KEY = 'untdoc_accent_color';
+   const DEFAULT_ACCENT_COLOR = '#ff2b9e';
+   const root = document.documentElement;
+   const colorPicker = document.getElementById('accentColorPicker');
+
+
+
+
+   function loadAccentColor() {
+       const savedColor = localStorage.getItem(STORAGE_KEY);
+       if (savedColor) {
+           applyAccentColor(savedColor);
+           colorPicker.value = savedColor;
+       } else {
+           colorPicker.value = DEFAULT_ACCENT_COLOR;
+       }
+   }
+
+
+
+
+   function hexToRgb(hex) {
+       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+       return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 43, 158';
+   }
+
+
+
+
+   function applyAccentColor(color) {
+       root.style.setProperty('--accent', color);
+       root.style.setProperty('--text', color);
+       root.style.setProperty('--accent-rgb', hexToRgb(color));
+   }
+
+
+
+
+   function saveAccentColor(color) {
+       localStorage.setItem(STORAGE_KEY, color);
+   }
+
+
+
+
+   function handleColorChange(event) {
+       const newColor = event.target.value;
+       applyAccentColor(newColor);
+       saveAccentColor(newColor);
+   }
+
+
+
+
+   // Initialize color picker
+   loadAccentColor();
+   colorPicker.addEventListener('input', handleColorChange);
+   colorPicker.addEventListener('change', handleColorChange);
+
+
+
+
+   // All Animations Toggle
+   const animationsToggle = document.getElementById('animationsToggle');
+   const animationsStorageKey = 'untdoc_animations_enabled';
+   let flickerInterval = null;
+   let sectionIndicatorInterval = null;
+
+
+
+
+   function loadAnimationsSetting() {
+       const savedSetting = localStorage.getItem(animationsStorageKey);
+       if (savedSetting !== null) {
+           animationsToggle.checked = savedSetting === 'true';
+           if (!animationsToggle.checked) {
+               disableAllAnimations();
+           }
+       }
+   }
+
+
+
+
+   function toggleAnimations() {
+       if (animationsToggle.checked) {
+           enableAllAnimations();
+       } else {
+           disableAllAnimations();
+       }
+       localStorage.setItem(animationsStorageKey, animationsToggle.checked);
+   }
+
+
+
+
+   function disableAllAnimations() {
+       document.body.classList.add('no-animations');
+      
+       // Stop JavaScript animations
+       if (flickerInterval) {
+           clearInterval(flickerInterval);
+           flickerInterval = null;
+       }
+      
+       // Stop section indicator updates
+       if (sectionIndicatorInterval) {
+           clearInterval(sectionIndicatorInterval);
+           sectionIndicatorInterval = null;
+       }
+      
+       // Reset title to no filter
+       title.style.filter = 'none';
+   }
+
+
+
+
+   function enableAllAnimations() {
+       document.body.classList.remove('no-animations');
+      
+       // Restart flicker animation
+       flickerInterval = setInterval(flickerLogo, 100);
+      
+       // Restart section indicator updates
+       sectionIndicatorInterval = setTimeout(updateSectionIndicator, 100);
+   }
+
+
+
+
+   animationsToggle.addEventListener('change', toggleAnimations);
+   loadAnimationsSetting();
+</script>
+</body>
+</html>
+
