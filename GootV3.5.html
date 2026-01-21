@@ -121,11 +121,10 @@ img { opacity: 0; transition: opacity 0.6s var(--motion-standard); }
 img.loaded { opacity: 1; }
 .folder-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 24px; position: relative; z-index: 1;
-    width: calc(100% + 120px);
-    margin-left: -60px;
-    margin-right: -60px;
-    padding-left: 60px;
-    padding-right: 60px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 .folder-card {
     background: #000; aspect-ratio: 1/1; border-radius: 20px; cursor: pointer; overflow: hidden; position: relative;
@@ -1052,11 +1051,11 @@ body.playing .clean-btn.play-btn-large {
 
 .listen-again-container {
     margin-bottom: 32px;
-    width: calc(100% + 120px);
-    margin-left: -60px;
-    margin-right: -60px;
-    padding: 0 60px;
-    max-width: none;
+    width: 100%;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 24px;
 }
 
 /* Horizontal scroll container - no wrapping */
@@ -1064,11 +1063,11 @@ body.playing .clean-btn.play-btn-large {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+    justify-content: flex-start;
     gap: 24px;
     overflow-x: auto;
     overflow-y: visible;
-    padding: 8px 12px 24px 12px;
-    margin: -8px -60px -24px 0;
+    padding: 8px 0 24px 0;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
@@ -1090,11 +1089,13 @@ body.playing .clean-btn.play-btn-large {
 
 .listen-again-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     margin-bottom: 24px;
     flex-wrap: wrap;
     gap: 16px;
+    text-align: center;
 }
 
 .listen-again-title {
@@ -1174,11 +1175,10 @@ body.playing .clean-btn.play-btn-large {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 24px;
-    width: calc(100% + 120px);
-    margin-left: -60px;
-    margin-right: -60px;
-    padding-left: 60px;
-    padding-right: 60px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
 .listen-again-skeleton-item {
@@ -1229,11 +1229,10 @@ body.playing .clean-btn.play-btn-large {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 24px;
-    width: calc(100% + 120px);
-    margin-left: -60px;
-    margin-right: -60px;
-    padding-left: 60px;
-    padding-right: 60px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
 .folder-grid-skeleton .skeleton-folder {
@@ -1655,8 +1654,7 @@ body.playing .clean-btn.play-btn-large {
     position: relative;
     width: 100%;
     overflow: visible;
-    margin: 0 -60px;
-    padding: 0 60px;
+    padding: 0 8px;
 }
 
 .listen-again-carousel-btn {
@@ -1673,9 +1671,6 @@ body.playing .clean-btn.play-btn-large {
     font-size: 16px;
     transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
     flex-shrink: 0;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
     z-index: 20;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
@@ -1684,7 +1679,7 @@ body.playing .clean-btn.play-btn-large {
     background: var(--md-sys-color-primary-container);
     border-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary-container);
-    transform: translateY(-50%) scale(1.08);
+    transform: scale(1.08);
     box-shadow: 0 4px 16px rgba(var(--md-sys-color-primary-rgb), 0.25);
 }
 
@@ -1694,21 +1689,14 @@ body.playing .clean-btn.play-btn-large {
 }
 
 .listen-again-carousel-btn:disabled:hover {
-    transform: translateY(-50%);
-}
-
-.listen-again-carousel-prev {
-    left: 0;
-}
-
-.listen-again-carousel-next {
-    right: 0;
+    transform: none;
 }
 
 .listen-again-scroll-wrapper {
     flex: 1;
     min-width: 0;
     overflow: visible;
+    padding: 0 16px;
 }
 
 .listen-again-grid-wrapper {
@@ -2003,15 +1991,16 @@ body.playing .clean-btn.play-btn-large {
 /* Mobile responsive */
 @media (max-width: 768px) {
     .listen-again-container {
-        width: calc(100% + 32px);
-        margin-left: -16px;
-        margin-right: -16px;
+        width: 100%;
+        max-width: none;
+        margin-left: auto;
+        margin-right: auto;
         padding: 0 16px;
     }
     
     .listen-again-scroll-container {
-        margin: -8px -16px -24px 0;
-        padding: 8px 12px 24px 12px;
+        padding: 8px 0 24px 0;
+        justify-content: flex-start;
     }
     
     .listen-again-grid {
@@ -2022,21 +2011,21 @@ body.playing .clean-btn.play-btn-large {
     .listen-again-skeleton {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 16px;
-        width: calc(100% + 32px);
-        margin-left: -16px;
-        margin-right: -16px;
-        padding-left: 16px;
-        padding-right: 16px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 0;
+        padding-right: 0;
     }
     
     .folder-grid-skeleton {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
-        width: calc(100% + 32px);
-        margin-left: -16px;
-        margin-right: -16px;
-        padding-left: 16px;
-        padding-right: 16px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 0;
+        padding-right: 0;
     }
     
     .listen-again-title {
@@ -3059,11 +3048,11 @@ input:checked + .slider:before { transform: translateX(26px); }
     .folder-grid { 
         grid-template-columns: repeat(2, 1fr); 
         gap: 12px;
-        width: calc(100% + 32px);
-        margin-left: -16px;
-        margin-right: -16px;
-        padding-left: 16px;
-        padding-right: 16px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 0;
+        padding-right: 0;
     }
     .playlist-card:hover .play-overlay { opacity: 1; pointer-events: auto; }
     
@@ -7235,8 +7224,12 @@ function renderQueue() {
 
 function play(idx) {
     if (idx<0 || idx>=queue.length) return;
-    qIndex = idx;
     const t = queue[idx];
+    
+    // Reset play tracking for new track - ensures fresh counting
+    lastTrackedPosition = {};
+    
+    qIndex = idx;
     
     player.src = WORKER_URL + "?id=" + t.id;
     
