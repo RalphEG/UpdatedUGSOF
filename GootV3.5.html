@@ -68,6 +68,20 @@ body {
 .main-container.bulk-loading .updated {
     animation: none !important;
 }
+
+/* Disable all animations when user preference is enabled */
+.animations-disabled * {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Also disable animations on html element for complete coverage */
+.animations-disabled html *,
+.animations-disabled body * {
+    transition: none !important;
+    animation: none !important;
+}
+
 .side-sheet {
     width: 380px; background: var(--md-sys-color-surface);
     border-left: 1px solid var(--md-sys-color-outline);
@@ -122,9 +136,9 @@ img.loaded { opacity: 1; }
 .folder-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 24px; position: relative; z-index: 1;
     width: 100%;
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 60px;
 }
 .folder-card {
     background: #000; aspect-ratio: 1/1; border-radius: 20px; cursor: pointer; overflow: hidden; position: relative;
@@ -1052,10 +1066,10 @@ body.playing .clean-btn.play-btn-large {
 .listen-again-container {
     margin-bottom: 32px;
     width: 100%;
-    max-width: 1400px;
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding: 0 24px;
+    padding: 0 60px;
 }
 
 /* Horizontal scroll container - no wrapping */
@@ -1176,9 +1190,9 @@ body.playing .clean-btn.play-btn-large {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 24px;
     width: 100%;
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 60px;
 }
 
 .listen-again-skeleton-item {
@@ -1230,9 +1244,9 @@ body.playing .clean-btn.play-btn-large {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 24px;
     width: 100%;
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 60px;
 }
 
 .folder-grid-skeleton .skeleton-folder {
@@ -1654,7 +1668,7 @@ body.playing .clean-btn.play-btn-large {
     position: relative;
     width: 100%;
     overflow: visible;
-    padding: 0 8px;
+    padding: 0 16px;
 }
 
 .listen-again-carousel-btn {
@@ -4697,6 +4711,22 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                 </label>
             </div>
 
+            <!-- Disable Animations Toggle -->
+            <div class="simple-settings-section">
+                <label class="simple-setting-row" style="cursor: pointer;">
+                    <div class="simple-setting-info">
+                        <span class="simple-setting-label">Disable Animations</span>
+                        <span class="simple-setting-desc">Reduce motion for better performance</span>
+                    </div>
+                    <div class="simple-toggle">
+                        <input type="checkbox" id="animationsToggle" onchange="toggleAnimations()">
+                        <span class="simple-toggle-track">
+                            <span class="simple-toggle-thumb"></span>
+                        </span>
+                    </div>
+                </label>
+            </div>
+
             <!-- Audio Section -->
             <div class="simple-settings-section">
                 <h2 class="simple-section-title">Audio</h2>
@@ -6131,8 +6161,9 @@ setTheme(savedTheme);
 
 function initPlaylistSortable() {
     if (playlistSortable) playlistSortable.destroy();
+    const animDuration = localStorage.getItem('goot_animations_disabled') === 'true' ? 0 : 200;
     playlistSortable = new Sortable(document.getElementById('playlistSongBody'), {
-        animation: 200,
+        animation: animDuration,
         handle: '.playlist-drag-handle',
         ghostClass: 'sortable-ghost',
         onEnd: (evt) => {
@@ -6192,6 +6223,9 @@ async function init() {
     if (localStorage.getItem('goot_album_color') === null) {
         localStorage.setItem('goot_album_color', 'true');
     }
+    if (localStorage.getItem('goot_animations_disabled') === null) {
+        localStorage.setItem('goot_animations_disabled', 'false');
+    }
     
     // Load normalization settings
     loadNormSettings();
@@ -6202,12 +6236,21 @@ async function init() {
     // Set album color toggle state
     document.getElementById('albumColorToggle').checked = localStorage.getItem('goot_album_color') === 'true';
     
+    // Set animations toggle state and apply to document
+    document.getElementById('animationsToggle').checked = localStorage.getItem('goot_animations_disabled') === 'true';
+    if (localStorage.getItem('goot_animations_disabled') === 'true') {
+        document.documentElement.classList.add('animations-disabled');
+    }
+    
     if (window.innerWidth <= 768) {
         document.getElementById("sidebar").classList.add("collapsed");
     }
     
+    // Determine animation duration based on user preference
+    const sortableAnimDuration = localStorage.getItem('goot_animations_disabled') === 'true' ? 0 : 200;
+    
     new Sortable(document.getElementById('queueList'), {
-        animation: 200,
+        animation: sortableAnimDuration,
         handle: '.queue-drag-handle',
         ghostClass: 'sortable-ghost',
         dragClass: 'queue-sort-drag',
@@ -6223,7 +6266,7 @@ async function init() {
     
     // Desktop extended view queue sorting
     new Sortable(document.getElementById('deQueueList'), {
-        animation: 200,
+        animation: sortableAnimDuration,
         handle: '.queue-drag-handle',
         ghostClass: 'sortable-ghost',
         dragClass: 'queue-sort-drag',
@@ -9133,6 +9176,17 @@ function toggleAlbumColorMode() {
     } else if (queue[qIndex]?.id) {
         // If enabled and a track is playing, extract color from its art
         extractColorFromAlbumArt(queue[qIndex].id);
+    }
+}
+
+function toggleAnimations() {
+    const disabled = document.getElementById('animationsToggle').checked;
+    localStorage.setItem('goot_animations_disabled', disabled);
+    
+    if (disabled) {
+        document.documentElement.classList.add('animations-disabled');
+    } else {
+        document.documentElement.classList.remove('animations-disabled');
     }
 }
 
