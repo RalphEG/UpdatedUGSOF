@@ -54,6 +54,20 @@ body {
     padding: 24px 0; gap: 12px; z-index: 100; flex-shrink: 0;
 }
 .main-container { flex: 1; padding: 40px 60px; overflow-y: auto; position: relative; padding-bottom: 120px; }
+
+/* Performance optimization during bulk metadata loading */
+.main-container.bulk-loading {
+    will-change: contents;
+}
+
+/* Reduce animations during bulk loading */
+.main-container.bulk-loading .updating {
+    transition: none !important;
+}
+
+.main-container.bulk-loading .updated {
+    animation: none !important;
+}
 .side-sheet {
     width: 380px; background: var(--md-sys-color-surface);
     border-left: 1px solid var(--md-sys-color-outline);
@@ -105,19 +119,37 @@ body.playing .player-bar .play-btn {
 .screen.active { display: block; opacity: 1; transform: translateY(0) scale(1); }
 img { opacity: 0; transition: opacity 0.6s var(--motion-standard); }
 img.loaded { opacity: 1; }
-.folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 24px; position: relative; z-index: 1; }
+.folder-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 24px; position: relative; z-index: 1;
+    width: calc(100% + 120px);
+    margin-left: -60px;
+    margin-right: -60px;
+    padding-left: 60px;
+    padding-right: 60px;
+}
 .folder-card {
     background: #000; aspect-ratio: 1/1; border-radius: 20px; cursor: pointer; overflow: hidden; position: relative;
     border: 1px solid var(--md-sys-color-outline);
-    opacity: 0; transform: translateY(30px) scale(0.92);
-    transition: all 0.7s var(--motion-standard), box-shadow 0.4s ease;
-    z-index: 1; /* Base z-index for stacking context */
+    opacity: 0; transform: translateY(16px) scale(0.96);
+    transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
+    z-index: 1;
 }
 .folder-card.loaded { opacity: 1; transform: translateY(0) scale(1); }
-.folder-card:hover { transform: translateY(-4px) scale(1.04); box-shadow: 0 16px 32px rgba(0,0,0,0.4); border-color: var(--md-sys-color-primary); }
-.folder-art { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1; background: #000; }
-.folder-art img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
-.folder-info { position: absolute; inset: 0; z-index: 2; padding: 12px; display: flex; align-items: flex-end; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%); }
+.folder-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 28px rgba(0,0,0,0.5), 0 0 0 1px var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
+.folder-art { 
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); 
+}
+.folder-art img { 
+    width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    transform: scale(1.05);
+}
+.folder-art img.loaded { 
+    opacity: 1;
+    transform: scale(1);
+}
+.folder-info { position: absolute; inset: 0; z-index: 2; padding: 12px; display: flex; align-items: flex-end; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%); }
 .folder-info span { font-weight: 600; font-size: 14px; color: white; }
 .playlist-card .play-overlay {
     position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end;
@@ -1035,7 +1067,7 @@ body.playing .clean-btn.play-btn-large {
     gap: 24px;
     overflow-x: auto;
     overflow-y: visible;
-    padding: 8px 60px 24px 12px;
+    padding: 8px 12px 24px 12px;
     margin: -8px -60px -24px 0;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
@@ -1071,6 +1103,18 @@ body.playing .clean-btn.play-btn-large {
     margin: 0;
     color: var(--md-sys-color-on-background);
     letter-spacing: -0.5px;
+    position: relative;
+}
+
+.listen-again-title::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 40px;
+    height: 4px;
+    background: var(--md-sys-color-primary);
+    border-radius: 2px;
 }
 
 .listen-again-actions {
@@ -1083,22 +1127,22 @@ body.playing .clean-btn.play-btn-large {
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: var(--md-sys-color-surface-variant);
+    background: var(--md-sys-color-surface-container);
     border: 1px solid var(--md-sys-color-outline);
     border-radius: 100px;
     color: var(--md-sys-color-on-surface);
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    font-family: inherit;
-    transition: all 0.3s var(--motion-standard);
+    transition: all 0.2s ease;
 }
 
 .listen-again-expand-btn:hover {
     background: var(--md-sys-color-primary-container);
     border-color: var(--md-sys-color-primary);
-    color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary-container);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--md-sys-color-primary-rgb), 0.3);
 }
 
 /* --- SKELETON LOADING STATES --- */
@@ -1107,6 +1151,12 @@ body.playing .clean-btn.play-btn-large {
 @keyframes shimmer {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
+}
+
+/* Smooth pulse for empty states */
+@keyframes pulse-subtle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
 }
 
 /* Skeleton container for loading states */
@@ -1124,22 +1174,28 @@ body.playing .clean-btn.play-btn-large {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 24px;
+    width: calc(100% + 120px);
+    margin-left: -60px;
+    margin-right: -60px;
+    padding-left: 60px;
+    padding-right: 60px;
 }
 
 .listen-again-skeleton-item {
     aspect-ratio: 1/1;
     border-radius: 20px;
-    background: var(--md-sys-color-surface-variant);
+    background: var(--md-sys-color-surface-container);
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .listen-again-skeleton-item .skeleton-art {
     position: absolute;
     inset: 0;
-    background: linear-gradient(110deg, var(--md-sys-color-surface-variant) 8%, rgba(255,255,255,0.08) 18%, var(--md-sys-color-surface-variant) 33%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s ease-in-out infinite;
+    background: linear-gradient(135deg, var(--md-sys-color-surface-container) 0%, var(--md-sys-color-surface-variant) 100%);
+    background-size: 200% 200%;
+    animation: shimmer 2s ease-in-out infinite;
     border-radius: 20px;
 }
 
@@ -1173,22 +1229,28 @@ body.playing .clean-btn.play-btn-large {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 24px;
+    width: calc(100% + 120px);
+    margin-left: -60px;
+    margin-right: -60px;
+    padding-left: 60px;
+    padding-right: 60px;
 }
 
 .folder-grid-skeleton .skeleton-folder {
     aspect-ratio: 1/1;
     border-radius: 20px;
-    background: var(--md-sys-color-surface-variant);
+    background: var(--md-sys-color-surface-container);
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .folder-grid-skeleton .skeleton-folder .skeleton-art {
     position: absolute;
     inset: 0;
-    background: linear-gradient(110deg, var(--md-sys-color-surface-variant) 8%, rgba(255,255,255,0.08) 18%, var(--md-sys-color-surface-variant) 33%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s ease-in-out infinite;
+    background: linear-gradient(135deg, var(--md-sys-color-surface-container) 0%, var(--md-sys-color-surface-variant) 100%);
+    background-size: 200% 200%;
+    animation: shimmer 2s ease-in-out infinite;
     border-radius: 20px;
 }
 
@@ -1274,15 +1336,11 @@ body.playing .clean-btn.play-btn-large {
     overflow: visible;
 }
 
-/* Ensure grid items don't stretch in flex mode */
+/* Track card styling matching folder-card */
 .listen-again-track-card {
     flex-shrink: 0;
     width: 180px;
     height: 180px;
-}
-
-/* Track card styling matching folder-card */
-.listen-again-track-card {
     background: #000;
     aspect-ratio: 1/1;
     border-radius: 20px;
@@ -1291,8 +1349,8 @@ body.playing .clean-btn.play-btn-large {
     position: relative;
     border: 1px solid var(--md-sys-color-outline);
     opacity: 0;
-    transform: translateY(30px) scale(0.92);
-    transition: all 0.7s var(--motion-standard), box-shadow 0.4s ease;
+    transform: translateY(16px) scale(0.96);
+    transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
     transform-origin: center center;
     isolation: isolate;
 }
@@ -1303,8 +1361,8 @@ body.playing .clean-btn.play-btn-large {
 }
 
 .listen-again-track-card:hover {
-    transform: translateY(-4px) scale(1.04);
-    box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.5), 0 0 0 1px var(--md-sys-color-primary);
     border-color: var(--md-sys-color-primary);
     z-index: 10;
     position: relative;
@@ -1321,7 +1379,7 @@ body.playing .clean-btn.play-btn-large {
     align-items: center;
     justify-content: center;
     z-index: 1;
-    background: #000;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
     border-radius: 20px;
     overflow: hidden;
 }
@@ -1330,16 +1388,18 @@ body.playing .clean-btn.play-btn-large {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 20px;
-}    object-fit: cover;
     position: absolute;
     inset: 0;
+    border-radius: 20px;
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    transform: scale(1.05);
 }
+
 .listen-again-track-art img.fade-in,
 .listen-again-track-art img.loaded {
     opacity: 1;
+    transform: scale(1);
 }
 
 /* Track table album art */
@@ -1357,14 +1417,13 @@ body.playing .clean-btn.play-btn-large {
 }
 
 /* Player album art */
-#npArt img, #fsArt img, #desktopExtendedArtImg {
+#npArt img, #fsArt img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 #npArt img.fade-in, #npArt img.loaded,
-#fsArt img.fade-in, #fsArt img.loaded,
-#desktopExtendedArtImg.fade-in, #desktopExtendedArtImg.loaded {
+#fsArt img.fade-in, #fsArt img.loaded {
     opacity: 1;
 }
 
@@ -1373,11 +1432,15 @@ body.playing .clean-btn.play-btn-large {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    transform: scale(1.05);
 }
 .folder-art img.fade-in, .folder-art img.loaded,
 .playlist-cover img.fade-in, .playlist-cover img.loaded,
 #playlistCover img.fade-in, #playlistCover img.loaded {
     opacity: 1;
+    transform: scale(1);
 }
 
 /* Play overlay for Listen Again cards - SAME as playlist-card */
@@ -1460,7 +1523,7 @@ body.playing .clean-btn.play-btn-large {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
     border-radius: 20px;
     overflow: visible;
 }
@@ -1473,12 +1536,12 @@ body.playing .clean-btn.play-btn-large {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 4px;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
 }
 
 .listen-again-track-artist {
     font-size: 12px;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255,255,255,0.75);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1493,24 +1556,25 @@ body.playing .clean-btn.play-btn-large {
     justify-content: center;
     padding: 60px 20px;
     text-align: center;
-    background: var(--md-sys-color-surface-variant);
+    background: var(--md-sys-color-surface-container);
     border-radius: 20px;
-    border: 1px solid var(--md-sys-color-outline);
+    border: 1px solid var(--md-sys-color-outline-variant);
 }
 
 .listen-again-empty-icon {
-    font-size: 56px;
+    font-size: 48px;
     color: var(--md-sys-color-primary);
-    margin-bottom: 20px;
-    opacity: 0.5;
+    margin-bottom: 16px;
+    opacity: 0.4;
 }
 
 .listen-again-empty-text {
-    font-size: 16px;
+    font-size: 15px;
     color: var(--md-sys-color-on-surface);
-    opacity: 0.7;
+    opacity: 0.6;
     margin: 0;
     max-width: 300px;
+    line-height: 1.5;
 }
 
 /* Pinned item styles - make them look more prominent like pinned content */
@@ -1596,36 +1660,41 @@ body.playing .clean-btn.play-btn-large {
 }
 
 .listen-again-carousel-btn {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    border: none;
-    background: rgba(30, 30, 30, 0.85);
+    border: 1px solid var(--md-sys-color-outline);
+    background: var(--md-sys-color-surface-container);
     color: var(--md-sys-color-on-surface);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    transition: all 0.2s ease;
+    font-size: 16px;
+    transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
     flex-shrink: 0;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     z-index: 20;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .listen-again-carousel-btn:hover:not(:disabled) {
     background: var(--md-sys-color-primary-container);
+    border-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary-container);
-    transform: translateY(-50%) scale(1.1);
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 4px 16px rgba(var(--md-sys-color-primary-rgb), 0.25);
 }
 
 .listen-again-carousel-btn:disabled {
     opacity: 0.3;
     cursor: not-allowed;
+}
+
+.listen-again-carousel-btn:disabled:hover {
+    transform: translateY(-50%);
 }
 
 .listen-again-carousel-prev {
@@ -1659,43 +1728,45 @@ body.playing .clean-btn.play-btn-large {
 }
 
 .listen-again-page-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--md-sys-color-outline);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
     cursor: pointer;
 }
 
 .listen-again-page-dot.active {
     background: var(--md-sys-color-primary);
-    transform: scale(1.2);
+    transform: scale(1.3);
+    box-shadow: 0 0 8px rgba(var(--md-sys-color-primary-rgb), 0.5);
 }
 
 .listen-again-page-dot:hover:not(.active) {
     background: var(--md-sys-color-primary-container);
+    transform: scale(1.15);
 }
 
 .listen-again-page-btn {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: var(--md-sys-color-surface-variant);
+    background: var(--md-sys-color-surface-container);
     border: 1px solid var(--md-sys-color-outline);
     color: var(--md-sys-color-on-surface);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-    transition: all 0.3s var(--motion-standard);
+    font-size: 14px;
+    transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
 }
 
 .listen-again-page-btn:hover:not(:disabled) {
     background: var(--md-sys-color-primary-container);
     border-color: var(--md-sys-color-primary);
-    color: var(--md-sys-color-primary);
-    transform: scale(1.1);
+    color: var(--md-sys-color-on-primary-container);
+    transform: scale(1.08);
 }
 
 .listen-again-page-btn:disabled {
@@ -1931,9 +2002,41 @@ body.playing .clean-btn.play-btn-large {
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+    .listen-again-container {
+        width: calc(100% + 32px);
+        margin-left: -16px;
+        margin-right: -16px;
+        padding: 0 16px;
+    }
+    
+    .listen-again-scroll-container {
+        margin: -8px -16px -24px 0;
+        padding: 8px 12px 24px 12px;
+    }
+    
     .listen-again-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 16px;
+    }
+    
+    .listen-again-skeleton {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 16px;
+        width: calc(100% + 32px);
+        margin-left: -16px;
+        margin-right: -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    .folder-grid-skeleton {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        width: calc(100% + 32px);
+        margin-left: -16px;
+        margin-right: -16px;
+        padding-left: 16px;
+        padding-right: 16px;
     }
     
     .listen-again-title {
@@ -1942,6 +2045,8 @@ body.playing .clean-btn.play-btn-large {
     
     .listen-again-track-card {
         border-radius: 16px;
+        width: 140px;
+        height: 140px;
     }
     
     .listen-again-track-title {
@@ -2154,6 +2259,30 @@ body.playing .clean-btn.play-btn-large {
 
 .danger-btn i {
     font-size: 18px;
+}
+
+/* Hard Reset Button - More extreme styling */
+.hard-reset-btn {
+    margin-top: 12px;
+    background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 50%, #991b1b 100%);
+    border: 2px solid #ef4444;
+    animation: pulse-red 2s infinite;
+}
+
+.hard-reset-btn:hover {
+    background: linear-gradient(135deg, #991b1b 0%, #ef4444 50%, #dc2626 100%);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(220, 38, 38, 0.6);
+    animation: none;
+}
+
+@keyframes pulse-red {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
+    }
 }
 
 /* Light mode */
@@ -2927,7 +3056,15 @@ input:checked + .slider:before { transform: translateX(26px); }
     .nav-rail { display: none; }
     .mobile-nav { display: flex; }
     .main-container { padding: 20px 16px; padding-bottom: 140px; }
-    .folder-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .folder-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 12px;
+        width: calc(100% + 32px);
+        margin-left: -16px;
+        margin-right: -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
     .playlist-card:hover .play-overlay { opacity: 1; pointer-events: auto; }
     
     .side-sheet { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; z-index: 3000; transform: translateY(100%); border-left: none; }
@@ -2999,8 +3136,9 @@ input:checked + .slider:before { transform: translateX(26px); }
 	z-index: 1600;
 	overflow-y: auto;
 	overflow-x: hidden;
-	transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
+	transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
 	background: var(--md-sys-color-primary-dark);
+	will-change: transform;
 }
 
 .desktop-extended.collapsed {
@@ -3013,8 +3151,8 @@ input:checked + .slider:before { transform: translateX(26px); }
 	width: 100%;
 	display: flex;
 	justify-content: center;
-	padding: 60px 0 0 0;
-	min-height: 60vh;
+	padding: 40px 0 16px 0;
+	min-height: auto;
 }
 
 /* Blurred background layer */
@@ -3023,11 +3161,12 @@ input:checked + .slider:before { transform: translateX(26px); }
 	inset: 0;
 	background-size: cover;
 	background-position: center center;
-	filter: blur(35px);
+	filter: blur(12px);
 	transform: scale(1.1);
 	opacity: 0;
 	transition: opacity 0.2s ease;
 	z-index: 0;
+	will-change: opacity;
 }
 
 /* Gradient overlay to fade into darker accent color at bottom */
@@ -3048,14 +3187,16 @@ input:checked + .slider:before { transform: translateX(26px); }
 /* Main album art */
 .desktop-extended-art-img {
 	position: relative;
-	width: min(200px, 20vw);
-	height: min(200px, 20vw);
+	width: 100%;
+	max-width: 500px;
+	aspect-ratio: 1;
 	object-fit: cover;
 	border-radius: 16px;
 	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 	z-index: 1;
 	opacity: 0;
 	transition: opacity 0.2s ease;
+	will-change: opacity;
 }
 
 .desktop-extended-art-img.visible {
@@ -3066,12 +3207,12 @@ input:checked + .slider:before { transform: translateX(26px); }
 .clean-player {
 	position: relative;
 	z-index: 2;
-	padding: 0 24px 60px 24px;
+	padding: 0 24px 40px 24px;
 	text-align: center;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 20px;
+	gap: 0;
 }
 
 .clean-controls-panel {
@@ -4642,12 +4783,9 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                     <i class="fa-solid fa-trash"></i>
                     Remove All Metadata
                 </button>
-            </div>
-            <div class="simple-settings-section danger-section">
-                <h2 class="simple-section-title" style="color: #dc2626;">Danger Zone</h2>
-                <button class="danger-btn" onclick="clearAllCache()">
-                    <i class="fa-solid fa-trash"></i>
-                    Remove All Metadata
+                <button class="danger-btn hard-reset-btn" onclick="hardReset()">
+                    <i class="fa-solid fa-bomb"></i>
+                    Hard Reset - Remove All Data
                 </button>
             </div>
         </div>
@@ -4894,6 +5032,7 @@ let logModalOpen = false;
 let playlistSortable = null;
 let currentAlbumMap = {};
 let pendingMetadataLoads = new Set();
+let isBulkMetadataLoading = false; // Flag to prevent color extraction lag during bulk loading
 
 // ========== NEW: Comprehensive IndexedDB for ALL data ==========
 // Consolidated database for track metadata, play counts, playlists, and album art
@@ -4914,6 +5053,14 @@ async function initMetaDB() {
         
         request.onsuccess = () => {
             metaDB = request.result;
+            
+            // Handle version change (e.g., after database deletion)
+            metaDB.onversionchange = () => {
+                console.log('[MetaDB] Version change detected, closing connection');
+                metaDB.close();
+                metaDBReady = false;
+            };
+            
             console.log('[MetaDB] Database opened successfully');
             metaDBReady = true;
             resolve(metaDB);
@@ -4921,6 +5068,8 @@ async function initMetaDB() {
         
         request.onupgradeneeded = (e) => {
             const db = e.target.result;
+            
+            console.log('[MetaDB] Creating/upgrading database stores');
             
             // Store for track metadata
             if (!db.objectStoreNames.contains('trackMetadata')) {
@@ -4951,6 +5100,11 @@ async function initMetaDB() {
             // Store for Listen Again / most played tracks
             if (!db.objectStoreNames.contains('mostPlayed')) {
                 db.createObjectStore('mostPlayed', { keyPath: 'id' });
+            }
+            
+            // Store for album counts
+            if (!db.objectStoreNames.contains('albumCounts')) {
+                db.createObjectStore('albumCounts', { keyPath: 'id' });
             }
             
             console.log('[MetaDB] Database upgrade complete');
@@ -6154,6 +6308,33 @@ async function init() {
         el.style.display = stack.length <= 1 ? 'block' : 'none';
     });
     
+    // FIX: After everything is loaded, ensure Listen Again is properly rendered
+    // Sometimes on first load the data isn't ready yet, so we re-check after a delay
+    setTimeout(async () => {
+        // Check if Listen Again shows empty but there should be content
+        const hasPlayCounts = Object.keys(playCounts).length > 0;
+        const hasPinnedItems = (pinnedItems.tracks?.length > 0) || (pinnedItems.albums?.length > 0) || (pinnedItems.playlists?.length > 0);
+        
+        if (hasPlayCounts || hasPinnedItems) {
+            // Check if section is showing empty state
+            const containers = document.querySelectorAll('#listenAgainSection');
+            let showingEmpty = false;
+            containers.forEach(c => {
+                const emptyState = c.querySelector('.listen-again-empty');
+                if (emptyState && emptyState.style.display !== 'none') {
+                    showingEmpty = true;
+                }
+            });
+            
+            // If showing empty but should have content, re-render
+            if (showingEmpty) {
+                console.log('[ListenAgain] Re-rendering - data loaded but showing empty');
+                listenAgainRendered = false;
+                await renderListenAgainSection(true);
+            }
+        }
+    }, 500);
+    
     const breadcrumb = document.getElementById('breadcrumb');
     if (breadcrumb) {
         breadcrumb.style.display = 'flex';
@@ -6285,11 +6466,14 @@ async function loadFolders(id) {
                 stack.push({id:f.id,name:f.name}); loadFolders(f.id);
             };
             grid.appendChild(card);
-            // Small delay to ensure DOM is ready before fetching art
-            setTimeout(() => fetchFolderArt(f.id), 10);
+            // Faster staggered loading - batches of 5 cards with 20ms delay
+            const cardIndex = grid.querySelectorAll('.folder-card').length - 1;
+            setTimeout(() => card.classList.add('loaded'), Math.floor(cardIndex / 5) * 20);
         });
         
-        document.querySelectorAll('.folder-card').forEach((c,i) => setTimeout(() => c.classList.add('loaded'), 60*i));
+        // Fetch folder art in batches to reduce API calls
+        const folderIds = files.filter(f => f.mimeType === 'application/vnd.google-apps.folder').map(f => f.id);
+        fetchFolderArtBatch(folderIds);
         
         const tracks = files.filter(f => f.mimeType.includes('audio'));
         renderTrackTable(tracks, listBody);
@@ -6330,6 +6514,18 @@ async function loadFolders(id) {
         document.querySelectorAll('#listenAgainSection').forEach(el => {
             el.style.display = 'block';
         });
+    }
+}
+
+// Batch fetch folder art to reduce API calls
+async function fetchFolderArtBatch(folderIds) {
+    if (!folderIds || folderIds.length === 0) return;
+    
+    // Process in parallel batches
+    const batchSize = 5;
+    for (let i = 0; i < folderIds.length; i += batchSize) {
+        const batch = folderIds.slice(i, i + batchSize);
+        await Promise.all(batch.map(fid => fetchFolderArt(fid)));
     }
 }
 
@@ -6480,12 +6676,74 @@ function renderPlaylistTracks(tracks, container, playlistName) {
 async function loadMetadataSequentially(tracks, index) {
     // No longer sequential - load all at once in parallel, but skip if already loading
     if (index === 0 && tracks.length > 0) {
+        // Set bulk loading flag to prevent color extraction lag
+        isBulkMetadataLoading = true;
+        
+        // Add performance optimization class to main container
+        const mainContainer = document.querySelector('.main-container');
+        if (mainContainer) {
+            mainContainer.classList.add('bulk-loading');
+        }
+        
         // Filter to only tracks that actually need metadata loading
         const tracksNeedingLoad = tracks.filter(t => !pendingMetadataLoads.has(t.id) && !trackMetadata[t.id]?.albumArt);
         if (tracksNeedingLoad.length > 0) {
-            Promise.all(tracksNeedingLoad.map(t => loadMetaAndArt(t.id, t.name || ''))).catch(() => {});
+            const loadPromise = Promise.all(tracksNeedingLoad.map(t => loadMetaAndArt(t.id, t.name || '')));
+            
+            // Wait for all loads to complete, then clear bulk loading flag
+            loadPromise.then(() => {
+                // Small delay to let final UI updates complete
+                setTimeout(() => {
+                    isBulkMetadataLoading = false;
+                    // Remove performance optimization class
+                    if (mainContainer) {
+                        mainContainer.classList.remove('bulk-loading');
+                    }
+                    // Batch extract colors for any tracks that need it
+                    batchExtractColors(tracksNeedingLoad.map(t => t.id));
+                }, 200);
+            }).catch(() => {});
+        } else {
+            // No tracks needed loading, clear flag immediately
+            isBulkMetadataLoading = false;
+            if (mainContainer) {
+                mainContainer.classList.remove('bulk-loading');
+            }
         }
     }
+}
+
+// Batch extract colors for multiple tracks (called after bulk loading completes)
+function batchExtractColors(trackIds) {
+    if (trackIds.length === 0) return;
+    
+    // Only process tracks that need color extraction
+    const tracksNeedingColor = trackIds.filter(id => {
+        const album = trackMetadata[id]?.album;
+        return album && album !== "Unknown";
+    });
+    
+    if (tracksNeedingColor.length === 0) return;
+    
+    // Process in small batches with delays to avoid UI freeze
+    const batchSize = 3;
+    let currentIndex = 0;
+    
+    function processNextBatch() {
+        const batch = tracksNeedingColor.slice(currentIndex, currentIndex + batchSize);
+        if (batch.length === 0) return;
+        
+        batch.forEach(id => extractColorFromAlbumArt(id));
+        
+        currentIndex += batchSize;
+        if (currentIndex < tracksNeedingColor.length) {
+            // Schedule next batch
+            setTimeout(processNextBatch, 100);
+        }
+    }
+    
+    // Start processing
+    processNextBatch();
 }
 
 async function loadMetaAndArt(id, name) {
@@ -6499,7 +6757,6 @@ async function loadMetaAndArt(id, name) {
         applyArtToUI(id, existingMeta.albumArt);
         updateFolderModalArt(id);
         updatePlaylistCoverIfNeeded(id, existingMeta.albumArt);
-        setTimeout(() => extractColorFromAlbumArt(id), 50);
         return;
     }
     
@@ -6515,7 +6772,6 @@ async function loadMetaAndArt(id, name) {
             existingMeta.albumArt = albumArtCache[album];
             saveTrackMetadataToDB(id, existingMeta).catch(() => {});
         }
-        setTimeout(() => extractColorFromAlbumArt(id), 50);
         return;
     }
     
@@ -6528,7 +6784,6 @@ async function loadMetaAndArt(id, name) {
             existingMeta.albumArt = tempArtCache[id];
             saveTrackMetadataToDB(id, existingMeta).catch(() => {});
         }
-        setTimeout(() => extractColorFromAlbumArt(id), 50);
         return;
     }
     
@@ -6546,7 +6801,6 @@ async function loadMetaAndArt(id, name) {
                     existingMeta.albumArt = dbArt;
                     saveTrackMetadataToDB(id, existingMeta).catch(() => {});
                 }
-                setTimeout(() => extractColorFromAlbumArt(id), 50);
                 return;
             }
         } catch (e) {
@@ -6598,11 +6852,19 @@ async function loadMetaAndArt(id, name) {
                     });
                 }
                 
-                // Update Library/Playlist Table Rows with animation
+                // Update Library/Playlist Table Rows
                 document.querySelectorAll(`tr#row-${id}`).forEach(r => {
                     const titleEl = r.querySelector('.meta-title');
                     const artistEl = r.querySelector('.meta-artist');
                     const albumEl = r.querySelector('.meta-album');
+                    
+                    // Skip animations during bulk loading to prevent lag
+                    if (isBulkMetadataLoading) {
+                        if (titleEl) titleEl.innerText = m.title;
+                        if (artistEl) artistEl.innerText = m.artist;
+                        if (albumEl) albumEl.innerText = m.album;
+                        return;
+                    }
                     
                     // Add updating class to trigger fade
                     [titleEl, artistEl, albumEl].forEach(el => {
@@ -6620,10 +6882,18 @@ async function loadMetaAndArt(id, name) {
                     });
                 });
                 
-                // Update Queue Items with animation
+                // Update Queue Items
                 document.querySelectorAll(`.q-row-${id}`).forEach(qItem => {
                     const tEl = qItem.querySelector('.q-title');
                     const aEl = qItem.querySelector('.q-artist');
+                    
+                    // Skip animations during bulk loading to prevent lag
+                    if (isBulkMetadataLoading) {
+                        if (tEl) tEl.innerText = m.title;
+                        if (aEl) aEl.innerText = m.artist;
+                        return;
+                    }
+                    
                     if(tEl) {
                         tEl.classList.add('updating');
                         setTimeout(() => {
@@ -7195,7 +7465,7 @@ function updateTrackPinButton(trackId, isPinned) {
     
     if (isPinned) {
         // Change to unpin button
-        pinBtn.onclick = "event.stopPropagation(); unpinTrackFromRow('" + trackId + "')";
+        pinBtn.setAttribute('onclick', "event.stopPropagation(); unpinTrackFromRow('" + trackId + "')");
         pinBtn.title = "Remove from Listen Again";
         pinBtn.innerHTML = '<i class="fa-solid fa-xmark"></i><span>Remove</span>';
         
@@ -7206,7 +7476,7 @@ function updateTrackPinButton(trackId, isPinned) {
         }
     } else {
         // Change back to pin button
-        pinBtn.onclick = "event.stopPropagation(); togglePinTrack('" + trackId + "')";
+        pinBtn.setAttribute('onclick', "event.stopPropagation(); togglePinTrack('" + trackId + "')");
         pinBtn.title = "Pin to Listen Again";
         pinBtn.innerHTML = '<i class="fa-solid fa-heart"></i><span>Pin</span>';
         
@@ -8706,6 +8976,83 @@ function clearAllCache() {
     }
 }
 
+function hardReset() {
+    if (!confirm("WARNING: This will DELETE ALL Goot data including:\n• All metadata and album art\n• Play counts and Listen Again history\n• All playlists\n• Theme and settings\n\nThis cannot be undone!\n\nAre you absolutely sure?")) {
+        return;
+    }
+    
+    // Double confirmation for safety
+    if (!confirm("Are you REALLY sure? All your data will be permanently deleted.")) {
+        return;
+    }
+    
+    // Clear all localStorage items first
+    const keysToRemove = [
+        'goot_meta_cache',
+        'goot_play_counts',
+        'goot_playlists',
+        'goot_most_played',
+        'goot_pinned_items',
+        'goot_accent',
+        'goot_album_color',
+        'goot_theme',
+        'goot_hide_played',
+        'goot_sort_order',
+        'goot_auto_play',
+        'goot_volume',
+        'goot_queue',
+        'goot_listen_again_cache',
+        'goot_folder_state'
+    ];
+    
+    keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+    });
+    
+    // Clear in-memory data
+    trackMetadata = {};
+    tempArtCache = {};
+    albumArtCache = {};
+    playCounts = {};
+    playlists = {};
+    pinnedItems = { tracks: [], folders: [] };
+    mostPlayedCache = [];
+    allTracks = [];
+    currentFolderTracks = [];
+    selectedFolderTracks.clear();
+    
+    // Reset IndexedDB state
+    metaDB = null;
+    metaDBReady = false;
+    
+    // Delete IndexedDB and wait for it to complete
+    const dbName = 'GootPlayerDB';
+    const deleteRequest = indexedDB.deleteDatabase(dbName);
+    
+    deleteRequest.onsuccess = function() {
+        console.log('[HardReset] IndexedDB deleted successfully');
+        // Reload after deletion completes
+        setTimeout(() => {
+            location.reload(true); // true = force reload from server
+        }, 100);
+    };
+    
+    deleteRequest.onerror = function() {
+        console.error('[HardReset] Failed to delete IndexedDB');
+        // Still reload even if there was an error
+        setTimeout(() => {
+            location.reload(true);
+        }, 100);
+    };
+    
+    deleteRequest.onblocked = function() {
+        console.log('[HardReset] IndexedDB deletion blocked, still reloading...');
+        setTimeout(() => {
+            location.reload(true);
+        }, 100);
+    };
+}
+
 function isColorTooLight(r, g, b) {
     // Check if a color is too light (close to white)
     // Using relative luminance formula
@@ -8797,6 +9144,9 @@ function toggleAlbumColorMode() {
 }
 
 function extractColorFromAlbumArt(id) {
+    // Skip during bulk metadata loading to prevent lag
+    if (isBulkMetadataLoading) return;
+    
     // Check if album color mode is enabled
     if (localStorage.getItem('goot_album_color') !== 'true') return;
     
@@ -9763,6 +10113,9 @@ async function loadPlayCounts() {
     }
     lastTrackedPosition = {};
     
+    // Reset Listen Again rendered flag to allow re-render with new data
+    listenAgainRendered = false;
+    
     // Note: loadPinnedItems() and loadAlbumCounts() are now called from init()
     // after initAllDatabases() completes to ensure database is ready
     
@@ -9789,6 +10142,9 @@ async function loadAlbumCounts() {
             });
             albumPlayCounts = data;
             console.log('[AlbumTracking] Loaded album counts:', Object.keys(albumPlayCounts).length, 'albums');
+            
+            // Reset Listen Again rendered flag to allow re-render with new album data
+            listenAgainRendered = false;
         }
     } catch (e) {
         console.log('[AlbumTracking] Error loading:', e);
@@ -9857,6 +10213,9 @@ function loadPinnedItems() {
                 // Save the updated data
                 localStorage.setItem('goot_pinned_items', JSON.stringify(pinnedItems));
             }
+            
+            // Reset Listen Again rendered flag to allow re-render with new pinned items
+            listenAgainRendered = false;
             
             console.log('[Pinned] Loaded pinned items:', pinnedItems);
         }
@@ -10027,7 +10386,7 @@ function getMostPlayedTracks(limit = 8) {
 }
 
 async function incrementPlayCount(trackId) {
-    console.log('[PlayTracking] Attempting to increment count for track:', trackId);
+    console.log('[PlayTracking] Attempting to increment count for:', trackId);
     
     // Get track metadata for album tracking
     const meta = trackMetadata[trackId];
@@ -10065,7 +10424,42 @@ async function incrementPlayCount(trackId) {
     await updateAllPlayedTracksSection();
     
     // Also refresh the cache in background
-    saveMostPlayedListToDB().catch(() => {});
+    refreshMostPlayedCache().catch(() => {});
+}
+
+async function decrementPlayCount(trackId) {
+    console.log('[PlayTracking] Decrementing count for:', trackId);
+    
+    // Get track metadata for album tracking
+    const meta = trackMetadata[trackId];
+    const queueTrack = queue.find(t => t.id === trackId);
+    const track = meta || queueTrack || {};
+    
+    // Track album plays - decrement
+    const albumName = track.album;
+    if (albumName && albumName !== 'Unknown' && albumName && albumPlayCounts[albumName]) {
+        albumPlayCounts[albumName].playCount--;
+        if (albumPlayCounts[albumName].playCount <= 0) {
+            albumPlayCounts[albumName].playCount = 0;
+        }
+        // Save album counts in background
+        saveAlbumCounts().catch(() => {});
+    }
+    
+    if (playCounts[trackId] && playCounts[trackId] > 0) {
+        playCounts[trackId]--;
+        await savePlayCounts();
+
+        // INSTANT UPDATE: Re-render Listen Again section immediately
+        await renderListenAgainSection(true);
+        await updateAllPlayedTracksSection();
+        
+        // Also refresh the cache in background
+        refreshMostPlayedCache().catch(() => {});
+    }
+    
+    // Reset tracking position
+    delete lastTrackedPosition[trackId];
 }
 
 // Update Listen Again section - now just calls renderListenAgainSection for full pagination support
@@ -11601,6 +11995,21 @@ function toggleShuffle() {
 }
 
 function skip(direction) {
+    // Check if current track crossed the 25% threshold - if so, discard the play
+    const currentTrack = queue[qIndex];
+    if (currentTrack?.id) {
+        const duration = player.duration;
+        const currentTime = player.currentTime;
+        if (duration && currentTime) {
+            const progress = currentTime / duration;
+            // If track has been counted (crossed 25% threshold) and we're skipping forward
+            if (progress >= PLAY_COUNT_THRESHOLD && direction > 0) {
+                console.log('[PlayTracking] Skipping after threshold - discarding play for:', currentTrack.id);
+                decrementPlayCount(currentTrack.id);
+            }
+        }
+    }
+    
     let next = qIndex + direction;
     if (shuffleMode) {
         if (repeatMode === 1 && next >= queue.length) {
