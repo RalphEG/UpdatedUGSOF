@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Home - Classroom</title>
+<title>Goot Player</title>
 <link rel="icon" type="image/svg+xml" href="https://www.gstatic.com/classroom/logo_square_rounded.svg">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css">
@@ -53,7 +53,7 @@ body {
     display: flex; flex-direction: column; align-items: center;
     padding: 24px 0; gap: 12px; z-index: 100; flex-shrink: 0;
 }
-.main-container { flex: 1; padding: 40px 60px; overflow-y: auto; position: relative; padding-bottom: 120px; }
+.main-container { flex: 1; padding: 40px 0; overflow-y: auto; position: relative; padding-bottom: 120px; }
 
 /* Performance optimization during bulk metadata loading */
 .main-container.bulk-loading {
@@ -88,8 +88,28 @@ body {
     display: flex; flex-direction: column;
     transition: transform 0.4s var(--motion-standard);
     z-index: 300;
+    position: relative;
 }
 .side-sheet.collapsed { transform: translateX(100%); width: 0; border: none; }
+
+/* Resize handle for sidebar */
+.sidebar-resize-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 10;
+    transition: background 0.2s;
+}
+.sidebar-resize-handle:hover {
+    background: var(--md-sys-color-primary);
+}
+.sidebar-resize-handle:active {
+    background: var(--md-sys-color-primary);
+}
 .player-bar {
     height: 110px; background: rgba(11,13,14,0.98);
     backdrop-filter: blur(20px); border-top: 1px solid var(--md-sys-color-outline);
@@ -138,7 +158,13 @@ img.loaded { opacity: 1; }
     width: 100%;
     max-width: 100%;
     margin: 0 auto;
-    padding: 0 60px;
+    padding: 0 24px;
+}
+.playlist-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,180px)); gap: 24px; position: relative; z-index: 1;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
 }
 .folder-card {
     background: #000; aspect-ratio: 1/1; border-radius: 20px; cursor: pointer; overflow: hidden; position: relative;
@@ -219,6 +245,7 @@ img.loaded { opacity: 1; }
     transform: translateY(20px);
     transition: opacity 0.4s var(--motion-standard), transform 0.4s var(--motion-standard);
 }
+
 .song-row.loaded {
     opacity: 1;
     transform: translateY(0);
@@ -280,8 +307,12 @@ img.loaded { opacity: 1; }
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     z-index: 100;
 }
-.nav-item { width: 100%; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; opacity: 0.6; transition: all 0.4s var(--motion-standard); }
-.nav-item.active { opacity: 1; color: var(--md-sys-color-primary); transform: scale(1.08); }
+.nav-item { 
+    width: 100%; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; opacity: 0.6; transition: all 0.4s var(--motion-standard); 
+}
+.nav-item.active { 
+    opacity: 1; color: var(--md-sys-color-primary); transform: scale(1.08); 
+}
 .nav-icon-wrapper { width: 56px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.4s var(--motion-standard); }
 .nav-item.active .nav-icon-wrapper { background: var(--md-sys-color-primary-container); transform: scale(1.1); }
 .play-btn {
@@ -582,7 +613,7 @@ body.playing .clean-btn.play-btn-large {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
+    padding: 12px 24px;
     cursor: pointer;
     border-bottom: 1px solid rgba(255,255,255,0.05);
     position: relative;
@@ -1069,7 +1100,7 @@ body.playing .clean-btn.play-btn-large {
     max-width: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding: 0 60px;
+    padding: 0 24px;
 }
 
 /* Horizontal scroll container - no wrapping */
@@ -1119,6 +1150,7 @@ body.playing .clean-btn.play-btn-large {
     color: var(--md-sys-color-on-background);
     letter-spacing: -0.5px;
     position: relative;
+    display: inline-block;
 }
 
 .listen-again-title::after {
@@ -1126,7 +1158,7 @@ body.playing .clean-btn.play-btn-large {
     position: absolute;
     bottom: -4px;
     left: 0;
-    width: 40px;
+    width: 100%;
     height: 4px;
     background: var(--md-sys-color-primary);
     border-radius: 2px;
@@ -1184,18 +1216,25 @@ body.playing .clean-btn.play-btn-large {
     opacity: 1;
 }
 
-/* Listen Again skeleton */
+/* Listen Again skeleton - single horizontal row */
 .listen-again-skeleton {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    display: flex;
+    flex-wrap: nowrap;
     gap: 24px;
     width: 100%;
     max-width: 100%;
     margin: 0 auto;
-    padding: 0 60px;
+    padding: 0 24px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+}
+.listen-again-skeleton::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
 }
 
 .listen-again-skeleton-item {
+    flex-shrink: 0;
+    width: 180px;
     aspect-ratio: 1/1;
     border-radius: 20px;
     background: var(--md-sys-color-surface-container);
@@ -1868,6 +1907,7 @@ body.playing .clean-btn.play-btn-large {
 
 .all-played-header {
     margin-bottom: 32px;
+    padding: 0 24px;
 }
 
 .all-played-title {
@@ -1901,7 +1941,7 @@ body.playing .clean-btn.play-btn-large {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 12px 16px;
+    padding: 12px 24px;
     border-radius: 12px;
     cursor: pointer;
     transition: background 0.2s ease;
@@ -2016,22 +2056,21 @@ body.playing .clean-btn.play-btn-large {
         padding: 8px 0 24px 0;
         justify-content: flex-start;
     }
-    
+
     .listen-again-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 16px;
     }
-    
+
     .listen-again-skeleton {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 16px;
-        width: 100%;
-        margin-left: auto;
-        margin-right: auto;
-        padding-left: 0;
-        padding-right: 0;
+        padding: 0 24px;
     }
-    
+
+    .listen-again-skeleton-item {
+        width: 140px;
+    }
+
     .folder-grid-skeleton {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
@@ -2411,7 +2450,7 @@ body.playing .clean-btn.play-btn-large {
 .album-modal-content {
     flex: 1;
     overflow-y: auto;
-    padding: 12px 16px;
+    padding: 12px 24px;
 }
 
 /* Individual track item in album modal */
@@ -2581,6 +2620,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 /* Page Header */
 .eq-page-header {
     margin-bottom: 32px;
+    padding: 0 24px;
 }
 
 .eq-page-title {
@@ -3058,15 +3098,15 @@ input:checked + .slider:before { transform: translateX(26px); }
     :root { --nav-height: 64px; }
     .nav-rail { display: none; }
     .mobile-nav { display: flex; }
-    .main-container { padding: 20px 16px; padding-bottom: 140px; }
+    .main-container { padding: 20px 0; padding-bottom: 140px; }
     .folder-grid { 
         grid-template-columns: repeat(2, 1fr); 
         gap: 12px;
         width: 100%;
         margin-left: auto;
         margin-right: auto;
-        padding-left: 0;
-        padding-right: 0;
+        padding-left: 16px;
+        padding-right: 16px;
     }
     .playlist-card:hover .play-overlay { opacity: 1; pointer-events: auto; }
     
@@ -3399,7 +3439,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 }
 
 .clean-queue-item {
-	padding: 12px 16px;
+	padding: 12px 24px;
 	border-radius: 8px;
 	display: flex;
 	justify-content: space-between;
@@ -3423,7 +3463,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 
 /* Desktop Extended View Queue - using same structure as sidebar */
 .clean-queue .queue-item {
-	padding: 12px 16px;
+	padding: 12px 24px;
 	border-radius: 8px;
 	margin-bottom: 4px;
 	background: rgba(255, 255, 255, 0.1);
@@ -3899,7 +3939,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 .playlist-modal-list {
 	flex: 1;
 	overflow-y: auto;
-	padding: 8px;
+	padding: 8px 24px;
 	max-height: 280px;
 }
 
@@ -3980,6 +4020,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 	z-index: 1000;
 	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 	display: none;
+	padding: 0 24px;
 }
 
 .search-results.visible {
@@ -4402,7 +4443,7 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                 <div id="listenAgainContent" style="display:none;"></div>
             </div>
             
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding:0 24px;">
                 <div>
                     <h1 id="viewTitle" style="font-size:48px;margin:0;display:none;">Library</h1>
                     <div id="folderActions" style="display:none;margin-top:16px;gap:12px;align-items:center;">
@@ -4443,7 +4484,7 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                 <p class="loading-subtext">Organizing your music</p>
             </div>
             
-            <div id="breadcrumb" style="display:flex;gap:8px;margin-bottom:32px;align-items:center;flex-wrap:wrap;display:none;"></div>
+            <div id="breadcrumb" style="display:flex;gap:8px;margin:0 24px 32px;align-items:center;flex-wrap:wrap;display:none;"></div>
             
             <!-- Folder grid skeleton loading -->
             <div id="folderGridSkeleton" class="folder-grid-skeleton">
@@ -4506,7 +4547,7 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
             </div>
             
             <div id="folderGrid" class="folder-grid" style="display:none;"></div>
-            <table style="width:100%;border-collapse:separate;border-spacing:0 4px;margin-top:20px;"><tbody id="libSongBody"></tbody></table>
+            <table style="width:100%;border-collapse:separate;border-spacing:0 4px;margin-top:20px;padding-left:24px;padding-right:24px;box-sizing:border-box;"><tbody id="libSongBody"></tbody></table>
         </div>
         
         <div id="equalizer-screen" class="screen">
@@ -4590,9 +4631,9 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
         </div>
 
         <div id="playlist-screen" class="screen">
+            <div class="playlist-screen-content" style="padding:0 24px;max-width:100%;">
             <h1 style="font-size:48px;margin:0 0 24px 0;">Playlists</h1>
-            <div id="playlistGridContainer">
-                <div style="display:flex;justify-content:flex-start;align-items:center;margin-bottom:32px;gap:12px;">
+            <div style="display:flex;justify-content:flex-start;align-items:center;margin-bottom:32px;gap:12px;">
                     <button class="m3-btn m3-btn-tonal" onclick="exportPlaylists()">
                         <i class="fa-solid fa-file-export"></i>
                         <span>Export</span>
@@ -4603,10 +4644,10 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                     </button>
                     <input type="file" id="importFile" accept=".goot2" style="display:none" onchange="importPlaylists(this)">
                 </div>
-                <div id="playlistGrid" class="folder-grid"></div>
+                <div id="playlistGrid" class="playlist-grid"></div>
             </div>
-            <div id="playlistContentView" style="display:none;">
-                <div class="playlist-breadcrumb" id="playlistBreadcrumb"></div>
+            <div id="playlistContentView" style="display:none;padding:0 24px;">
+                <div class="playlist-breadcrumb" id="playlistBreadcrumb" style="margin:0 0 24px 0;"></div>
                 <div class="playlist-header">
                     <div class="playlist-cover" id="playlistCover">
                         <div class="no-art"><i class="fa-solid fa-compact-disc"></i></div>
@@ -4637,7 +4678,7 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                         </div>
                     </div>
                 </div>
-                <div class="search-wrapper">
+                <div class="search-wrapper" style="margin-top:24px;">
                     <div class="search-container">
                         <div class="search-input-wrapper">
                             <input type="text" class="search-input" placeholder="Search cache (title/artist/album/genre/etc)..." oninput="searchSongsToAdd(this.value)">
@@ -4646,10 +4687,11 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                         <div id="searchResults" class="search-results"></div>
                     </div>
                 </div>
-                <table style="width:100%;"><tbody id="playlistSongBody"></tbody></table>
+                <table style="width:100%;box-sizing:border-box;"><tbody id="playlistSongBody"></tbody></table>
             </div>
         </div>
         <div id="settings-screen" class="screen">
+            <div class="settings-wrapper" style="padding:0 24px;">
             <div class="settings-header">
                 <h1 class="settings-title">Settings</h1>
             </div>
@@ -4807,6 +4849,7 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                     Hard Reset - Remove All Data
                 </button>
             </div>
+            </div>
         </div>
         
         <!-- All Played Tracks Screen (not in sidebar) -->
@@ -4820,6 +4863,7 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
         </div>
     </main>
     <aside class="side-sheet" id="sidebar">
+        <div class="sidebar-resize-handle" id="sidebarResizeHandle"></div>
         <div style="padding:24px;border-bottom:1px solid var(--md-sys-color-outline);display:flex;justify-content:space-between;align-items:center;">
             <b style="letter-spacing:1px;text-transform:uppercase;font-size:12px;opacity:0.6;">Current Queue</b>
             <button onclick="toggleSidebar()" style="background:none;border:none;color:inherit;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
@@ -4980,12 +5024,19 @@ function updateListenAgainScrollState() {
         const scrollWidth = container.scrollWidth;
         const clientWidth = container.clientWidth;
         
-        const canScrollLeft = scrollLeft > 0;
-        const canScrollRight = scrollLeft < scrollWidth - clientWidth - 10;
+        const canScrollLeft = scrollLeft > 5;
+        // Check if there's more content to scroll to
+        const hasMoreContent = scrollWidth > clientWidth + 10;
+        const atEnd = scrollLeft >= scrollWidth - clientWidth - 10;
+        const canScrollRight = hasMoreContent ? !atEnd : true;
         
-        // Use visibility instead of disabled for cleaner UI
-        prevBtn.style.visibility = canScrollLeft ? 'visible' : 'hidden';
-        nextBtn.style.visibility = canScrollRight ? 'visible' : 'hidden';
+        // Use opacity for disabled state (gray out instead of hiding)
+        prevBtn.style.opacity = canScrollLeft ? '1' : '0.3';
+        prevBtn.style.cursor = canScrollLeft ? 'pointer' : 'not-allowed';
+        prevBtn.style.pointerEvents = canScrollLeft ? 'auto' : 'none';
+        nextBtn.style.opacity = canScrollRight ? '1' : '0.3';
+        nextBtn.style.cursor = canScrollRight ? 'pointer' : 'not-allowed';
+        nextBtn.style.pointerEvents = canScrollRight ? 'auto' : 'none';
     }
 }
 
@@ -7754,16 +7805,16 @@ function openPinnedPlaylistFromCard(playlistName) {
     console.log('[Playlist] Available playlists:', Object.keys(playlists));
     console.log('[Playlist] Playlist data exists:', playlists[name] !== undefined);
     console.log('[Playlist] Playlist data:', playlists[name]);
-    
+
     // Debug: Check if DOM elements exist
-    const gridContainer = document.getElementById("playlistGridContainer");
+    const gridContainer = document.getElementById("playlistGrid");
     const contentView = document.getElementById("playlistContentView");
     const titleEl = document.getElementById("currentPlaylistTitle");
     const breadcrumbEl = document.getElementById("playlistBreadcrumb");
     const coverEl = document.getElementById("playlistCover");
     const songBody = document.getElementById("playlistSongBody");
     const playlistScreen = document.getElementById('playlist-screen');
-    
+
     console.log('[Playlist] DOM elements:', {
         gridContainer: !!gridContainer,
         contentView: !!contentView,
@@ -7773,15 +7824,15 @@ function openPinnedPlaylistFromCard(playlistName) {
         songBody: !!songBody,
         playlistScreen: !!playlistScreen
     });
-    
+
     if (!gridContainer || !contentView || !playlistScreen) {
         console.error('[Playlist] Required DOM elements missing!');
         showNotification('Error: Required elements not found');
         return;
     }
-    
+
     currentPlaylistName = name;
-    
+
     // Show content view, hide grid
     gridContainer.style.display = "none";
     contentView.style.display = "block";
@@ -8045,7 +8096,7 @@ function renderPlaylists() {
         }
         card.onclick = () => {
             currentPlaylistName = name;
-            document.getElementById("playlistGridContainer").style.display = "none";
+            document.getElementById("playlistGrid").style.display = "none";
             document.getElementById("playlistContentView").style.display = "block";
             document.getElementById("currentPlaylistTitle").innerText = name;
             document.getElementById("playlistBreadcrumb").innerHTML = `
@@ -8123,8 +8174,27 @@ function renderPlaylists() {
 }
 
 function backToPlaylistGrid() {
-    document.getElementById("playlistGridContainer").style.display="block";
-    document.getElementById("playlistContentView").style.display="none";
+    const grid = document.getElementById("playlistGrid");
+    const contentView = document.getElementById("playlistContentView");
+
+    // Force layout reset by temporarily hiding and showing the grid
+    grid.style.display = "none";
+    contentView.style.display = "none";
+
+    // Force browser reflow
+    void grid.offsetWidth;
+
+    // Show grid and trigger reflow again
+    grid.style.display = "grid";
+    void grid.offsetWidth;
+
+    // Re-trigger animations for playlist cards
+    const playlistCards = grid.querySelectorAll('.folder-card');
+    playlistCards.forEach(card => {
+        card.classList.remove('loaded');
+        setTimeout(() => card.classList.add('loaded'), 50);
+    });
+
     if (playlistSortable) {
         playlistSortable.destroy();
         playlistSortable = null;
@@ -10765,7 +10835,7 @@ async function renderListenAgainSection(skipSave = false) {
             </div>
             ${hasContent ? `
             <div class="listen-again-carousel">
-                <button class="listen-again-carousel-btn listen-again-carousel-prev" onclick="scrollListenAgain(-1)" id="listenAgainPrevBtn" style="visibility: hidden;">
+                <button class="listen-again-carousel-btn listen-again-carousel-prev" onclick="scrollListenAgain(-1)" id="listenAgainPrevBtn">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
                 <div class="listen-again-scroll-wrapper">
@@ -11975,9 +12045,9 @@ function nav(el) {
     if(target) target.classList.add('active');
 }
 
-function toggleSidebar() { 
+function toggleSidebar() {
     document.getElementById("sidebar").classList.toggle("collapsed");
-    
+
     // Re-render Listen Again section to adjust for new width
     // Use setTimeout to allow the CSS transition to complete first
     setTimeout(() => {
@@ -11986,6 +12056,50 @@ function toggleSidebar() {
         }
     }, 420);
 }
+
+// Sidebar resize functionality
+const sidebar = document.getElementById('sidebar');
+const resizeHandle = document.getElementById('sidebarResizeHandle');
+let isResizing = false;
+let startX = 0;
+let startWidth = 0;
+
+// Load saved width from localStorage
+const savedSidebarWidth = localStorage.getItem('goot_sidebar_width');
+if (savedSidebarWidth) {
+    sidebar.style.width = savedSidebarWidth + 'px';
+}
+
+resizeHandle.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    startX = e.clientX;
+    startWidth = sidebar.offsetWidth;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+
+    const diff = startX - e.clientX;
+    let newWidth = startWidth + diff;
+
+    // Constrain width between 200px and 600px
+    newWidth = Math.max(200, Math.min(600, newWidth));
+
+    sidebar.style.width = newWidth + 'px';
+});
+
+document.addEventListener('mouseup', () => {
+    if (isResizing) {
+        isResizing = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        // Save width to localStorage
+        localStorage.setItem('goot_sidebar_width', sidebar.offsetWidth);
+    }
+});
 
 function openMobilePlayer() {
     if (window.innerWidth <= 768) {
