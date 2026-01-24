@@ -21,8 +21,10 @@
     --md-sys-color-on-primary: #ffffff;
     --md-sys-color-background: #060809;
     --md-sys-color-on-background: #e2e2e6;
-    --motion-standard: cubic-bezier(0.2, 0, 0, 1);
+    --md-sys-color-primary-dark: #0b0d0e;
+    --motion-standard: cubic-bezier(0.3, 0, 0.2, 1);
     --nav-height: 0px;
+    --header-height: 0px;
 }
 [data-theme="light"] {
     --md-sys-color-primary: #b71c1c;
@@ -38,6 +40,285 @@
 * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb { background: var(--md-sys-color-primary); border-radius: 10px; }
+
+/* Scrolling text animation for truncated queue items */
+.queue-item-text-container {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.queue-item-title, .queue-item-artist {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 0.2s ease;
+}
+
+.queue-item-title.scrolled, .queue-item-artist.scrolled {
+    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    animation: marqueeText 8s ease-in-out infinite;
+}
+
+@keyframes marqueeText {
+    0%, 10% { transform: translateX(0); }
+    40%, 60% { transform: translateX(calc(-100% + 120px)); }
+    90%, 100% { transform: translateX(0); }
+}
+
+/* Redesigned Equalizer Section - Modern Material 3 Expressive Style */
+.eq-page-header {
+    margin-bottom: 24px;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.eq-page-title {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--md-sys-color-on-background), var(--md-sys-color-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.eq-page-subtitle {
+    font-size: 16px;
+    opacity: 0.7;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Main Container */
+.eq-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--md-sys-color-surface-variant);
+    border-radius: 28px;
+    padding: 28px;
+    border: 1px solid var(--md-sys-color-outline);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Header Section */
+.eq-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--md-sys-color-outline);
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.eq-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.eq-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.6;
+    color: var(--md-sys-color-primary);
+}
+
+.eq-header-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+/* Presets */
+.eq-presets {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.eq-preset-dropdown {
+    position: relative;
+    min-width: 150px;
+}
+
+.eq-preset-dropdown select {
+    appearance: none;
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    border: 1px solid var(--md-sys-color-outline);
+    padding: 10px 36px 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.25s var(--motion-standard);
+}
+
+.eq-preset-dropdown select:hover {
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-primary-container);
+}
+
+.eq-preset-dropdown select:focus {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 3px var(--md-sys-color-primary-container);
+}
+
+.eq-preset-dropdown i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    opacity: 0.6;
+    font-size: 10px;
+    transition: transform 0.25s var(--motion-standard);
+}
+
+.eq-preset-dropdown:hover i {
+    opacity: 1;
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.eq-presets .m3-btn {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    transition: all 0.25s var(--motion-standard);
+}
+
+.eq-presets .m3-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Sections */
+.eq-section {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.25s var(--motion-standard);
+}
+
+.eq-section:hover {
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.eq-section:last-child {
+    margin-bottom: 0;
+}
+
+.eq-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.eq-section-header i {
+    font-size: 16px;
+    color: var(--md-sys-color-primary);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--md-sys-color-primary-container);
+    border-radius: 10px;
+}
+
+.eq-section-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.3px;
+}
+
+/* Tone Sliders */
+.tone-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: all 0.25s var(--motion-standard);
+}
+
+.tone-slider-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.tone-slider-row:last-child {
+    margin-bottom: 0;
+}
+
+.tone-label {
+    width: 90px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--md-sys-color-on-surface);
+}
+
+.tone-label i {
+    font-size: 12px;
+    opacity: 0.7;
+    color: var(--md-sys-color-primary);
+}
+
+.tone-range {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s var(--motion-standard);
+}
+
+.tone-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--md-sys-color-primary);
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 0 8px color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent);
+    cursor: pointer;
+    transition: transform 0.2s var(--motion-standard), box-shadow 0.2s var(--motion-standard);
+}
+
+.tone-range::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 16px color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
+}
+
+.tone-range::-webkit-slider-runnable-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
 body {
     font-family: 'Google Sans', sans-serif;
     background: var(--md-sys-color-background);
@@ -53,7 +334,16 @@ body {
     display: flex; flex-direction: column; align-items: center;
     padding: 24px 0; gap: 12px; z-index: 100; flex-shrink: 0;
 }
-.main-container { flex: 1; padding: 40px 0; overflow-y: auto; position: relative; padding-bottom: 120px; }
+.main-container {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    padding: 20px 0 120px;
+    max-width: calc(100vw - 488px); /* Account for nav-rail + sidebar */
+    width: 100%;
+    margin: 0 auto;
+    transition: max-width 0.4s var(--motion-standard);
+}
 
 /* Performance optimization during bulk metadata loading */
 .main-container.bulk-loading {
@@ -80,6 +370,31 @@ body {
 .animations-disabled body * {
     transition: none !important;
     animation: none !important;
+}
+
+/* Ensure elements are visible when animations are disabled */
+.animations-disabled .screen.active .folder-grid,
+.animations-disabled .screen.active .section,
+.animations-disabled .screen.active .album-grid,
+.animations-disabled .screen.active .playlist-grid,
+.animations-disabled .screen.active .song-list,
+.animations-disabled .screen.active .eq-presets,
+.animations-disabled .screen.active .listen-again-container,
+.animations-disabled .screen.active .all-played-tracks-container {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* Ensure individual cards are visible when animations are disabled */
+.animations-disabled .folder-card,
+.animations-disabled .playlist-card,
+.animations-disabled .song-row,
+.animations-disabled .album-card,
+.animations-disabled .listen-again-track-card,
+.animations-disabled .all-played-track-row,
+.animations-disabled .eq-presets > div {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
 }
 
 .side-sheet {
@@ -139,49 +454,352 @@ body {
     transform: scale(0.95);
 }
 
-body.playing .player-bar .play-btn {
-    animation: playerHeartbeat 2.4s infinite ease-in-out;
+/* Audio Visualizer - Pulse effect on play button */
+.audio-visualizer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 3px;
+    height: 24px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-@keyframes playerHeartbeat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.12); }
+.audio-visualizer.active {
+    opacity: 1;
+}
+
+.audio-visualizer .bar {
+    width: 4px;
+    background: var(--md-sys-color-primary);
+    border-radius: 2px;
+    transition: height 0.05s ease;
+}
+
+/* Bass-bob animation - reacts to actual bass frequencies */
+@keyframes bass-bob {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+.play-btn.playing,
+.mp-play-btn.playing,
+.play-btn-large.playing {
+    animation: bass-bob 0.2s ease-in-out infinite;
+}
+
+/* Fullscreen play button animation */
+.fs-play-btn.playing {
+    animation: bass-bob 0.2s ease-in-out infinite;
+}
+
+/* Desktop extended play button animation */
+.dePlayBtn.playing {
+    animation: bass-bob 0.2s ease-in-out infinite;
 }
 
 [data-theme="light"] .player-bar { background: rgba(255,255,255,0.95); }
-.screen { display: none; opacity: 0; transform: translateY(24px) scale(0.98); transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
-.screen.active { display: block; opacity: 1; transform: translateY(0) scale(1); }
-img { opacity: 0; transition: opacity 0.6s var(--motion-standard); }
+/* Screen Transitions */
+.screen {
+    display: none;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.3s var(--motion-standard), transform 0.3s var(--motion-standard);
+    max-width: 100%;
+}
+
+.screen.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    width: 100%;
+}
+
+.screen.entering {
+    display: block;
+    animation: slideUp 0.35s var(--motion-standard) forwards;
+}
+
+.screen.leaving {
+    display: block;
+    animation: slideDown 0.35s var(--motion-standard) forwards;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+}
+
+/* Page load animations - staggered children */
+.screen.active .folder-grid,
+.screen.active .section,
+.screen.active .album-grid,
+.screen.active .playlist-grid,
+.screen.active .song-list,
+.screen.active .eq-presets {
+    animation: fadeInStagger 0.4s var(--motion-standard) forwards;
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+.screen.active .folder-grid:nth-child(1) { animation-delay: 0.05s; }
+.screen.active .folder-grid:nth-child(2) { animation-delay: 0.1s; }
+.screen.active .section:nth-child(1) { animation-delay: 0.05s; }
+.screen.active .section:nth-child(2) { animation-delay: 0.1s; }
+.screen.active .section:nth-child(3) { animation-delay: 0.15s; }
+.screen.active .album-grid > div:nth-child(1) { animation-delay: 0.05s; }
+.screen.active .album-grid > div:nth-child(2) { animation-delay: 0.08s; }
+.screen.active .album-grid > div:nth-child(3) { animation-delay: 0.11s; }
+.screen.active .album-grid > div:nth-child(4) { animation-delay: 0.14s; }
+.screen.active .album-grid > div:nth-child(5) { animation-delay: 0.17s; }
+.screen.active .album-grid > div:nth-child(6) { animation-delay: 0.2s; }
+.screen.active .playlist-grid > div:nth-child(1) { animation-delay: 0.05s; }
+.screen.active .playlist-grid > div:nth-child(2) { animation-delay: 0.08s; }
+.screen.active .playlist-grid > div:nth-child(3) { animation-delay: 0.11s; }
+.screen.active .playlist-grid > div:nth-child(4) { animation-delay: 0.14s; }
+.screen.active .song-list > div:nth-child(1) { animation-delay: 0.02s; }
+.screen.active .song-list > div:nth-child(2) { animation-delay: 0.04s; }
+.screen.active .song-list > div:nth-child(3) { animation-delay: 0.06s; }
+.screen.active .song-list > div:nth-child(4) { animation-delay: 0.08s; }
+.screen.active .song-list > div:nth-child(5) { animation-delay: 0.1s; }
+.screen.active .eq-presets > div:nth-child(1) { animation-delay: 0.05s; }
+.screen.active .eq-presets > div:nth-child(2) { animation-delay: 0.08s; }
+.screen.active .eq-presets > div:nth-child(3) { animation-delay: 0.11s; }
+.screen.active .eq-presets > div:nth-child(4) { animation-delay: 0.14s; }
+.screen.active .eq-presets > div:nth-child(5) { animation-delay: 0.17s; }
+
+@keyframes fadeInStagger {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+img { opacity: 0; transition: opacity 0.4s var(--motion-standard); }
 img.loaded { opacity: 1; }
 .folder-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 24px; position: relative; z-index: 1;
     width: 100%;
-    max-width: 100%;
+    max-width: calc(100vw - 488px); /* Default with sidebar visible */
     margin: 0 auto;
     padding: 0 24px;
+    transition: max-width 0.4s var(--motion-standard);
 }
+
+/* When sidebar is collapsed, expand folder grid */
+.app-shell.sidebar-collapsed .folder-grid {
+    width: 100%;
+    max-width: calc(100vw - 120px); /* Account for nav-rail only */
+}
+
+/* Folder Header and Back Button */
+#folderHeader {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: calc(100vw - 488px); /* Default with sidebar visible */
+    margin: 0 auto;
+    padding: 0 24px 16px;
+    transition: max-width 0.4s var(--motion-standard);
+}
+
+/* When sidebar is collapsed, expand folder header */
+.app-shell.sidebar-collapsed #folderHeader {
+    width: 100%;
+    max-width: calc(100vw - 120px); /* Account for nav-rail only */
+}
+
+.folder-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 28px;
+    border: none;
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    flex-shrink: 0;
+    box-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.12),
+        0 1px 2px rgba(0, 0, 0, 0.08),
+        0 0 0 1px transparent;
+}
+
+.folder-back-btn:hover {
+    background: var(--md-sys-color-primary-container-hover, color-mix(in srgb, var(--md-sys-color-primary-container) 92%, transparent));
+    transform: scale(1.02);
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.12),
+        0 3px 4px rgba(0, 0, 0, 0.08),
+        0 0 0 1px transparent;
+}
+
+.folder-back-btn:active {
+    transform: scale(0.96);
+    background: var(--md-sys-color-primary-container-active, color-mix(in srgb, var(--md-sys-color-primary-container) 84%, transparent));
+    box-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.08),
+        0 0 0 1px transparent;
+}
+
+.folder-back-btn i {
+    font-size: 24px;
+}
+
+.folder-header-title {
+    font-size: 42px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Mobile responsive for folder header */
+@media (max-width: 768px) {
+    #folderHeader {
+        max-width: 100% !important;
+        padding: 0 16px 12px;
+    }
+    .folder-header-title {
+        font-size: 28px;
+    }
+    .folder-back-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 24px;
+    }
+    .folder-back-btn i {
+        font-size: 20px;
+    }
+}
+
 .playlist-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,180px)); gap: 24px; position: relative; z-index: 1;
     width: 100%;
-    max-width: 100%;
+    max-width: calc(100vw - 488px); /* Default with sidebar visible */
     margin: 0 auto;
+    transition: max-width 0.4s var(--motion-standard);
 }
+
+/* When sidebar is collapsed, expand playlist grid */
+.app-shell.sidebar-collapsed .playlist-grid {
+    width: 100%;
+    max-width: calc(100vw - 120px); /* Account for nav-rail only */
+}
+
+/* Listen Again container expansion */
+.listen-again-container {
+    margin-bottom: 32px;
+    width: 100%;
+    max-width: calc(100vw - 488px); /* Default with sidebar visible */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 24px;
+    transition: max-width 0.4s var(--motion-standard);
+}
+
+/* When sidebar is collapsed, expand Listen Again container */
+.app-shell.sidebar-collapsed .listen-again-container {
+    width: 100%;
+    max-width: calc(100vw - 120px); /* Account for nav-rail only */
+}
+
+/* ========== Sidebar Collapse - Main Container Expansion ========== */
+
+/* Main container expands when sidebar is collapsed */
+.app-shell.sidebar-collapsed .main-container {
+    width: calc(100vw - 120px); /* Account for nav-rail only */
+    max-width: calc(100vw - 120px);
+    flex-shrink: 0;
+    transition: max-width 0.4s var(--motion-standard), width 0.4s var(--motion-standard);
+}
+
+/* Expand all direct children of main-container when sidebar collapses */
+.app-shell.sidebar-collapsed .folder-grid,
+.app-shell.sidebar-collapsed .playlist-grid,
+.app-shell.sidebar-collapsed .listen-again-container {
+    width: 100%;
+    max-width: calc(100vw - 120px);
+}
+
+/* Ensure all direct children of screen expand with parent */
+.app-shell.sidebar-collapsed .screen.active {
+    width: 100%;
+}
+
+/* Expand all-played tracks container when sidebar is collapsed */
+.app-shell.sidebar-collapsed .all-played-tracks-container {
+    max-width: calc(100vw - 120px); /* Account for nav-rail only */
+    margin: 0 auto;
+    transition: max-width 0.4s var(--motion-standard);
+}
+
+/* Expand equalizer page when sidebar is collapsed */
+.app-shell.sidebar-collapsed .eq-page-content,
+.app-shell.sidebar-collapsed .eq-container {
+    max-width: calc(100vw - 120px); /* Account for nav-rail only */
+    margin-left: auto;
+    margin-right: auto;
+    transition: max-width 0.4s var(--motion-standard);
+}
+
+/* Expand settings container when sidebar is collapsed */
+.app-shell.sidebar-collapsed .settings-container {
+    max-width: calc(100vw - 120px); /* Account for nav-rail only */
+    margin: 0 auto;
+    transition: max-width 0.4s var(--motion-standard);
+}
+
+/* Expand library section when sidebar is collapsed */
+.app-shell.sidebar-collapsed .library-section {
+    max-width: calc(100vw - 120px); /* Account for nav-rail only */
+    margin: 0 auto;
+    padding: 0 24px;
+    transition: max-width 0.4s var(--motion-standard);
+}
+
 .folder-card {
-    background: #000; aspect-ratio: 1/1; border-radius: 20px; cursor: pointer; overflow: hidden; position: relative;
+    background: #000; aspect-ratio: 1/1; border-radius: 16px; cursor: pointer; overflow: hidden; position: relative;
     border: 1px solid var(--md-sys-color-outline);
-    opacity: 0; transform: translateY(16px) scale(0.96);
-    transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
+    opacity: 0; transform: translateY(12px);
+    transition: opacity 0.3s var(--motion-standard), transform 0.3s var(--motion-standard), box-shadow 0.2s ease, border-color 0.2s ease;
     z-index: 1;
 }
-.folder-card.loaded { opacity: 1; transform: translateY(0) scale(1); }
-.folder-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 28px rgba(0,0,0,0.5), 0 0 0 1px var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
+.folder-card.loaded { opacity: 1; transform: translateY(0); }
+.folder-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px var(--md-sys-color-primary-container); border-color: var(--md-sys-color-primary); }
 .folder-art { 
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); 
 }
 .folder-art img { 
     width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;
     opacity: 0;
-    transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    transition: opacity 0.3s ease, transform 0.4s ease;
     transform: scale(1.05);
 }
 .folder-art img.loaded { 
@@ -192,19 +810,19 @@ img.loaded { opacity: 1; }
 .folder-info span { font-weight: 600; font-size: 14px; color: white; }
 .playlist-card .play-overlay {
     position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end;
-    padding: 16px; opacity: 0; transition: opacity 0.4s var(--motion-standard); pointer-events: none;
-    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%); z-index: 3;
+    padding: 16px; opacity: 0; transition: opacity 0.25s var(--motion-standard); pointer-events: none;
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%); z-index: 3;
 }
 .playlist-card:hover .play-overlay { opacity: 1; pointer-events: auto; }
-.play-overlay .control-group { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.play-overlay .control-group { display: flex; flex-direction: column; gap: 8px; align-items: center; }
 .play-overlay .control-btn {
-    width: 56px; height: 56px; border-radius: 50%; background: var(--md-sys-color-primary); color: white;
-    display: flex; align-items: center; justify-content: center; font-size: 22px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.5); transition: transform 0.3s ease;
+    width: 48px; height: 48px; border-radius: 50%; background: var(--md-sys-color-primary); color: white;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4); transition: transform 0.2s var(--motion-standard);
 }
 .play-overlay .control-btn.shuffle { background: color-mix(in srgb, var(--md-sys-color-primary) 70%, #333); }
-.play-overlay .control-btn:hover { transform: scale(1.15); }
-.play-overlay .btn-label { color: white; font-size: 13px; font-weight: 500; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+.play-overlay .control-btn:hover { transform: scale(1.1); }
+.play-overlay .btn-label { color: white; font-size: 12px; font-weight: 500; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
 
 /* Listen Again section - smaller control buttons */
 .listen-again-track-card .play-overlay .control-btn {
@@ -235,15 +853,32 @@ img.loaded { opacity: 1; }
 }
 .playlist-breadcrumb .chip:hover { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-primary); }
 .breadcrumb-chip {
-    padding: 8px 16px; background: var(--md-sys-color-surface-variant); border-radius: 100px; font-size: 13px; cursor: pointer; transition: all 0.3s ease;
+    padding: 8px 16px;
+    background: var(--md-sys-color-surface-variant);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s var(--motion-standard);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-.breadcrumb-chip:hover { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-primary); }
+
+.breadcrumb-chip:hover {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-primary);
+    transform: translateY(-1px);
+}
+
+.breadcrumb-chip:active {
+    transform: translateY(0);
+}
 .song-row { 
     cursor: pointer;
-    /* Start hidden and shifted down */
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.4s var(--motion-standard), transform 0.4s var(--motion-standard);
+    transform: translateY(12px);
+    transition: opacity 0.3s var(--motion-standard), transform 0.3s var(--motion-standard);
 }
 
 .song-row.loaded {
@@ -280,17 +915,137 @@ img.loaded { opacity: 1; }
 }
 .playlist-drag-handle:hover { opacity: 1; }
 .playlist-drag-handle:active { cursor: grabbing; }
-.sortable-ghost { opacity: 0.4; background: var(--md-sys-color-primary-container); }
+
+/* ========== Playlist & Queue Drag-Drop Animations ========== */
+
+/* Ghost element (placeholder) */
+.sortable-ghost {
+    opacity: 0.3;
+    background: var(--md-sys-color-primary);
+    border-radius: 8px;
+}
+
+/* Item being dragged - enhanced visual feedback */
+.sortable-chosen {
+    opacity: 0.95;
+    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    z-index: 1000;
+    background: var(--md-sys-color-surface-variant);
+}
+
+/* Item actively being dragged */
+.sortable-drag {
+    opacity: 1 !important;
+    transform: scale(1.03) rotate(2deg);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+    z-index: 1001;
+    background: var(--md-sys-color-surface-variant);
+    border-radius: 12px;
+}
+
+/* ========== Playlist Row Animations ========== */
+.playlist-song-row {
+    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effect during drag - items shift away */
+.playlist-song-row.sortable-chosen {
+    transition: none;
+}
+
+/* Animation when item is dropped - subtle bounce back */
+.playlist-song-row.drop-target {
+    animation: playlistDropBounce 0.3s ease-out;
+}
+
+@keyframes playlistDropBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); background: var(--md-sys-color-primary-container); }
+    100% { transform: scale(1); }
+}
+
+/* ========== Queue Item Animations ========== */
+.queue-item {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.2s ease,
+                opacity 0.2s ease;
+}
 
 .queue-item.visible { opacity: 1; transform: translateX(0); }
 .queue-item:hover { background: var(--md-sys-color-primary-container); transform: translateX(6px); }
 .queue-item.active { background: var(--md-sys-color-primary-container); border-left: 4px solid var(--md-sys-color-primary); }
 
 /* Disable transitions during drag for smooth animation */
-.queue-item.sortable-chosen { transition: none; }
-.queue-item.sortable-ghost { transition: none; opacity: 0.4; background: var(--md-sys-color-primary-container); }
+.queue-item.sortable-chosen {
+    transition: none;
+    opacity: 0.95;
+    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    z-index: 1000;
+    background: var(--md-sys-color-surface-variant);
+}
 
-/* Queue drag handle */
+.queue-item.sortable-ghost {
+    transition: none;
+    opacity: 0.3;
+    background: var(--md-sys-color-primary);
+}
+
+.queue-item.sortable-drag {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: scale(1.03) rotate(2deg) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+    z-index: 1001;
+    background: var(--md-sys-color-surface-variant);
+    border-radius: 12px;
+}
+
+/* Queue item drop animation */
+.queue-item.drop-target {
+    animation: queueDropPulse 0.3s ease-out;
+}
+
+@keyframes queueDropPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); background: var(--md-sys-color-primary-container); }
+    100% { transform: scale(1); }
+}
+
+/* ========== Desktop Extended Queue Animations ========== */
+.desktop-extended .queue-item {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.2s ease,
+                opacity 0.2s ease;
+}
+
+.desktop-extended .queue-item.sortable-chosen {
+    transition: none;
+    opacity: 0.95;
+    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    z-index: 1000;
+    background: var(--md-sys-color-surface-variant);
+}
+
+.desktop-extended .queue-item.sortable-ghost {
+    transition: none;
+    opacity: 0.3;
+    background: var(--md-sys-color-primary);
+}
+
+.desktop-extended .queue-item.sortable-drag {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: scale(1.03) rotate(2deg) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+    z-index: 1001;
+    background: var(--md-sys-color-surface-variant);
+    border-radius: 12px;
+}
+
+/* ========== Queue drag handle ========== */
 .queue-drag-handle {
     opacity: 0.3;
     cursor: grab;
@@ -300,7 +1055,7 @@ img.loaded { opacity: 1; }
 .queue-drag-handle:hover { opacity: 1; }
 .queue-drag-handle:active { cursor: grabbing; }
 
-/* Queue drag animations - matching playlist style */
+/* Queue drag visual feedback */
 .queue-sort-drag {
     opacity: 1;
     transform: scale(1.02);
@@ -308,28 +1063,19 @@ img.loaded { opacity: 1; }
     z-index: 100;
 }
 .nav-item { 
-    width: 100%; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; opacity: 0.6; transition: all 0.4s var(--motion-standard); 
+    width: 100%; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; opacity: 0.6; transition: all 0.25s var(--motion-standard); 
 }
 .nav-item.active { 
-    opacity: 1; color: var(--md-sys-color-primary); transform: scale(1.08); 
+    opacity: 1; color: var(--md-sys-color-primary); transform: scale(1.05); 
 }
-.nav-icon-wrapper { width: 56px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.4s var(--motion-standard); }
-.nav-item.active .nav-icon-wrapper { background: var(--md-sys-color-primary-container); transform: scale(1.1); }
+.nav-icon-wrapper { width: 48px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.25s var(--motion-standard); }
+.nav-item.active .nav-icon-wrapper { background: var(--md-sys-color-primary-container); }
 .play-btn {
-    width: 56px; height: 56px; border-radius: 50%; background: var(--md-sys-color-primary); color: white;
-    display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+    width: 64px; height: 64px; border-radius: 50%; background: var(--md-sys-color-primary); color: white;
+    display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer;
+    transition: all 0.25s var(--motion-standard);
 }
-.play-btn:hover { transform: scale(1.12); filter: brightness(1.15); }
-body.playing .play-btn,
-body.playing .clean-btn.play-btn-large {
-    animation: heartbeat 2.4s infinite ease-in-out;
-}
-
-@keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.12); }
-}
+.play-btn:hover { transform: scale(1.08); filter: brightness(1.1); }
 
 @keyframes fadeInOut {
     0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
@@ -340,9 +1086,9 @@ body.playing .clean-btn.play-btn-large {
 .action-btn {
     background: var(--md-sys-color-surface-variant); color: white; border: 1px solid var(--md-sys-color-outline);
     padding: 10px 20px; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px;
-    transition: all 0.3s var(--motion-standard);
+    transition: all 0.2s var(--motion-standard);
 }
-.action-btn:hover { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); transform: translateY(-2px); }
+.action-btn:hover { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); transform: translateY(-1px); }
 
 /* Material 3 Expressive Buttons */
 .m3-btn {
@@ -357,7 +1103,7 @@ body.playing .clean-btn.play-btn-large {
     font-family: inherit;
     font-size: 14px;
     font-weight: 500;
-    transition: all 0.3s var(--motion-standard);
+    transition: all 0.2s var(--motion-standard);
 }
 
 .m3-btn i {
@@ -378,7 +1124,7 @@ body.playing .clean-btn.play-btn-large {
 .m3-btn-filled:hover {
     background: var(--md-sys-color-primary);
     filter: brightness(1.1);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
@@ -397,7 +1143,7 @@ body.playing .clean-btn.play-btn-large {
 .m3-btn-tonal:hover {
     background: var(--md-sys-color-primary-container);
     border-color: var(--md-sys-color-primary);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
 }
 
 .m3-btn-tonal:active {
@@ -448,7 +1194,7 @@ body.playing .clean-btn.play-btn-large {
 .m3-btn.playlist-delete-btn:hover {
     background: rgba(255, 68, 68, 0.25);
     border-color: #ff4444;
-    transform: translateY(-2px);
+    transform: translateY(-1px);
 }
 
 /* New Playlist Big Square Card */
@@ -464,8 +1210,8 @@ body.playing .clean-btn.play-btn-large {
     justify-content: center;
     background: var(--md-sys-color-surface-variant);
     border: 2px dashed var(--md-sys-color-outline);
-    border-radius: 20px;
-    transition: all 0.3s ease;
+    border-radius: 16px;
+    transition: all 0.2s ease;
 }
 
 .new-playlist-card:hover .new-playlist-icon {
@@ -477,13 +1223,13 @@ body.playing .clean-btn.play-btn-large {
     font-size: 48px;
     color: var(--md-sys-color-on-surface);
     opacity: 0.4;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .new-playlist-card:hover .new-playlist-icon i {
     opacity: 1;
     color: var(--md-sys-color-primary);
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .new-playlist-label {
@@ -542,7 +1288,7 @@ body.playing .clean-btn.play-btn-large {
 
 .pin-btn:hover {
     background: var(--md-sys-color-primary);
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .pin-btn i {
@@ -550,7 +1296,7 @@ body.playing .clean-btn.play-btn-large {
 }
 
 .pin-btn:hover i {
-    transform: rotate(45deg);
+    transform: rotate(15deg);
 }
 
 .labeled-pin-btn {
@@ -625,7 +1371,8 @@ body.playing .clean-btn.play-btn-large {
     align-items: center;
     gap: 12px;
     flex: 1;
-    transition: opacity 0.25s var(--motion-standard);
+    min-width: 0;
+    transition: opacity 0.2s var(--motion-standard);
     z-index: 1;
 }
 
@@ -644,7 +1391,7 @@ body.playing .clean-btn.play-btn-large {
     transform: translateX(-100%);
     opacity: 0;
     z-index: 10;
-    transition: transform 0.3s var(--motion-standard), opacity 0.2s ease;
+    transition: transform 0.25s var(--motion-standard), opacity 0.2s ease;
 }
 
 /* Trigger hover menu from ellipsis button hover */
@@ -1097,10 +1844,11 @@ body.playing .clean-btn.play-btn-large {
 .listen-again-container {
     margin-bottom: 32px;
     width: 100%;
-    max-width: 100%;
+    max-width: calc(100vw - 488px); /* Default with sidebar visible */
     margin-left: auto;
     margin-right: auto;
     padding: 0 24px;
+    transition: max-width 0.4s var(--motion-standard);
 }
 
 /* Horizontal scroll container - no wrapping */
@@ -1935,6 +2683,9 @@ body.playing .clean-btn.play-btn-large {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    max-width: calc(100vw - 488px); /* Account for nav-rail + sidebar */
+    margin: 0 auto;
+    transition: max-width 0.4s var(--motion-standard);
 }
 
 .all-played-track-row {
@@ -2044,11 +2795,18 @@ body.playing .clean-btn.play-btn-large {
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+    /* On mobile, sidebar is always hidden, so use full width */
     .listen-again-container {
         width: 100%;
-        max-width: none;
+        max-width: 100% !important; /* Override any sidebar-collapsed rules */
         margin-left: auto;
         margin-right: auto;
+        padding: 0 16px;
+    }
+    
+    /* Folder and playlist grids on mobile */
+    .folder-grid, .playlist-grid {
+        max-width: 100% !important; /* Override any sidebar-collapsed rules */
         padding: 0 16px;
     }
     
@@ -2618,15 +3376,19 @@ input:checked + .slider:before { transform: translateX(26px); }
 /* --- EQUALIZER STYLES --- */
 
 /* Page Header */
+/* Redesigned Equalizer Section - Modern Material 3 Expressive Style */
 .eq-page-header {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .eq-page-title {
-    font-size: 52px;
+    font-size: 48px;
     font-weight: 700;
-    margin: 0 0 8px 0;
+    margin: 0;
     letter-spacing: -1px;
     background: linear-gradient(135deg, var(--md-sys-color-on-background), var(--md-sys-color-primary));
     -webkit-background-clip: text;
@@ -2638,26 +3400,27 @@ input:checked + .slider:before { transform: translateX(26px); }
     font-size: 16px;
     opacity: 0.7;
     margin: 0;
+    font-weight: 400;
 }
 
 /* Main Container */
 .eq-container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     background: var(--md-sys-color-surface-variant);
-    border-radius: 32px;
-    padding: 32px;
+    border-radius: 28px;
+    padding: 28px;
     border: 1px solid var(--md-sys-color-outline);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 
 /* Header Section */
 .eq-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
+    align-items: center;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
     border-bottom: 1px solid var(--md-sys-color-outline);
     flex-wrap: wrap;
     gap: 16px;
@@ -2666,32 +3429,36 @@ input:checked + .slider:before { transform: translateX(26px); }
 .eq-header-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
 .eq-section-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     opacity: 0.6;
+    color: var(--md-sys-color-primary);
 }
 
 .eq-header-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 600;
     margin: 0;
+    letter-spacing: -0.5px;
 }
 
 /* Presets */
 .eq-presets {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .eq-preset-dropdown {
     position: relative;
+    min-width: 150px;
 }
 
 .eq-preset-dropdown select {
@@ -2699,13 +3466,13 @@ input:checked + .slider:before { transform: translateX(26px); }
     background: var(--md-sys-color-surface);
     color: var(--md-sys-color-on-surface);
     border: 1px solid var(--md-sys-color-outline);
-    padding: 12px 40px 12px 16px;
-    border-radius: 16px;
+    padding: 10px 36px 10px 14px;
+    border-radius: 12px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    min-width: 140px;
-    transition: all 0.3s var(--motion-standard);
+    width: 100%;
+    transition: all 0.25s var(--motion-standard);
 }
 
 .eq-preset-dropdown select:hover {
@@ -2713,61 +3480,96 @@ input:checked + .slider:before { transform: translateX(26px); }
     background: var(--md-sys-color-primary-container);
 }
 
+.eq-preset-dropdown select:focus {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 3px var(--md-sys-color-primary-container);
+}
+
 .eq-preset-dropdown i {
     position: absolute;
-    right: 14px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
     opacity: 0.6;
-    font-size: 12px;
+    font-size: 10px;
+    transition: transform 0.25s var(--motion-standard);
+}
+
+.eq-preset-dropdown:hover i {
+    opacity: 1;
+    transform: translateY(-50%) rotate(180deg);
 }
 
 .eq-presets .m3-btn {
-    padding: 12px 16px;
-    border-radius: 16px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    transition: all 0.25s var(--motion-standard);
+}
+
+.eq-presets .m3-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Sections */
 .eq-section {
-    margin-bottom: 28px;
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 24px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.25s var(--motion-standard);
+}
+
+.eq-section:hover {
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.eq-section:last-child {
+    margin-bottom: 0;
 }
 
 .eq-section-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: 10px;
+    margin-bottom: 16px;
 }
 
 .eq-section-header i {
-    font-size: 18px;
+    font-size: 16px;
     color: var(--md-sys-color-primary);
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--md-sys-color-primary-container);
-    border-radius: 12px;
+    border-radius: 10px;
 }
 
 .eq-section-header h3 {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     margin: 0;
+    letter-spacing: -0.3px;
 }
 
 /* Tone Sliders */
 .tone-slider-row {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 14px;
+    margin-bottom: 14px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: all 0.25s var(--motion-standard);
+}
+
+.tone-slider-row:hover {
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .tone-slider-row:last-child {
@@ -2775,50 +3577,53 @@ input:checked + .slider:before { transform: translateX(26px); }
 }
 
 .tone-label {
-    width: 100px;
+    width: 90px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-weight: 600;
-    font-size: 14px;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--md-sys-color-on-surface);
 }
 
 .tone-label i {
-    font-size: 14px;
+    font-size: 12px;
     opacity: 0.7;
+    color: var(--md-sys-color-primary);
 }
 
 .tone-range {
     -webkit-appearance: none;
     appearance: none;
     flex: 1;
-    height: 8px;
+    height: 6px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
+    transition: all 0.2s var(--motion-standard);
 }
 
 .tone-range::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     background: var(--md-sys-color-primary);
     border-radius: 50%;
-    border: 3px solid white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 12px color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 0 8px color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent);
     cursor: pointer;
     transition: transform 0.2s var(--motion-standard), box-shadow 0.2s var(--motion-standard);
 }
 
 .tone-range::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 20px color-mix(in srgb, var(--md-sys-color-primary) 50%, transparent);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 16px color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
 }
 
 .tone-range::-webkit-slider-runnable-track {
-    height: 8px;
+    height: 6px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
 .tone-range::-moz-range-thumb {
@@ -3083,8 +3888,8 @@ input:checked + .slider:before { transform: translateX(26px); }
 .mp-btn { font-size: 24px; color: var(--md-sys-color-on-background); background: none; border: none; cursor: pointer; transition: all 0.2s; }
 .mp-btn:active { transform: scale(0.9); }
 .mp-play-btn {
-    width: 72px; height: 72px; background: var(--md-sys-color-primary); border-radius: 50%;
-    color: white; display: flex; align-items: center; justify-content: center; font-size: 28px;
+    width: 80px; height: 80px; background: var(--md-sys-color-primary); border-radius: 50%;
+    color: white; display: flex; align-items: center; justify-content: center; font-size: 32px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 
@@ -3103,6 +3908,7 @@ input:checked + .slider:before { transform: translateX(26px); }
         grid-template-columns: repeat(2, 1fr); 
         gap: 12px;
         width: 100%;
+        max-width: 100% !important; /* Override any sidebar-collapsed rules */
         margin-left: auto;
         margin-right: auto;
         padding-left: 16px;
@@ -3172,7 +3978,7 @@ input:checked + .slider:before { transform: translateX(26px); }
     .song-row { cursor: pointer; }
 }
 
-/* === DESKTOP EXPANDED VIEW === */
+/* === DESKTOP EXPANDED VIEW - Centered Fullscreen Design === */
 .desktop-extended {
 	position: fixed;
 	inset: 0;
@@ -3225,16 +4031,13 @@ input:checked + .slider:before { transform: translateX(26px); }
 	opacity: 1;
 }
 
-
-
-/* Main album art */
+/* Main album art - responsive sizing */
 .desktop-extended-art-img {
 	position: relative;
-	width: 100%;
-	max-width: 500px;
+	width: min(90%, 500px);
 	aspect-ratio: 1;
 	object-fit: cover;
-	border-radius: 16px;
+	border-radius: clamp(12px, 2vw, 20px);
 	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 	z-index: 1;
 	opacity: 0;
@@ -3270,11 +4073,11 @@ input:checked + .slider:before { transform: translateX(26px); }
 .clean-info-panel {
 	text-align: center;
 	width: 100%;
-	max-width: 500px;
 }
 
+/* Responsive typography */
 .clean-title {
-	font-size: 28px;
+	font-size: clamp(20px, 3vw, 32px);
 	font-weight: 700;
 	white-space: nowrap;
 	overflow: hidden;
@@ -3285,23 +4088,22 @@ input:checked + .slider:before { transform: translateX(26px); }
 
 .clean-artist {
 	opacity: 0.7;
-	font-size: 18px;
-	margin: 8px 0 0 0;
+	font-size: clamp(14px, 2vw, 20px);
+	margin: clamp(4px, 1vh, 8px) 0 0 0;
 }
 
 .clean-progress {
 	width: 100%;
-	max-width: 500px;
-	margin: 24px auto 0 auto;
+	margin: clamp(16px, 2vh, 24px) auto 0 auto;
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: clamp(8px, 1.5vw, 12px);
 }
 
 .clean-time {
-	font-size: 12px;
+	font-size: clamp(10px, 1.2vw, 14px);
 	opacity: 0.9;
-	min-width: 40px;
+	min-width: clamp(32px, 5vw, 44px);
 	text-align: center;
 	font-variant-numeric: tabular-nums;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -3309,7 +4111,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 
 .clean-bar-bg {
 	flex: 1;
-	height: 6px;
+	height: clamp(4px, 0.8vh, 6px);
 	background: rgba(0, 0, 0, 0.4);
 	border-radius: 3px;
 	position: relative;
@@ -3339,12 +4141,13 @@ input:checked + .slider:before { transform: translateX(26px); }
 	cursor: pointer;
 }
 
+/* Controls - responsive spacing */
 .clean-controls {
-	margin-top: 20px;
+	margin-top: clamp(16px, 2vh, 24px);
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	gap: 24px;
+	gap: clamp(16px, 2vw, 28px);
 }
 
 .clean-btn {
@@ -3352,14 +4155,14 @@ input:checked + .slider:before { transform: translateX(26px); }
 	border: none;
 	color: var(--desktop-extended-text, white);
 	cursor: pointer;
-	transition: all 0.3s ease;
-	padding: 10px;
+	transition: all 0.25s var(--motion-standard);
+	padding: clamp(6px, 1vw, 10px);
 	border-radius: 50%;
 }
 
 .clean-btn:hover {
 	opacity: 1;
-	transform: scale(1.15);
+	transform: scale(1.12);
 }
 
 .clean-btn:active {
@@ -3367,10 +4170,10 @@ input:checked + .slider:before { transform: translateX(26px); }
 }
 
 .clean-btn.play-btn-large {
-	width: 64px;
-	height: 64px;
+	width: clamp(56px, 8vw, 84px);
+	height: clamp(56px, 8vw, 84px);
 	background: var(--md-sys-color-primary);
-	font-size: 28px;
+	font-size: clamp(24px, 3.5vw, 40px);
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
@@ -3380,7 +4183,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 
 .clean-btn#deShuffleBtn,
 .clean-btn#deRepeatBtn {
-	font-size: 18px;
+	font-size: clamp(14px, 2vw, 20px);
 	opacity: 0.6;
 }
 
@@ -3402,40 +4205,86 @@ input:checked + .slider:before { transform: translateX(26px); }
 /* Skip buttons in expanded view */
 .clean-controls .fa-backward-step,
 .clean-controls .fa-forward-step {
-	font-size: 22px;
+	font-size: clamp(16px, 2.5vw, 24px);
 }
 
 .clean-controls .fa-backward-step:hover,
 .clean-controls .fa-forward-step:hover {
-	transform: scale(1.15);
+	transform: scale(1.12);
 }
 
 .clean-volume {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 12px;
-	margin-top: 20px;
+	gap: clamp(8px, 1.5vw, 14px);
+	margin-top: clamp(16px, 2vh, 24px);
 	color: var(--desktop-extended-text, white);
 }
 
+.clean-volume input[type="range"] {
+	width: clamp(80px, 15vw, 120px);
+	cursor: pointer;
+	accent-color: var(--md-sys-color-primary);
+}
+
+/* Queue section - centered */
 .clean-queue {
 	position: relative;
 	z-index: 2;
 	width: 100%;
-	max-width: 600px;
+	max-width: 700px;
 	margin: 0 auto;
-	padding: 24px 24px 100px 24px;
+	padding: clamp(16px, 2vh, 24px) clamp(16px, 2vw, 24px) clamp(80px, 12vh, 120px) clamp(16px, 2vw, 24px);
+	grid-column: 2;
+	grid-row: 3;
+	align-self: center;
 }
 
 .clean-queue h3 {
 	opacity: 0.8;
 	letter-spacing: 1.5px;
-	font-size: 11px;
-	margin: 0 0 16px 0;
+	font-size: clamp(10px, 1.2vw, 12px);
+	margin: 0 0 clamp(12px, 2vh, 16px) 0;
 	text-transform: uppercase;
 	font-weight: 700;
 	color: white;
+}
+
+/* Mobile responsive adjustments for desktop extended view */
+@media (max-width: 900px) {
+	.desktop-extended .clean-player {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto auto auto;
+		padding-bottom: 100px;
+		align-content: center;
+	}
+	
+	.desktop-extended-art {
+		grid-column: 1;
+		grid-row: 1;
+		padding: clamp(24px, 4vh, 40px) 0 clamp(16px, 2vh, 24px) 0;
+	}
+	
+	.desktop-extended-art-img {
+		width: min(70%, 450px);
+	}
+	
+	.clean-controls-panel {
+		grid-column: 1;
+		grid-row: 2;
+		align-self: center;
+		margin: 0 auto;
+		width: 90%;
+		max-width: 450px;
+	}
+	
+	.clean-queue {
+		grid-column: 1;
+		grid-row: 3;
+		align-self: center;
+		padding-bottom: clamp(100px, 15vh, 140px);
+	}
 }
 
 .clean-queue-item {
@@ -3491,6 +4340,23 @@ input:checked + .slider:before { transform: translateX(26px); }
 
 .clean-queue .queue-item .q-artist {
 	opacity: 0.8 !important;
+}
+
+/* Marquee scrolling support for clean-queue items */
+.clean-queue .queue-item .q-title,
+.clean-queue .queue-item .q-artist {
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: opacity 0.2s ease;
+}
+
+.clean-queue .queue-item .q-title.scrolled,
+.clean-queue .queue-item .q-artist.scrolled {
+	mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+	-webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+	animation: marqueeText 8s ease-in-out infinite;
 }
 
 .clean-queue .queue-item .queue-ellipsis {
@@ -4484,7 +5350,15 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                 <p class="loading-subtext">Organizing your music</p>
             </div>
             
-            <div id="breadcrumb" style="display:flex;gap:8px;margin:0 24px 32px;align-items:center;flex-wrap:wrap;display:none;"></div>
+            <!-- Folder Header with Back Button -->
+            <div id="folderHeader" style="display:none;padding:0 24px 16px;align-items:center;gap:16px;">
+                <button id="folderBackBtn" class="folder-back-btn" onclick="goBackOneLevel()" style="display:none;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 id="folderHeaderTitle" class="folder-header-title" style="margin:0;font-size:42px;font-weight:600;"></h1>
+            </div>
+            
+            <div id="breadcrumb" style="display:none;gap:8px;margin:0 24px 20px;align-items:center;flex-wrap:wrap;"></div>
             
             <!-- Folder grid skeleton loading -->
             <div id="folderGridSkeleton" class="folder-grid-skeleton">
@@ -4564,18 +5438,15 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                         <h2 class="eq-header-title">Sound Profiles</h2>
                     </div>
                     <div class="eq-presets">
-                        <div class="eq-preset-dropdown">
-                            <select onchange="applyEqPreset(this.value)">
-                                <option value="flat">Flat</option>
-                                <option value="rock">Rock</option>
-                                <option value="pop">Pop</option>
-                                <option value="jazz">Jazz</option>
-                                <option value="classical">Classical</option>
-                                <option value="bass">Bass Boost</option>
-                                <option value="vocal">Vocal Boost</option>
-                            </select>
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </div>
+                        <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('flat')">Flat</button>
+                        <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('bass')">Bass</button>
+                        <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('bass_and_treble')">Bass & Treble</button>
+                        <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('blow_yo_brains_out')">BASS PRO MAX ULTRA</button>
+                        <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('hiphop')">Hip Hop</button>
+                        <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('vocal')">Vocal</button>
+                        <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('rock')">Rock</button>
+                        <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('pop')">Pop</button>
+                        <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('tin_can_nigga')">tin can</button>
                         <button class="m3-btn m3-btn-tonal" onclick="resetEqualizer()" title="Reset to Default">
                             <i class="fa-solid fa-arrow-rotate-left"></i>
                             <span>Reset</span>
@@ -4619,14 +5490,7 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
                     </div>
                 </div>
 
-                <!-- Quick Preset Buttons -->
-                <div class="eq-quick-presets">
-                    <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('flat')">Flat</button>
-                    <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('bass')">Bass</button>
-                    <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('vocal')">Vocal</button>
-                    <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('rock')">Rock</button>
-                    <button class="m3-btn m3-btn-tonal eq-preset-chip" onclick="applyEqPreset('pop')">Pop</button>
-                </div>
+
             </div>
         </div>
 
@@ -4940,7 +5804,7 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
 
 <audio id="player" crossorigin="anonymous" preload="auto"></audio>
 
-<div id="desktopExtended" class="desktop-extended collapsed">
+	<div id="desktopExtended" class="desktop-extended collapsed">
 		<div id="desktopExtendedArtBg" class="desktop-extended-art-bg"></div>
 		<div class="desktop-extended-art">
 			<img id="desktopExtendedArtImg" class="desktop-extended-art-img" src="" alt="">
@@ -4987,6 +5851,19 @@ body:has(.desktop-extended:not(.collapsed)) #playerBarExpandedBtn {
 	</div>
 
 <script>
+
+// Utility function for debouncing
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
 // Horizontal scroll functions for Listen Again
 let listenAgainCanScrollLeft = false;
@@ -5098,6 +5975,12 @@ let shouldCancelLoad = false;
 let loadLog = [];
 let totalFilesToLoad = 0;
 let processedFiles = 0;
+
+// Audio Visualizer - Pulse effect on play button
+let animationFrameId = null;
+let isAudioVisualizerActive = false;
+let audioAnalyzer = null;
+let frequencyData = null;
 let logModalOpen = false;
 let playlistSortable = null;
 let currentAlbumMap = {};
@@ -5924,7 +6807,11 @@ const EQ_PRESETS = {
     jazz: { bass: -6, treble: -12, bands: [1,1,0,0,0,0,0,0,0,1] },
     classical: { bass: -6, treble: -12, bands: [1,1,0,0,0,0,0,0,1,1] },
     bass: { bass: -3, treble: -12, bands: [2,1,1,0,0,0,0,0,0,0] },
-    vocal: { bass: -12, treble: -6, bands: [-1,-1,0,0,1,1,1,0,0,0] }
+    blow_yo_brains_out: { bass: 120, treble: 0, bands: [999,50,50,50,50,50,50,50,50,50] },
+    tin_can_nigga: { bass: -120, treble: 500, bands: [1,0,0,0,0,0,0,0,0,120] },
+    vocal: { bass: -12, treble: -6, bands: [-1,-1,0,0,1,1,1,0,0,0] },
+    bass_and_treble: { bass: -6, treble: -6, bands: [1,1,0,0,0,0,0,0,0,0] },
+    hiphop: { bass: 0, treble: -12, bands: [2,1,1,0,0,0,0,0,0,0] }
 };
 
 // --- Panic Mode Variables ---
@@ -6063,19 +6950,139 @@ function initAudioContext() {
         limiterNode.attack.setValueAtTime(0.001, audioCtx.currentTime);
         limiterNode.release.setValueAtTime(0.1, audioCtx.currentTime);
         
-        // 6. Final Gain
+        // 6. Audio Analyzer for visualizer - connect in parallel after final gain
+        audioAnalyzer = audioCtx.createAnalyser();
+        audioAnalyzer.fftSize = 256; // Small FFT size for performance
+        audioAnalyzer.smoothingTimeConstant = 0.8;
+
+        // 7. Final Gain
         const finalGain = audioCtx.createGain();
         finalGain.gain.value = 1.0;
 
-        // Connect chain to destination
+        // Connect chain: FinalGain -> Destination AND FinalGain -> Analyzer
         prevNode.connect(limiterNode);
         limiterNode.connect(finalGain);
         finalGain.connect(audioCtx.destination);
-        
+        finalGain.connect(audioAnalyzer); // Analyzer gets copy of final audio
+
+        // Pre-allocate array for frequency data
+        frequencyData = new Uint8Array(audioAnalyzer.frequencyBinCount);
+
+        // Initialize MediaSession API for Android lock screen/widget
+        initMediaSession();
+
         return audioCtx;
     } catch(e) {
         console.warn("Web Audio API failed or not supported:", e);
         return null;
+    }
+}
+
+// MediaSession API for Android lock screen and notification controls
+let mediaSession = null;
+
+function initMediaSession() {
+    if (!('mediaSession' in navigator)) {
+        console.log('[MediaSession] Not supported in this browser');
+        return;
+    }
+
+    mediaSession = navigator.mediaSession;
+
+    // Set default action handlers
+    mediaSession.setActionHandler('play', () => {
+        player.play().catch(() => {});
+    });
+
+    mediaSession.setActionHandler('pause', () => {
+        player.pause();
+    });
+
+    mediaSession.setActionHandler('previoustrack', () => {
+        skip(-1);
+    });
+
+    mediaSession.setActionHandler('nexttrack', () => {
+        skip(1);
+    });
+
+    mediaSession.setActionHandler('seekbackward', (details) => {
+        const seekTime = details.seekOffset || 10;
+        if (player.duration) {
+            player.currentTime = Math.max(0, player.currentTime - seekTime);
+        }
+    });
+
+    mediaSession.setActionHandler('seekforward', (details) => {
+        const seekTime = details.seekOffset || 10;
+        if (player.duration) {
+            player.currentTime = Math.min(player.duration, player.currentTime + seekTime);
+        }
+    });
+
+    mediaSession.setActionHandler('seekto', (details) => {
+        if (details.seekTime && player.duration) {
+            player.currentTime = Math.min(details.seekTime, player.duration);
+        }
+    });
+
+    console.log('[MediaSession] Initialized successfully');
+}
+
+function updateMediaSessionMetadata() {
+    if (!mediaSession) return;
+
+    const track = queue[qIndex];
+    if (!track) return;
+
+    // Get metadata from track or fallback
+    const meta = trackMetadata[track.id] || {};
+    const title = meta.title || track.title || track.name || 'Unknown Track';
+    const artist = meta.artist || track.artist || 'Unknown Artist';
+    const album = meta.album || track.album || '';
+
+    const artwork = [];
+
+    // Add album art if available
+    const albumArt = meta.albumArt || track.albumArt || track.art || '';
+    if (albumArt) {
+        artwork.push({
+            src: albumArt,
+            sizes: '512x512',
+            type: 'image/jpeg'
+        });
+    }
+
+    // Update metadata
+    mediaSession.metadata = new MediaMetadata({
+        title: title,
+        artist: artist,
+        album: album,
+        artwork: artwork
+    });
+
+    console.log('[MediaSession] Updated metadata:', { title, artist, album });
+}
+
+function updateMediaSessionPlaybackState() {
+    if (!mediaSession) return;
+
+    mediaSession.playbackState = player.paused ? 'paused' : 'playing';
+}
+
+function updateMediaSessionPositionState() {
+    if (!mediaSession || !mediaSession.setPositionState) return;
+
+    const state = {
+        duration: player.duration || 0,
+        position: player.currentTime || 0,
+        playbackRate: player.playbackRate || 1
+    };
+
+    try {
+        mediaSession.setPositionState(state);
+    } catch (e) {
+        // Some browsers may not support setPositionState
     }
 }
 
@@ -6217,13 +7224,28 @@ function initPlaylistSortable() {
         animation: animDuration,
         handle: '.playlist-drag-handle',
         ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        onStart: (evt) => {
+            // Add class to playlist container for styling
+            document.getElementById('playlistSongBody').classList.add('is-dragging');
+        },
         onEnd: (evt) => {
+            document.getElementById('playlistSongBody').classList.remove('is-dragging');
             if (evt.oldIndex === evt.newIndex) return;
             const tracks = playlists[currentPlaylistName];
             const movedItem = tracks.splice(evt.oldIndex, 1)[0];
             tracks.splice(evt.newIndex, 0, movedItem);
             localStorage.setItem('goot_playlists', JSON.stringify(playlists));
             const currentId = queue[qIndex]?.id;
+
+            // Add drop animation class to the dropped item
+            const rows = document.querySelectorAll('.playlist-song-row');
+            if (rows[evt.newIndex]) {
+                rows[evt.newIndex].classList.add('drop-target');
+                setTimeout(() => rows[evt.newIndex].classList.remove('drop-target'), 300);
+            }
+
             renderTrackTable(tracks, document.getElementById("playlistSongBody"), true, currentPlaylistName, true, false);
             if (tracks.length > 0) {
                 loadMetaAndArt(tracks[0].id, '');
@@ -6304,30 +7326,54 @@ async function init() {
         animation: sortableAnimDuration,
         handle: '.queue-drag-handle',
         ghostClass: 'sortable-ghost',
-        dragClass: 'queue-sort-drag',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        onStart: (evt) => {
+            document.getElementById('queueList').classList.add('is-dragging');
+        },
         onEnd: (evt) => {
+            document.getElementById('queueList').classList.remove('is-dragging');
             const item = queue.splice(evt.oldIndex, 1)[0];
             queue.splice(evt.newIndex, 0, item);
             if (qIndex === evt.oldIndex) qIndex = evt.newIndex;
             currentQueueSource = null;
-            // Defer renderQueue for smoother drag end experience
-            setTimeout(() => renderQueue(), 0);
+
+            // Add drop animation to the dropped item
+            setTimeout(() => {
+                const items = document.querySelectorAll('#queueList .queue-item');
+                if (items[evt.newIndex]) {
+                    items[evt.newIndex].classList.add('drop-target');
+                    setTimeout(() => items[evt.newIndex].classList.remove('drop-target'), 300);
+                }
+            }, 10);
         }
     });
-    
+
     // Desktop extended view queue sorting
     new Sortable(document.getElementById('deQueueList'), {
         animation: sortableAnimDuration,
         handle: '.queue-drag-handle',
         ghostClass: 'sortable-ghost',
-        dragClass: 'queue-sort-drag',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        onStart: (evt) => {
+            document.getElementById('deQueueList').classList.add('is-dragging');
+        },
         onEnd: (evt) => {
+            document.getElementById('deQueueList').classList.remove('is-dragging');
             const item = queue.splice(evt.oldIndex, 1)[0];
             queue.splice(evt.newIndex, 0, item);
             if (qIndex === evt.oldIndex) qIndex = evt.newIndex;
             currentQueueSource = null;
-            // Defer renderQueue for smoother drag end experience
-            setTimeout(() => renderQueue(), 0);
+
+            // Add drop animation to the dropped item
+            setTimeout(() => {
+                const items = document.querySelectorAll('#deQueueList .queue-item');
+                if (items[evt.newIndex]) {
+                    items[evt.newIndex].classList.add('drop-target');
+                    setTimeout(() => items[evt.newIndex].classList.remove('drop-target'), 300);
+                }
+            }, 10);
         }
     });
     
@@ -6420,9 +7466,10 @@ async function init() {
     
     const breadcrumb = document.getElementById('breadcrumb');
     if (breadcrumb) {
+        // Always show breadcrumb - even at home screen
         breadcrumb.style.display = 'flex';
     }
-    
+
     // Show folder actions based on current navigation depth
     const folderActions = document.getElementById('folderActions');
     if (folderActions) {
@@ -6563,6 +7610,21 @@ async function loadFolders(id) {
         
         document.getElementById("viewTitle").innerText = stack[stack.length-1].name;
         updateBreadcrumbs();
+        
+        // Update folder header with current folder name and back button
+        const folderHeader = document.getElementById('folderHeader');
+        const folderBackBtn = document.getElementById('folderBackBtn');
+        const folderHeaderTitle = document.getElementById('folderHeaderTitle');
+        
+        if (folderHeader && folderBackBtn && folderHeaderTitle) {
+            const currentFolderName = stack[stack.length - 1].name;
+            const isHome = stack.length <= 1;
+            
+            // Show header on all screens, show back button only when not at home
+            folderHeader.style.display = 'flex';
+            folderBackBtn.style.display = isHome ? 'none' : 'flex';
+            folderHeaderTitle.textContent = currentFolderName;
+        }
     } catch(e) {
         console.error('Error loading folders:', e);
         grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#ff4444;"><i class="fa-solid fa-triangle-exclamation" style="font-size:32px;margin-bottom:12px;"></i><br>Error loading content.<br><small>${e.message || "Network Error"}</small><br><button class="action-btn" style="margin-top:16px;" onclick="loadFolders('${id}')">Retry</button></div>`;
@@ -6581,7 +7643,8 @@ async function loadFolders(id) {
     }
     const breadcrumb = document.getElementById('breadcrumb');
     if (breadcrumb) {
-        breadcrumb.style.display = 'flex';
+        // Show breadcrumb only when not on home screen (stack has more than just "Home")
+        breadcrumb.style.display = stack.length > 1 ? 'flex' : 'none';
     }
     // Show folder actions based on current navigation depth
     const folderActions = document.getElementById('folderActions');
@@ -7314,7 +8377,41 @@ function renderQueue() {
     // Batch append fragments to DOM
     qList.appendChild(sidebarFragment);
     if (deQList) deQList.appendChild(deFragment);
+    
+    // Initialize marquee scrolling for queue items
+    initQueueItemMarquee();
 }
+
+// Function to initialize marquee scrolling for queue items
+function initQueueItemMarquee() {
+    // Wait for DOM to update
+    setTimeout(() => {
+        // Check all queue item titles and artists for overflow
+        const queueItems = document.querySelectorAll('.q-title, .q-artist');
+        queueItems.forEach(el => {
+            // Remove scrolled class first
+            el.classList.remove('scrolled');
+            
+            // Check if element is overflowing
+            if (el.scrollWidth > el.clientWidth) {
+                el.classList.add('scrolled');
+            }
+        });
+    }, 100);
+}
+
+// Function to check and update marquee state (call on window resize)
+function updateQueueItemMarquee() {
+    const queueItems = document.querySelectorAll('.q-title.scrolled, .q-artist.scrolled');
+    queueItems.forEach(el => {
+        if (el.scrollWidth <= el.clientWidth) {
+            el.classList.remove('scrolled');
+        }
+    });
+}
+
+// Add resize listener for marquee updates
+window.addEventListener('resize', debounce(updateQueueItemMarquee, 200));
 
 function play(idx) {
     if (idx<0 || idx>=queue.length) return;
@@ -7458,6 +8555,10 @@ function play(idx) {
     document.body.classList.add('playing');
     // Defer queue rendering to prevent UI blocking
     setTimeout(() => renderQueue(), 0);
+
+    // Update MediaSession metadata for Android lock screen/widget
+    updateMediaSessionMetadata();
+    updateMediaSessionPositionState();
 }
 
 function playPlaylist(name) {
@@ -9305,15 +10406,21 @@ function extractColorFromAlbumArt(id) {
         const vibrantColor = findMostVibrant(img);
         if (vibrantColor && queue[qIndex]?.id === id) {
             const hexColor = rgbToHex(vibrantColor.rgb);
-            
-            // Check if the color is essentially grayscale (black/white/gray album art)
             const rgb = vibrantColor.rgb;
+            const hsl = rgbToHsl(rgb[0], rgb[1], rgb[2]);
+
+            // Check if the color is essentially grayscale
             const isGrayscale = isColorGrayscale(rgb[0], rgb[1], rgb[2]);
-            
-            // Use #666666 for grayscale albums, otherwise use the extracted color
-            const finalColor = isGrayscale ? '#666666' : hexColor;
+
+            // For dark album covers (like Kanye's "Ye"), even if the color appears
+            // somewhat desaturated, we should still use it if it's a cool tone (blue/purple)
+            const isCoolTone = hsl.h >= 160 && hsl.h < 320;
+
+            // Use #666666 only for truly grayscale album art, otherwise use extracted color
+            // Special case: use the color even if slightly desaturated if it's a cool tone
+            const finalColor = (isGrayscale && !isCoolTone) ? '#666666' : hexColor;
             updateTheme(finalColor);
-            
+
             // Cache this color for the album
             const cache = JSON.parse(localStorage.getItem('goot_album_accent_cache') || '{}');
             cache[album] = finalColor;
@@ -9393,13 +10500,43 @@ function findMostCommonVibrantColor(img) {
             }
         }
         
-        // Find the color with highest saturation weighted by frequency
-        // Formula: sqrt(count) * saturation^3 - heavily prioritizes vibrancy
+        // Find the color with highest saturation weighted by frequency and hue preference
+        // Formula: sqrt(count) * saturation^3 * hueBonus - prioritizes vibrancy AND warm/bright hues
         let maxScore = 0;
         let bestColor = null;
-        
+
         Object.values(colorCounts).forEach(color => {
-            const score = Math.sqrt(color.count) * Math.pow(color.saturation, 3);
+            // Calculate hue for preference scoring
+            const max = Math.max(color.r, color.g, color.b);
+            const min = Math.min(color.r, color.g, color.b);
+            const hsl = rgbToHsl(color.r, color.g, color.b);
+
+            // Hue preference: ORANGES, YELLOWS, PINKS, AND REDS are now THE HIGHEST PRIORITY
+            let hueBonus = 1;
+            const hue = hsl.h;
+
+            // BRIGHT ORANGES/YELLOWS/PINKS/REDS - ULTRA HIGH PRIORITY
+            // Oranges/Yellows (35-85) and Pinks/Reds (320-360/0-35)
+            if ((hue >= 35 && hue < 85) || (hue >= 320 || hue < 35)) {
+                // Warm colors - MAXIMUM BONUS
+                // Extra boost for warm, bright colors
+                const brightness = (color.r + color.g + color.b) / 3;
+                if (brightness >= 100 && brightness <= 200) {
+                    hueBonus = 2.0; // Maximum bonus for bright warm colors
+                } else {
+                    hueBonus = 1.7; // High bonus for other warm colors
+                }
+            }
+            // Blues - MEDIUM PRIORITY
+            else if (hue >= 180 && hue < 280) {
+                hueBonus = 1.2;
+            }
+            // Other hues (purples, greens, cyans) - LOWER OR NO BONUS
+            else {
+                hueBonus = 0.8; // Slight penalty to deprioritize
+            }
+
+            const score = Math.sqrt(color.count) * Math.pow(color.saturation, 3) * hueBonus;
             if (score > maxScore) {
                 maxScore = score;
                 bestColor = color;
@@ -9435,19 +10572,43 @@ function findMostCommonVibrantColor(img) {
                 }
                 colorCounts[key].count++;
             }
-            
+
             Object.values(colorCounts).forEach(color => {
-                const score = Math.sqrt(color.count) * Math.pow(color.saturation, 3);
+                // Apply same hue preference as main loop
+                const hsl = rgbToHsl(color.r, color.g, color.b);
+                let hueBonus = 1;
+                const hue = hsl.h;
+
+                // BRIGHT ORANGES/YELLOWS/PINKS/REDS - ULTRA HIGH PRIORITY
+                // Oranges/Yellows (35-85) and Pinks/Reds (320-360/0-35)
+                if ((hue >= 35 && hue < 85) || (hue >= 320 || hue < 35)) {
+                    const brightness = (color.r + color.g + color.b) / 3;
+                    if (brightness >= 100 && brightness <= 200) {
+                        hueBonus = 2.0;
+                    } else {
+                        hueBonus = 1.7;
+                    }
+                }
+                // Blues - MEDIUM PRIORITY
+                else if (hue >= 180 && hue < 280) {
+                    hueBonus = 1.2;
+                }
+                // Other hues - LOWER OR NO BONUS
+                else {
+                    hueBonus = 0.8;
+                }
+
+                const score = Math.sqrt(color.count) * Math.pow(color.saturation, 3) * hueBonus;
                 if (score > maxScore) {
                     maxScore = score;
                     bestColor = color;
                 }
             });
         }
-        
+
         if (!bestColor) {
-            // Final fallback to orange if no vibrant colors found
-            return '#ff6600';
+            // Final fallback to bright orange if no vibrant colors found
+            return '#ff8800';
         }
         
         // Convert to hex
@@ -9502,9 +10663,10 @@ function findMostVibrant(img) {
         if (a < 128) continue;
         
         const hsl = rgbToHsl(r, g, b);
-        
-        // Skip very dark or very desaturated colors
-        if (hsl.l < 0.15 || hsl.s < 0.15) continue;
+
+        // Skip extremely dark or completely desaturated colors
+        // Using lower thresholds (0.08) to handle dark album covers like Kanye's "Ye"
+        if (hsl.l < 0.08 || hsl.s < 0.08) continue;
         
         // Quantize
         const qr = Math.round(r / binSize) * binSize;
@@ -9545,38 +10707,49 @@ function findMostVibrant(img) {
         
         // VIBE SCORE CALCULATION
         let score = 0;
-        
+
         // Saturation weight: 3x (MOST IMPORTANT)
         score += avgS * 300;
-        
-        // Brightness bonus: sweet spot between 40% and 80%
+
+        // Brightness bonus: broader sweet spot, no penalty for dark colors
         if (avgL >= 0.4 && avgL <= 0.8) {
             score += 80;
-        } else if (avgL >= 0.3 && avgL <= 0.85) {
+        } else if (avgL >= 0.25 && avgL <= 0.9) {
             score += 40;
-        } else if (avgL < 0.25) {
-            score -= 50; // Too dark
-        } else if (avgL > 0.9) {
+        } else if (avgL < 0.15) {
+            score -= 20; // Very dark - minor penalty only
+        } else if (avgL > 0.95) {
             score -= 30; // Too washed out
         }
-        
-        // Cool color bonus (blues and purples are preferred)
+
+        // Hue preference: PINKS AND REDS ARE NOW THE HIGHEST PRIORITY
         const hue = avgH;
-        if (hue >= 180 && hue < 280) {
-            // Blues, cyans
-            score += 50;
-        } else if (hue >= 280 && hue < 320) {
-            // Purples, magentas (valued higher than blues)
-            score += 60;
-        } else if (hue >= 320 || hue < 30) {
-            // Pinks, reds (same priority as blues)
-            score += 50;
-        } else if (hue >= 30 && hue < 60) {
-            // Oranges (same priority as blues)
-            score += 50;
-        } else {
-            // Yellows, greens (less preferred)
-            score += 10;
+
+        // PINKS AND REDS - ULTRA HIGH PRIORITY
+        // Reds (320-360/0-35) and Pinks (300-320)
+        if (hue >= 300 || hue < 35) {
+            // Warm accent colors - MAXIMUM PRIORITY
+            // Extra bonus for warm, vibrant colors, including darker shades
+            const warmBonus = avgL >= 0.35 && avgL <= 0.8 ? 150 : 120;
+            score += warmBonus;
+
+            // Extra saturation boost for warm colors
+            if (avgS >= 0.4) {
+                score += avgS * 50; // Additional saturation bonus
+            }
+        }
+        // Oranges/Yellows - MEDIUM PRIORITY
+        else if (hue >= 35 && hue < 85) {
+            score += 40;
+        }
+        // Blues and Purples - MEDIUM PRIORITY
+        else if (hue >= 180 && hue < 300) {
+            score += 40;
+        }
+        // Cyans, greens - LOWEST PRIORITY
+        else {
+            // Greens, cyans (85-180) - LOWEST PRIORITY
+            score -= 20;
         }
         
         // Frequency bonus (but not too much)
@@ -9605,35 +10778,44 @@ function findMostVibrant(img) {
 function findBrightestFallback(img) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+
     canvas.width = 100;
     canvas.height = 100;
     ctx.drawImage(img, 0, 0, 100, 100);
-    
+
     const imageData = ctx.getImageData(0, 0, 100, 100);
     const pixels = imageData.data;
-    
-    let brightest = [255, 255, 255];
-    let maxBright = 0;
-    
+
+    let bestColor = [255, 255, 255];
+    let maxScore = -1;
+
     for (let i = 0; i < pixels.length; i += 4) {
         const r = pixels[i];
         const g = pixels[i + 1];
         const b = pixels[i + 2];
         const a = pixels[i + 3];
-        
+
         if (a < 128) continue;
-        
+
+        // Calculate both brightness and saturation
         const brightness = (r + g + b) / 3;
-        if (brightness > maxBright) {
-            maxBright = brightness;
-            brightest = [r, g, b];
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const saturation = max === 0 ? 0 : (max - min) / max;
+
+        // Score: prefer bright AND saturated colors (like neon accents)
+        // This helps pick up text or accents on dark backgrounds
+        const score = (brightness * 0.5) + (saturation * 200);
+
+        if (score > maxScore) {
+            maxScore = score;
+            bestColor = [r, g, b];
         }
     }
-    
+
     return {
-        rgb: brightest,
-        hsl: rgbToHsl(brightest[0], brightest[1], brightest[2]),
+        rgb: bestColor,
+        hsl: rgbToHsl(bestColor[0], bestColor[1], bestColor[2]),
         score: 0
     };
 }
@@ -9674,18 +10856,21 @@ function rgbToHsl(r, g, b) {
 
 function isColorGrayscale(r, g, b) {
     // Check if color is essentially grayscale (R ≈ G ≈ B)
-    // A color is grayscale if the difference between channels is very small
+    // For dark album covers like Kanye's "Ye", we need to be more lenient
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     const diff = max - min;
     
-    // If the difference is less than 10% of the range, consider it grayscale
-    // Also check if the saturation is very low
+    // Calculate saturation more carefully
     const brightness = (r + g + b) / 3;
     const saturation = max === 0 ? 0 : diff / max;
     
-    // A color is grayscale if saturation is very low (< 10%)
-    return saturation < 0.1;
+    // For darker colors (brightness < 80), use a lower threshold
+    // This helps with dark blue album covers that might have lower saturation readings
+    const grayscaleThreshold = brightness < 80 ? 0.05 : 0.1;
+    
+    // A color is grayscale if saturation is below threshold
+    return saturation < grayscaleThreshold;
 }
 
 function rgbToHex(rgb) {
@@ -11065,7 +12250,7 @@ async function renderListenAgainSection(skipSave = false) {
 // Play album consolidation - plays all tracks from the album
 async function playAlbumConsolidation(albumName) {
     const decodedName = decodeURIComponent(albumName);
-    
+
     // Find all tracks from this album in trackMetadata
     const albumTracks = [];
     Object.entries(trackMetadata).forEach(([id, meta]) => {
@@ -11081,7 +12266,7 @@ async function playAlbumConsolidation(albumName) {
             });
         }
     });
-    
+
     if (albumTracks.length > 0) {
         // Build queue from album tracks
         const tracksToPlay = albumTracks.map(t => ({
@@ -11094,7 +12279,7 @@ async function playAlbumConsolidation(albumName) {
             googleUrl: t.googleUrl,
             url: t.googleUrl || t.path
         }));
-        
+
         queue = tracksToPlay;
         qIndex = 0;
         play(0);
@@ -12022,6 +13207,102 @@ function setupNormalizedAudio() {
     // This is handled by the createMediaElementSource setup
 }
 
+	// Beat-reactive visualizer state
+	// Bass Bob State - tracks the physics for the bobbing animation
+	let bassBobState = {
+	    y: 0,           // Current Y position
+	    velocity: 0,    // Current velocity
+	    lastBass: 0,    // Last frame's bass value for delta detection
+	    peakTime: 0,    // How long we've been at a peak
+	    isPeak: false   // Whether we're currently at a bass peak
+	};
+
+	// Beat detection parameters
+	const BEAT_THRESHOLD_LOW = 140;      // Minimum bass value to start bobbing
+	const BEAT_THRESHOLD_HIGH = 180;     // Bass value indicating a strong beat
+	const BEAT_RISE_RATE = 8;            // How fast bass must rise to trigger beat
+	const BOB_INTENSITY = 0.15;          // How far the button bobs (0-1 scale)
+	const BOB_SMOOTHING = 0.4;           // Animation smoothing (0-1, higher = smoother)
+	const DECAY_RATE = 0.85;             // How fast the bob decays
+
+	function updateAudioVisualizer() {
+	    // Stop if no audio data or player is paused
+	    if (!audioAnalyzer || !frequencyData || player.paused) {
+	        const playBtns = document.querySelectorAll('.play-btn, .mp-play-btn, .play-btn-large, .fs-play-btn, .dePlayBtn');
+	        playBtns.forEach(btn => {
+	            btn.classList.remove('playing');
+	            btn.style.transform = '';
+	            btn.style.transition = '';
+	        });
+	        // Reset state
+	        bassBobState.y = 0;
+	        bassBobState.velocity = 0;
+	        bassBobState.lastBass = 0;
+	        bassBobState.peakTime = 0;
+	        bassBobState.isPeak = false;
+	        return;
+	    }
+
+	    // Get frequency data from analyzer
+	    audioAnalyzer.getByteFrequencyData(frequencyData);
+
+	    // Calculate bass energy from lower frequencies (focused on deepest bass)
+	    let bassEnergy = 0;
+	    const bassBins = Math.floor(frequencyData.length / 8); // Focus on lowest 1/8 of frequencies
+	    for (let i = 0; i < bassBins; i++) {
+	        bassEnergy += frequencyData[i];
+	    }
+	    bassEnergy = bassEnergy / bassBins / 255; // Normalize to 0-1
+
+	    // Get all play buttons
+	    const playBtns = document.querySelectorAll('.play-btn, .mp-play-btn, .play-btn-large, .fs-play-btn, .dePlayBtn');
+
+	    playBtns.forEach(btn => {
+	        // Remove animation class
+	        btn.classList.remove('playing');
+
+	        // Shrink when quiet, expand on beats - extreme pulse effect
+	        // Use higher power curve for more dramatic peaks
+	        const normalizedBass = Math.pow(bassEnergy, 3.0);
+	        
+	        const minScale = 0.80;
+	        const maxScale = 1.25;
+	        const scale = minScale + normalizedBass * (maxScale - minScale);
+
+	        // Apply sharp, responsive transition
+	        btn.style.transition = 'transform 0.05s ease-out';
+	        btn.style.transform = `scale(${scale})`;
+	    });
+
+	    // Continue animation loop
+	    animationFrameId = requestAnimationFrame(updateAudioVisualizer);
+	}
+
+	// Start the audio visualizer when playback begins
+	function startAudioVisualizer() {
+	    if (animationFrameId) {
+	        cancelAnimationFrame(animationFrameId);
+	    }
+	    isAudioVisualizerActive = true;
+	    updateAudioVisualizer();
+	}
+
+	// Stop the audio visualizer when playback pauses
+	function stopAudioVisualizer() {
+	    isAudioVisualizerActive = false;
+	    if (animationFrameId) {
+	        cancelAnimationFrame(animationFrameId);
+	        animationFrameId = null;
+	    }
+
+	    // Reset all play buttons to normal state
+	    const playBtns = document.querySelectorAll('.play-btn, .mp-play-btn, .play-btn-large, .fs-play-btn, .dePlayBtn');
+	    playBtns.forEach(btn => {
+	        btn.classList.remove('playing');
+	        btn.style.transform = '';
+	        btn.style.transition = '';
+	    });
+	}
 	function adjustColor(hex, amount) {
 	    const num = parseInt(hex.slice(1), 16);
 	    const r = Math.min(255, Math.max(0, (num >> 16) + amount));
@@ -12032,21 +13313,73 @@ function setupNormalizedAudio() {
 
 function goHome(el) { stack=[{id:ROOT_ID,name:"Home"}]; loadFolders(ROOT_ID); nav(el); }
 
+function goBackOneLevel() {
+    if (stack.length > 1) {
+        stack.pop(); // Remove current folder
+        const previousFolder = stack[stack.length - 1];
+        loadFolders(previousFolder.id);
+    }
+}
+
 function nav(el) {
     const screen = el.dataset.screen;
+    
+    // Update nav item states
     document.querySelectorAll('.nav-item').forEach(x => {
         x.classList.toggle('active', x.dataset.screen === screen);
     });
     document.querySelectorAll('.mobile-nav-item').forEach(x => {
         if(x.dataset.screen) x.classList.toggle('active', x.dataset.screen === screen);
     });
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    
+    // Get current active screen
+    const currentActive = document.querySelector('.screen.active');
     const target = document.getElementById(screen + '-screen');
-    if(target) target.classList.add('active');
+    
+    if (currentActive && target && currentActive.id !== target.id) {
+        // Add leaving animation to current screen (slide down)
+        currentActive.classList.remove('active');
+        currentActive.classList.add('leaving');
+        
+        // Add entering animation to target screen (slide up)
+        target.classList.add('entering');
+        
+        // After animation completes, clean up classes
+        setTimeout(() => {
+            currentActive.classList.remove('leaving');
+            target.classList.remove('entering');
+            target.classList.add('active');
+        }, 350);
+    } else if (target) {
+        // First load or same screen
+        target.classList.add('active');
+    }
+}
+
+// Trigger animations when a screen becomes active
+function triggerScreenAnimations() {
+    const activeScreen = document.querySelector('.screen.active');
+    if (activeScreen) {
+        // Re-trigger the staggered animations
+        const animatedElements = activeScreen.querySelectorAll('.folder-grid, .section, .album-grid, .playlist-grid, .song-list, .eq-presets');
+        animatedElements.forEach(el => {
+            el.style.animation = 'none';
+            el.offsetHeight; // Trigger reflow
+            el.style.animation = null;
+        });
+    }
 }
 
 function toggleSidebar() {
-    document.getElementById("sidebar").classList.toggle("collapsed");
+    const sidebar = document.getElementById("sidebar");
+    const appShell = document.querySelector('.app-shell');
+    
+    sidebar.classList.toggle("collapsed");
+    
+    // Toggle class on app-shell to enable center content expansion
+    if (appShell) {
+        appShell.classList.toggle("sidebar-collapsed", sidebar.classList.contains("collapsed"));
+    }
 
     // Re-render Listen Again section to adjust for new width
     // Use setTimeout to allow the CSS transition to complete first
@@ -12155,18 +13488,22 @@ function toggleShuffle() {
     setTimeout(() => renderQueue(), 0);
 }
 
-function skip(direction) {
-    // Check if current track crossed the 25% threshold - if so, discard the play
-    const currentTrack = queue[qIndex];
-    if (currentTrack?.id) {
-        const duration = player.duration;
-        const currentTime = player.currentTime;
-        if (duration && currentTime) {
-            const progress = currentTime / duration;
-            // If track has been counted (crossed 25% threshold) and we're skipping forward
-            if (progress >= PLAY_COUNT_THRESHOLD && direction > 0) {
-                console.log('[PlayTracking] Skipping after threshold - discarding play for:', currentTrack.id);
-                decrementPlayCount(currentTrack.id);
+function skip(direction, isManual = true) {
+    // Only decrement play count if this is a MANUAL skip (skip button pressed)
+    // Auto-play from track ending or queue navigation does NOT count as a skip
+    if (isManual && direction > 0) {
+        // Check if current track crossed the 25% threshold - if so, discard the play
+        const currentTrack = queue[qIndex];
+        if (currentTrack?.id) {
+            const duration = player.duration;
+            const currentTime = player.currentTime;
+            if (duration && currentTime) {
+                const progress = currentTime / duration;
+                // If track has been counted (crossed 25% threshold) and we're manually skipping forward
+                if (progress >= PLAY_COUNT_THRESHOLD) {
+                    console.log('[PlayTracking] Manual skip after threshold - discarding play for:', currentTrack.id);
+                    decrementPlayCount(currentTrack.id);
+                }
             }
         }
     }
@@ -12212,9 +13549,21 @@ function togglePlay() {
 function scrub(v) { if (player.duration) player.currentTime = (v/100)*player.duration; }
 
 function updateBreadcrumbs() {
-    document.getElementById('breadcrumb').innerHTML = stack.map((s,i)=>`
-        <div class="breadcrumb-chip" onclick="stack.splice(${i+1});loadFolders(stack[${i}].id)">${s.name}</div>
-    `).join('<i class="fa-solid fa-chevron-right" style="opacity:0.2;font-size:10px;"></i>');
+    const breadcrumb = document.getElementById('breadcrumb');
+    if (!breadcrumb) return;
+
+    // Always show breadcrumb - even at home level
+    // Add "Home" at the beginning if stack is just Home
+    const displayStack = stack.length === 0 || (stack.length === 1 && stack[0].name === 'Home')
+        ? [{ id: 'root', name: 'Home' }]
+        : stack;
+
+    breadcrumb.innerHTML = displayStack.map((s, i) => `
+        <div class="breadcrumb-chip ${i === displayStack.length - 1 ? 'active' : ''}"
+             onclick="stack.splice(${i+1});loadFolders(stack[${i}].id)">
+            ${s.name}
+        </div>
+    `).join('<i class="fa-solid fa-chevron-right" style="opacity:0.3;font-size:10px;"></i>');
 }
 
 function openPlaylistModal(e,id) {
@@ -12386,6 +13735,9 @@ player.ontimeupdate = () => {
     (document.getElementById("progFill") || {}).style.width = p + "%";
     (document.getElementById("curTime") || {}).textContent = cur;
     (document.getElementById("durTime") || {}).textContent = dur;
+
+    // Update MediaSession position state for Android lock screen progress bar
+    updateMediaSessionPositionState();
     
     // Clean View Updates
     const deFill = document.getElementById("deProgFill");
@@ -12427,17 +13779,27 @@ player.onplay = () => {
     if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
-    
+
+    // Initialize audio context for visualizer if not already done
+    initAudioContext();
+
     // Analyze and apply normalization to current track with slight delay to ensure audio graph is ready
     if (queue[qIndex]?.id) {
         setTimeout(() => analyzeAndApplyNormalization(queue[qIndex].id), 10);
     }
-    
+
     document.getElementById("playIcon").className = "fa-solid fa-pause";
     document.getElementById("fsPlayIcon").className = "fa-solid fa-pause";
     const dePlay = document.getElementById("dePlayIcon");
     if(dePlay) dePlay.className = "fa-solid fa-pause";
     document.body.classList.add('playing');
+
+    // Start audio visualizer pulse effect
+    startAudioVisualizer();
+
+    // Update MediaSession playback state for Android lock screen/widget
+    updateMediaSessionPlaybackState();
+    updateMediaSessionPositionState();
 };
 
 player.onpause = () => {
@@ -12446,6 +13808,13 @@ player.onpause = () => {
     const dePlay = document.getElementById("dePlayIcon");
     if(dePlay) dePlay.className = "fa-solid fa-play";
     document.body.classList.remove('playing');
+
+    // Stop audio visualizer pulse effect
+    stopAudioVisualizer();
+
+    // Update MediaSession playback state for Android lock screen/widget
+    updateMediaSessionPlaybackState();
+    updateMediaSessionPositionState();
 };
 
 player.onended = () => {
@@ -12462,10 +13831,11 @@ player.onended = () => {
             if (next < 0) next = queue.length-1;
         } else if (next >= queue.length || next < 0) return;
     }
-    
+
     // Skip to next track (which will call play and analyze/apply normalization)
-    skip(1);
-    
+    // Pass false to indicate this is NOT a manual skip - don't decrement play count
+    skip(1, false);
+
     // Also analyze and apply normalization again after a short delay to ensure it's applied
     if (queue[qIndex]?.id) {
         setTimeout(() => analyzeAndApplyNormalization(queue[qIndex].id), 100);
@@ -12480,6 +13850,18 @@ function toggleDesktopExtended() {
     if (!panel.classList.contains("collapsed")) {
         // Defer renderQueue for smoother UI
         setTimeout(() => renderQueue(), 0);
+        // Enter fullscreen after panel is visible
+        setTimeout(() => {
+            const container = document.documentElement;
+            if (container.requestFullscreen) {
+                container.requestFullscreen().catch(err => console.log("Fullscreen denied:", err));
+            }
+        }, 350);
+    } else {
+        // Exit fullscreen when closing
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
     }
 }
 
