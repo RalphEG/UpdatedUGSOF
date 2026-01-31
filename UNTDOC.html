@@ -60,20 +60,25 @@
        }
        #gameSearch:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
 
-#onefileSearch {
-    width: 100%;
-    max-width: 600px;
-    background: #000;
-    border: 1px solid var(--border);
-    padding: 15px;
-    color: var(--accent);
-    font-family: inherit;
-    outline: none;
-    transition: 0.3s;
-    text-align: center;
-}
-#onefileSearch:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
 
+       .pinned-empty-message {
+           text-align: center;
+           color: var(--text);
+           opacity: 0.5;
+           font-size: 1rem;
+           font-style: italic;
+           padding: 3rem 1rem;
+       }
+       .pinned-empty-message .pin-icon-large {
+           display: inline-block;
+           margin-bottom: 1rem;
+           opacity: 0.3;
+       }
+       .pinned-empty-message .pin-icon-large svg {
+           fill: var(--text);
+           width: 48px;
+           height: 48px;
+       }
 
        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
        .game-card { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
@@ -81,16 +86,52 @@
        .game-card:hover::before { left: 100%; }
        .game-card:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3); transform: translateY(-5px); }
        .game-card h3 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1.2rem; }
-
+       .game-card-title-container {
+           display: flex;
+           align-items: flex-start;
+           justify-content: space-between;
+           gap: 10px;
+       }
+       .game-card h3 { margin: 0; flex: 1; }
+       .pin-icon {
+           cursor: pointer;
+           padding: 4px;
+           border-radius: 4px;
+           transition: all 0.2s ease;
+           flex-shrink: 0;
+           opacity: 0.5;
+       }
+       .pin-icon:hover {
+           opacity: 1;
+           background: rgba(var(--accent-rgb), 0.1);
+       }
+       .pin-icon svg {
+           display: block;
+           fill: var(--text);
+           transition: fill 0.2s ease, filter 0.2s ease;
+       }
+       .pin-icon:hover svg {
+           filter: drop-shadow(0 0 5px var(--accent));
+       }
+       .pin-icon.pinned {
+           opacity: 1;
+       }
+       .pin-icon.pinned svg {
+           fill: var(--accent);
+           filter: drop-shadow(0 0 8px var(--accent));
+       }
+       .pin-icon.pinned:hover svg {
+           filter: drop-shadow(0 0 12px var(--accent));
+       }
 
 
        .compiler-container { display: flex; flex-direction: column; gap: 15px; }
        #editor { width: 100%; height: 60vh; background: #000; color: var(--accent); border: 1px solid var(--border); padding: 15px; font-family: monospace; resize: vertical; outline: none; scrollbar-width: thin; scrollbar-color: var(--accent) var(--border); }
-#editor::-webkit-scrollbar { width: 8px; height: 8px; }
-#editor::-webkit-scrollbar-track { background: #000; border: 1px solid var(--border); }
-#editor::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 0; }
-#editor::-webkit-scrollbar-thumb:hover { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-#editor::-webkit-scrollbar-corner { background: var(--border); }
+       #editor::-webkit-scrollbar { width: 8px; height: 8px; }
+       #editor::-webkit-scrollbar-track { background: #000; border: 1px solid var(--border); }
+       #editor::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 0; }
+       #editor::-webkit-scrollbar-thumb:hover { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+       #editor::-webkit-scrollbar-corner { background: var(--border); }
        .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
        .control-btn { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; color: var(--accent); font-family: 'Courier New', monospace; font-size: 1rem; font-weight: bold; }
        .control-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px; background: var(--accent); transition: left 0.3s ease; }
@@ -119,11 +160,11 @@
        .toggle-switch input:checked + .toggle-slider { background-color: var(--accent); border-color: var(--accent); }
        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); background-color: #000; }
 
-.home-button { position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease; }
-.home-button:hover { transform: scale(1.1); }
-.home-button-icon { width: 50px; height: 50px; -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEg0lEQVR4AeyZScgURxTHv+z7BrkkOSSHEMghEAiBXJJAcgrJJckhhOwhG9kTSEhIUHHf911xww08iILLRdwV9SKKHlT04MWL4q64/34NjTUz1d/U+HXPpzLD/9+vqvrV8qrqve7qubPrNvl1DLnZFrKzIj1ckeepPx6ugxtaoPoT0Lc+4jp6a0V+ZQg/wzfh6y1Q/Z/Q/x3WoLcMcUbvqBlJesZ6L9Wr95YhixjIMXgOni/gRcqL0DDuhoKimiWXL6G9D+EfBexL+V6YjN4yxFXQcacx0ql1nEdePOsllc0MuYuG3oCD4Sw4pwWq/xf6j8BW8CXK/eDjMBlFhtxLC0aTTcj18F/4FfyiBao/HP0ZMAUPovQjHAcfgDlOkNgFu/OZrpghd1PpPbgQvgZ7incSGnDVDMcj0bV/RAa34DBS8+ElWIiYIc+h/Q98BpaBVU0acfW/Q8dVD1fCgf9NuQ9OV4VkMWKGuKVepYrxGtF1mYsRxFmZSzqVs9F1IN8ii6APul2HohD6hCvxJ2U+xc8gmyJmyNtBrSukV0DLPkPqiKn8Gv0R8BSMwe3kE34yN8Pt5Oz3p8xggUhDzJCng6o6mM5+JCgrI/kwjejYPi9CI1z9QdybBJNWAr0MMUPChq+idRaWDVf1fxp9DObQiF/IGLVOIltCzJCWGmhRWWf+njqjoauCyODADTCG6gtZSe3FCQ1L3PJhPhp+axRKzDxKW4ZYo9A9pHO4hXT26RQYqRAN2EeJ72WILo3abSJkmSsStlufvo+CPMQabslmcOD/kTI6uSoko9hG6W9wJdR/xiJr0A5DDOOf0+sQ+ATMYSDxXKFPnM4LC6Th2PD/Lvf1owPIGlRtiH5gx85iGESOM4o+0GcNoueo0hCNMMQOYJihTxid9IkplJcWEasyxO3kA9H9r5Mz5gz6hCvkdvLBlxWWcanCEB37GwY3CoZG+IT3lcXzh3ue2w3wab+YUo1UmifbHGUb4kr4sKt/7dAInX0mQzJ8IqL4gdKPoBOgNE+2Oco25CG6/BiGju128qA0kXINQhTixbo79fm629ezZRviQ8uIlPegY+sTYyhoZgQqDQ/o5PElK9pLAh24x9vl6Prhzbdbj8fdbSdUe46yDXFE+7l8AD1lGmKLHBuV8lCFIY7OlXErVb4SdiarMsS228qOIW2d7oTOOiuSMEltVemsSFunO6Gz2IrUx/6YTkLTN6TiB7uwYsNHhvBmmI4N8mig4IHoZfLJr9Po3iieouIrUORM/p4WM2RL3grSGXof6dnC056v1VXQz6P+V/ICfYVYHWa6S8cMWUOFQzDHkyQ87WmMb7FV0P9f/LDgxNFdhq1cN8MkxAzZQ01nx3clkhns4H5SVdFTZT4WffQwfXma9J2NZHPklUNNv/T51jqQwoPQhhFtww568jPRdmQyYoZY2Y9lfgTzD0tnZimFni82IqvgWtpdAN3CnyCXQScUkYYiQ6xtQztJ+C+S5wv/rPf/xCr4Fv18Cv3O5ce35C1FnQzdGZIp3CqXjiE320pdAwAA//9ZsS84AAAABklEQVQDAJNWBnRwlGWFAAAAAElFTkSuQmCC); mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEg0lEQVR4AeyZScgURxTHv+z7BrkkOSSHEMghEAiBXJJAcgrJJckhhOwhG9kTSEhIUHHf911xww08iILLRdwV9SKKHlT04MWL4q64/34NjTUz1d/U+HXPpzLD/9+vqvrV8qrqve7qubPrNvl1DLnZFrKzIj1ckeepPx6ugxtaoPoT0Lc+4jp6a0V+ZQg/wzfh6y1Q/Z/Q/x3WoLcMcUbvqBlJesZ6L9Wr95YhixjIMXgOni/gRcqL0DDuhoKimiWXL6G9D+EfBexL+V6YjN4yxFXQcacx0ql1nEdePOsllc0MuYuG3oCD4Sw4pwWq/xf6j8BW8CXK/eDjMBlFhtxLC0aTTcj18F/4FfyiBao/HP0ZMAUPovQjHAcfgDlOkNgFu/OZrpghd1PpPbgQvgZ7incSGnDVDMcj0bV/RAa34DBS8+ElWIiYIc+h/Q98BpaBVU0acfW/Q8dVD1fCgf9NuQ9OV4VkMWKGuKVepYrxGtF1mYsRxFmZSzqVs9F1IN8ii6APul2HohD6hCvxJ2U+xc8gmyJmyNtBrSukV0DLPkPqiKn8Gv0R8BSMwe3kE34yN8Pt5Oz3p8xggUhDzJCng6o6mM5+JCgrI/kwjejYPi9CI1z9QdybBJNWAr0MMUPChq+idRaWDVf1fxp9DObQiF/IGLVOIltCzJCWGmhRWWf+njqjoauCyODADTCG6gtZSe3FCQ1L3PJhPhp+axRKzDxKW4ZYo9A9pHO4hXT26RQYqRAN2EeJ72WILo3abSJkmSsStlufvo+CPMQabslmcOD/kTI6uSoko9hG6W9wJdR/xiJr0A5DDOOf0+sQ+ATMYSDxXKFPnM4LC6Th2PD/Lvf1owPIGlRtiH5gx85iGESOM4o+0GcNoueo0hCNMMQOYJihTxid9IkplJcWEasyxO3kA9H9r5Mz5gz6hCvkdvLBlxWWcanCEB37GwY3CoZG+IT3lcXzh3ue2w3wab+YUo1UmifbHGUb4kr4sKt/7dAInX0mQzJ8IqL4gdKPoBOgNE+2Oco25CG6/BiGju128qA0kXINQhTixbo79fm629ezZRviQ8uIlPegY+sTYyhoZgQqDQ/o5PElK9pLAh24x9vl6Prhzbdbj8fdbSdUe46yDXFE+7l8AD1lGmKLHBuV8lCFIY7OlXErVb4SdiarMsS228qOIW2d7oTOOiuSMEltVemsSFunO6Gz2IrUx/6YTkLTN6TiB7uwYsNHhvBmmI4N8mig4IHoZfLJr9Po3iieouIrUORM/p4WM2RL3grSGXof6dnC056v1VXQz6P+V/ICfYVYHWa6S8cMWUOFQzDHkyQ87WmMb7FV0P9f/LDgxNFdhq1cN8MkxAzZQ01nx3clkhns4H5SVdFTZT4WffQwfXma9J2NZHPklUNNv/T51jqQwoPQhhFtww568jPRdmQyYoZY2Y9lfgTzD0tnZimFni82IqvgWtpdAN3CnyCXQScUkYYiQ6xtQztJ+C+S5wv/rPf/xCr4Fv18Cv3O5ce35C1FnQzdGZIp3CqXjiE320pdAwAA//9ZsS84AAAABklEQVQDAJNWBnRwlGWFAAAAAElFTkSuQmCC); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: contain; mask-size: contain; background-color: var(--accent); transition: background-color 0.3s ease, transform 0.3s ease; }.home-button { position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease; }
-.home-button:hover { transform: scale(1.1); }
-.home-button-icon { width: 50px; height: 50px; -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEg0lEQVR4AeyZScgURxTHv+z7BrkkOSSHEMghEAiBXJJAcgrJJckhhOwhG9kTSEhIUHHf911xww08iILLRdwV9SKKHlT04MWL4q64/34NjTUz1d/U+HXPpzLD/9+vqvrV8qrqve7qubPrNvl1DLnZFrKzIj1ckeepPx6ugxtaoPoT0Lc+4jp6a0V+ZQg/wzfh6y1Q/Z/Q/x3WoLcMcUbvqBlJesZ6L9Wr95YhixjIMXgOni/gRcqL0DDuhoKimiWXL6G9D+EfBexL+V6YjN4yxFXQcacx0ql1nEdePOsllc0MuYuG3oCD4Sw4pwWq/xf6j8BW8CXK/eDjMBlFhtxLC0aTTcj18F/4FfyiBao/HP0ZMAUPovQjHAcfgDlOkNgFu/OZrpghd1PpPbgQvgZ7incSGnDVDMcj0bV/RAa34DBS8+ElWIiYIc+h/Q98BpaBVU0acfW/Q8dVD1fCgf9NuQ9OV4VkMWKGuKVepYrxGtF1mYsRxFmZSzqVs9F1IN8ii6APul2HohD6hCvxJ2U+xc8gmyJmyNtBrSukV0DLPkPqiKn8Gv0R8BSMwe3kE34yN8Pt5Oz3p8xggUhDzJCng6o6mM5+JCgrI/kwjejYPi9CI1z9QdybBJNWAr0MMUPChq+idRaWDVf1fxp9DObQiF/IGLVOIltCzJCWGmhRWWf+njqjoauCyODADTCG6gtZSe3FCQ1L3PJhPhp+axRKzDxKW4ZYo9A9pHO4hXT26RQYqRAN2EeJ72WILo3abSJkmSsStlufvo+CPMQabslmcOD/kTI6uSoko9hG6W9wJdR/xiJr0A5DDOOf0+sQ+ATMYSDxXKFPnM4LC6Th2PD/Lvf1owPIGlRtiH5gx85iGESOM4o+0GcNoueo0hCNMMQOYJihTxid9IkplJcWEasyxO3kA9H9r5Mz5gz6hCvkdvLBlxWWcanCEB37GwY3CoZG+IT3lcXzh3ue2w3wab+YUo1UmifbHGUb4kr4sKt/7dAInX0mQzJ8IqL4gdKPoBOgNE+2Oco25CG6/BiGju128qA0kXINQhTixbo79fm629ezZRviQ8uIlPegY+sTYyhoZgQqDQ/o5PElK9pLAh24x9vl6Prhzbdbj8fdbSdUe46yDXFE+7l8AD1lGmKLHBuV8lCFIY7OlXErVb4SdiarMsS228qOIW2d7oTOOiuSMEltVemsSFunO6Gz2IrUx/6YTkLTN6TiB7uwYsNHhvBmmI4N8mig4IHoZfLJr9Po3iieouIrUORM/p4WM2RL3grSGXof6dnC056v1VXQz6P+V/ICfYVYHWa6S8cMWUOFQzDHkyQ87WmMb7FV0P9f/LDgxNFdhq1cN8MkxAzZQ01nx3clkhns4H5SVdFTZT4WffQwfXma9J2NZHPklUNNv/T51jqQwoPQhhFtww568jPRdmQyYoZY2Y9lfgTzD0tnZimFni82IqvgWtpdAN3CnyCXQScUkYYiQ6xtQztJ+C+S5wv/rPf/xCr4Fv18Cv3O5ce35C1FnQzdGZIp3CqXjiE320pdAwAA//9ZsS84AAAABklEQVQDAJNWBnRwlGWFAAAAAElFTkSuQmCC); mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEg0lEQVR4AeyZScgURxTHv+z7BrkkOSSHEMghEAiBXJJAcgrJJckhhOwhG9kTSEhIUHHf911xww08iILLRdwV9SKKHlT04MWL4q64/34NjTUz1d/U+HXPpzLD/9+vqvrV8qrqve7qubPrNvl1DLnZFrKzIj1ckeepPx6ugxtaoPoT0Lc+4jp6a0V+ZQg/wzfh6y1Q/Z/Q/x3WoLcMcUbvqBlJesZ6L9Wr95YhixjIMXgOni/gRcqL0DDuhoKimiWXL6G9D+EfBexL+V6YjN4yxFXQcacx0ql1nEdePOsllc0MuYuG3oCD4Sw4pwWq/xf6j8BW8CXK/eDjMBlFhtxLC0aTTcj18F/4FfyiBao/HP0ZMAUPovQjHAcfgDlOkNgFu/OZrpghd1PpPbgQvgZ7incSGnDVDMcj0bV/RAa34DBS8+ElWIiYIc+h/Q98BpaBVU0acfW/Q8dVD1fCgf9NuQ9OV4VkMWKGuKVepYrxGtF1mYsRxFmZSzqVs9F1IN8ii6APul2HohD6hCvxJ2U+xc8gmyJmyNtBrSukV0DLPkPqiKn8Gv0R8BSMwe3kE34yN8Pt5Oz3p8xggUhDzJCng6o6mM5+JCgrI/kwjejYPi9CI1z9QdybBJNWAr0MMUPChq+idRaWDVf1fxp9DObQiF/IGLVOIltCzJCWGmhRWWf+njqjoauCyODADTCG6gtZSe3FCQ1L3PJhPhp+axRKzDxKW4ZYo9A9pHO4hXT26RQYqRAN2EeJ72WILo3abSJkmSsStlufvo+CPMQabslmcOD/kTI6uSoko9hG6W9wJdR/xiJr0A5DDOOf0+sQ+ATMYSDxXKFPnM4LC6Th2PD/Lvf1owPIGlRtiH5gx85iGESOM4o+0GcNoueo0hCNMMQOYJihTxid9IkplJcWEasyxO3kA9H9r5Mz5gz6hCvkdvLBlxWWcanCEB37GwY3CoZG+IT3lcXzh3ue2w3wab+YUo1UmifbHGUb4kr4sKt/7dAInX0mQzJ8IqL4gdKPoBOgNE+2Oco25CG6/BiGju128qA0kXINQhTixbo79fm629ezZRviQ8uIlPegY+sTYyhoZgQqDQ/o5PElK9pLAh24x9vl6Prhzbdbj8fdbSdUe46yDXFE+7l8AD1lGmKLHBuV8lCFIY7OlXErVb4SdiarMsS228qOIW2d7oTOOiuSMEltVemsSFunO6Gz2IrUx/6YTkLTN6TiB7uwYsNHhvBmmI4N8mig4IHoZfLJr9Po3iieouIrUORM/p4WM2RL3grSGXof6dnC056v1VXQz6P+V/ICfYVYHWa6S8cMWUOFQzDHkyQ87WmMb7FV0P9f/LDgxNFdhq1cN8MkxAzZQ01nx3clkhns4H5SVdFTZT4WffQwfXma9J2NZHPklUNNv/T51jqQwoPQhhFtww568jPRdmQyYoZY2Y9lfgTzD0tnZimFni82IqvgWtpdAN3CnyCXQScUkYYiQ6xtQztJ+C+S5wv/rPf/xCr4Fv18Cv3O5ce35C1FnQzdGZIp3CqXjiE320pdAwAA//9ZsS84AAAABklEQVQDAJNWBnRwlGWFAAAAAElFTkSuQmCC); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: contain; mask-size: contain; background-color: var(--accent); transition: background-color 0.3s ease, transform 0.3s ease; }
+       .home-button { position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease; }
+       .home-button:hover { transform: scale(1.1); }
+       .home-button-icon { width: 50px; height: 50px; -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEg0lEQVR4AeyZScgURxTHv+z7BrkkOSSHEMghEAiBXJJAcgrJJckhhOwhG9kTSEhIUHHf911xww08iILLRdwV9SKKHlT04MWL4q64/34NjTUz1d/U+HXPpzLD/9+vqvrV8qrqve7qubPrNvl1DLnZFrKzIj1ckeepPx6ugxtaoPoT0Lc+4jp6a0V+ZQg/wzfh6y1Q/Z/Q/x3WoLcMcUbvqBlJesZ6L9Wr95YhixjIMXgOni/gRcqL0DDuhoKimiWXL6G9D+EfBexL+V6YjN4yxFXQcacx0ql1nEdePOsllc0MuYuG3oCD4Sw4pwWq/xf6j8BW8CXK/eDjMBlFhtxLC0aTTcj18F/4FfyiBao/HP0ZMAUPovQjHAcfgDlOkNgFu/OZrpghd1PpPbgQvgZ7incSGnDVDMcj0bV/RAa34DBS8+ElWIiYIc+h/Q98BpaBVU0acfW/Q8dVD1fCgf9NuQ9OV4VkMWKGuKVepYrxGtF1mYsRxFmZSzqVs9F1IN8ii6APul2HohD6hCvxJ2U+xc8gmyJmyNtBrSukV0DLPkPqiKn8Gv0R8BSMwe3kE34yN8Pt5Oz3p8xggUhDzJCng6o6mM5+JCgrI/kwjejYPi9CI1z9QdybBJNWAr0MMUPChq+idRaWDVf1fxp9DObQiF/IGLVOIltCzJCWGmhRWWf+njqjoauCyODADTCG6gtZSe3FCQ1L3PJhPhp+axRKzDxKW4ZYo9A9pHO4hXT26RQYqRAN2EeJ72WILo3abSJkmSsStlufvo+CPMQabslmcOD/kTI6uSoko9hG6W9wJdR/xiJr0A5DDOOf0+sQ+ATMYSDxXKFPnM4LC6Th2PD/Lvf1owPIGlRtiH5gx85iGESOM4o+0GcNoueo0hCNMMQOYJihTxid9IkplJcWEasyxO3kA9H9r5Mz5gz6hCvkdvLBlxWWcanCEB37GwY3CoZG+IT3lcXzh3ue2w3wab+YUo1UmifbHGUb4kr4sKt/7dAInX0mQzJ8IqL4gdKPoBOgNE+2Oco25CG6/BiGju128qA0kXINQhTixbo79fm629ezZRviQ8uIlPegY+sTYyhoZgQqDQ/o5PElK9pLAh24x9vl6Prhzbdbj8fdbSdUe46yDXFE+7l8AD1lGmKLHBuV8lCFIY7OlXErVb4SdiarMsS228qOIW2d7oTOOiuSMEltVemsSFunO6Gz2IrUx/6YTkLTN6TiB7uwYsNHhvBmmI4N8mig4IHoZfLJr9Po3iieouIrUORM/p4WM2RL3grSGXof6dnC056v1VXQz6P+V/ICfYVYHWa6S8cMWUOFQzDHkyQ87WmMb7FV0P9f/LDgxNFdhq1cN8MkxAzZQ01nx3clkhns4H5SVdFTZT4WffQwfXma9J2NZHPklUNNv/T51jqQwoPQhhFtww568jPRdmQyYoZY2Y9lfgTzD0tnZimFni82IqvgWtpdAN3CnyCXQScUkYYiQ6xtQztJ+C+S5wv/rPf/xCr4Fv18Cv3O5ce35C1FnQzdGZIp3CqXjiE320pdAwAA//9ZsS84AAAABklEQVQDAJNWBnRwlGWFAAAAAElFTkSuQmCC); mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEg0lEQVR4AeyZScgURxTHv+z7BrkkOSSHEMghEAiBXJJAcgrJJckhhOwhG9kTSEhIUHHf911xww08iILLRdwV9SKKHlT04MWL4q64/34NjTUz1d/U+HXPpzLD/9+vqvrV8qrqve7qubPrNvl1DLnZFrKzIj1ckeepPx6ugxtaoPoT0Lc+4jp6a0V+ZQg/wzfh6y1Q/Z/Q/x3WoLcMcUbvqBlJesZ6L9Wr95YhixjIMXgOni/gRcqL0DDuhoKimiWXL6G9D+EfBexL+V6YjN4yxFXQcacx0ql1nEdePOsllc0MuYuG3oCD4Sw4pwWq/xf6j8BW8CXK/eDjMBlFhtxLC0aTTcj18F/4FfyiBao/HP0ZMAUPovQjHAcfgDlOkNgFu/OZrpghd1PpPbgQvgZ7incSGnDVDMcj0bV/RAa34DBS8+ElWIiYIc+h/Q98BpaBVU0acfW/Q8dVD1fCgf9NuQ9OV4VkMWKGuKVepYrxGtF1mYsRxFmZSzqVs9F1IN8ii6APul2HohD6hCvxJ2U+xc8gmyJmyNtBrSukV0DLPkPqiKn8Gv0R8BSMwe3kE34yN8Pt5Oz3p8xggUhDzJCng6o6mM5+JCgrI/kwjejYPi9CI1z9QdybBJNWAr0MMUPChq+idRaWDVf1fxp9DObQiF/IGLVOIltCzJCWGmhRWWf+njqjoauCyODADTCG6gtZSe3FCQ1L3PJhPhp+axRKzDxKW4ZYo9A9pHO4hXT26RQYqRAN2EeJ72WILo3abSJkmSsStlufvo+CPMQabslmcOD/kTI6uSoko9hG6W9wJdR/xiJr0A5DDOOf0+sQ+ATMYSDxXKFPnM4LC6Th2PD/Lvf1owPIGlRtiH5gx85iGESOM4o+0GcNoueo0hCNMMQOYJihTxid9IkplJcWEasyxO3kA9H9r5Mz5gz6hCvkdvLBlxWWcanCEB37GwY3CoZG+IT3lcXzh3ue2w3wab+YUo1UmifbHGUb4kr4sKt/7dAInX0mQzJ8IqL4gdKPoBOgNE+2Oco25CG6/BiGju128qA0kXINQhTixbo79fm629ezZRviQ8uIlPegY+sTYyhoZgQqDQ/o5PElK9pLAh24x9vl6Prhzbdbj8fdbSdUe46yDXFE+7l8AD1lGmKLHBuV8lCFIY7OlXErVb4SdiarMsS228qOIW2d7oTOOiuSMEltVemsSFunO6Gz2IrUx/6YTkLTN6TiB7uwYsNHhvBmmI4N8mig4IHoZfLJr9Po3iieouIrUORM/p4WM2RL3grSGXof6dnC056v1VXQz6P+V/ICfYVYHWa6S8cMWUOFQzDHkyQ87WmMb7FV0P9f/LDgxNFdhq1cN8MkxAzZQ01nx3clkhns4H5SVdFTZT4WffQwfXma9J2NZHPklUNNv/T51jqQwoPQhhFtww568jPRdmQyYoZY2Y9lfgTzD0tnZimFni82IqvgWtpdAN3CnyCXQScUkYYiQ6xtQztJ+C+S5wv/rPf/xCr4Fv18Cv3O5ce35C1FnQzdGZIp3CqXjiE320pdAwAA//9ZsS84AAAABklEQVQDAJNWBnRwlGWFAAAAAElFTkSuQmCC); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: contain; mask-size: contain; background-color: var(--accent); transition: background-color 0.3s ease, transform 0.3s ease; }.home-button { position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease; }
+       .home-button:hover { transform: scale(1.1); }
+       .home-button-icon { width: 50px; height: 50px; -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEg0lEQVR4AeyZScgURxTHv+z7BrkkOSSHEMghEAiBXJJAcgrJJckhhOwhG9kTSEhIUHHf911xww08iILLRdwV9SKKHlT04MWL4q64/34NjTUz1d/U+HXPpzLD/9+vqvrV8qrqve7qubPrNvl1DLnZFrKzIj1ckeepPx6ugxtaoPoT0Lc+4jp6a0V+ZQg/wzfh6y1Q/Z/Q/x3WoLcMcUbvqBlJesZ6L9Wr95YhixjIMXgOni/gRcqL0DDuhoKimiWXL6G9D+EfBexL+V6YjN4yxFXQcacx0ql1nEdePOsllc0MuYuG3oCD4Sw4pwWq/xf6j8BW8CXK/eDjMBlFhtxLC0aTTcj18F/4FfyiBao/HP0ZMAUPovQjHAcfgDlOkNgFu/OZrpghd1PpPbgQvgZ7incSGnDVDMcj0bV/RAa34DBS8+ElWIiYIc+h/Q98BpaBVU0acfW/Q8dVD1fCgf9NuQ9OV4VkMWKGuKVepYrxGtF1mYsRxFmZSzqVs9F1IN8ii6APul2HohD6hCvxJ2U+xc8gmyJmyNtBrSukV0DLPkPqiKn8Gv0R8BSMwe3kE34yN8Pt5Oz3p8xggUhDzJCng6o6mM5+JCgrI/kwjejYPi9CI1z9QdybBJNWAr0MMUPChq+idRaWDVf1fxp9DObQiF/IGLVOIltCzJCWGmhRWWf+njqjoauCyODADTCG6gtZSe3FCQ1L3PJhPhp+axRKzDxKW4ZYo9A9pHO4hXT26RQYqRAN2EeJ72WILo3abSJkmSsStlufvo+CPMQabslmcOD/kTI6uSoko9hG6W9wJdR/xiJr0A5DDOOf0+sQ+ATMYSDxXKFPnM4LC6Th2PD/Lvf1owPIGlRtiH5gx85iGESOM4o+0GcNoueo0hCNMMQOYJihTxid9IkplJcWEasyxO3kA9H9r5Mz5gz6hCvkdvLBlxWWcanCEB37GwY3CoZG+IT3lcXzh3ue2w3wab+YUo1UmifbHGUb4kr4sKt/7dAInX0mQzJ8IqL4gdKPoBOgNE+2Oco25CG6/BiGju128qA0kXINQhTixbo79fm629ezZRviQ8uIlPegY+sTYyhoZgQqDQ/o5PElK9pLAh24x9vl6Prhzbdbj8fdbSdUe46yDXFE+7l8AD1lGmKLHBuV8lCFIY7OlXErVb4SdiarMsS228qOIW2d7oTOOiuSMEltVemsSFunO6Gz2IrUx/6YTkLTN6TiB7uwYsNHhvBmmI4N8mig4IHoZfLJr9Po3iieouIrUORM/p4WM2RL3grSGXof6dnC056v1VXQz6P+V/ICfYVYHWa6S8cMWUOFQzDHkyQ87WmMb7FV0P9f/LDgxNFdhq1cN8MkxAzZQ01nx3clkhns4H5SVdFTZT4WffQwfXma9J2NZHPklUNNv/T51jqQwoPQhhFtww568jPRdmQyYoZY2Y9lfgTzD0tnZimFni82IqvgWtpdAN3CnyCXQScUkYYiQ6xtQztJ+C+S5wv/rPf/xCr4Fv18Cv3O5ce35C1FnQzdGZIp3CqXjiE320pdAwAA//9ZsS84AAAABklEQVQDAJNWBnRwlGWFAAAAAElFTkSuQmCC); mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEg0lEQVR4AeyZScgURxTHv+z7BrkkOSSHEMghEAiBXJJAcgrJJckhhOwhG9kTSEhIUHHf911xww08iILLRdwV9SKKHlT04MWL4q64/34NjTUz1d/U+HXPpzLD/9+vqvrV8qrqve7qubPrNvl1DLnZFrKzIj1ckeepPx6ugxtaoPoT0Lc+4jp6a0V+ZQg/wzfh6y1Q/Z/Q/x3WoLcMcUbvqBlJesZ6L9Wr95YhixjIMXgOni/gRcqL0DDuhoKimiWXL6G9D+EfBexL+V6YjN4yxFXQcacx0ql1nEdePOsllc0MuYuG3oCD4Sw4pwWq/xf6j8BW8CXK/eDjMBlFhtxLC0aTTcj18F/4FfyiBao/HP0ZMAUPovQjHAcfgDlOkNgFu/OZrpghd1PpPbgQvgZ7incSGnDVDMcj0bV/RAa34DBS8+ElWIiYIc+h/Q98BpaBVU0acfW/Q8dVD1fCgf9NuQ9OV4VkMWKGuKVepYrxGtF1mYsRxFmZSzqVs9F1IN8ii6APul2HohD6hCvxJ2U+xc8gmyJmyNtBrSukV0DLPkPqiKn8Gv0R8BSMwe3kE34yN8Pt5Oz3p8xggUhDzJCng6o6mM5+JCgrI/kwjejYPi9CI1z9QdybBJNWAr0MMUPChq+idRaWDVf1fxp9DObQiF/IGLVOIltCzJCWGmhRWWf+njqjoauCyODADTCG6gtZSe3FCQ1L3PJhPhp+axRKzDxKW4ZYo9A9pHO4hXT26RQYqRAN2EeJ72WILo3abSJkmSsStlufvo+CPMQabslmcOD/kTI6uSoko9hG6W9wJdR/xiJr0A5DDOOf0+sQ+ATMYSDxXKFPnM4LC6Th2PD/Lvf1owPIGlRtiH5gx85iGESOM4o+0GcNoueo0hCNMMQOYJihTxid9IkplJcWEasyxO3kA9H9r5Mz5gz6hCvkdvLBlxWWcanCEB37GwY3CoZG+IT3lcXzh3ue2w3wab+YUo1UmifbHGUb4kr4sKt/7dAInX0mQzJ8IqL4gdKPoBOgNE+2Oco25CG6/BiGju128qA0kXINQhTixbo79fm629ezZRviQ8uIlPegY+sTYyhoZgQqDQ/o5PElK9pLAh24x9vl6Prhzbdbj8fdbSdUe46yDXFE+7l8AD1lGmKLHBuV8lCFIY7OlXErVb4SdiarMsS228qOIW2d7oTOOiuSMEltVemsSFunO6Gz2IrUx/6YTkLTN6TiB7uwYsNHhvBmmI4N8mig4IHoZfLJr9Po3iieouIrUORM/p4WM2RL3grSGXof6dnC056v1VXQz6P+V/ICfYVYHWa6S8cMWUOFQzDHkyQ87WmMb7FV0P9f/LDgxNFdhq1cN8MkxAzZQ01nx3clkhns4H5SVdFTZT4WffQwfXma9J2NZHPklUNNv/T51jqQwoPQhhFtww568jPRdmQyYoZY2Y9lfgTzD0tnZimFni82IqvgWtpdAN3CnyCXQScUkYYiQ6xtQztJ+C+S5wv/rPf/xCr4Fv18Cv3O5ce35C1FnQzdGZIp3CqXjiE320pdAwAA//9ZsS84AAAABklEQVQDAJNWBnRwlGWFAAAAAElFTkSuQmCC); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: contain; mask-size: contain; background-color: var(--accent); transition: background-color 0.3s ease, transform 0.3s ease; }
 
 
        /* Browser Tab Styles */
@@ -193,12 +234,11 @@
 
 <nav>
    <button class="nav-btn active" onclick="showTab('games')">GAMES</button>
-      <button class="nav-btn" onclick="showTab('onefile')">ONEFILE</button>
+   <button class="nav-btn" onclick="showTab('pinned')">PINNED</button>
    <button class="nav-btn" onclick="showTab('compiler')">HTML COMPILER</button>
    <button class="nav-btn" onclick="showTab('browser')">BROWSER</button>
    <div class="section-indicator" id="sectionIndicator"></div>
 </nav>
-
 
 
 
@@ -215,6 +255,20 @@
 
 
 
+       <div id="pinned" class="tab-content">
+           <div class="pinned-empty-message" id="pinnedEmptyMessage">
+               <div class="pin-icon-large">
+                   <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m640-480 80 80v80H520v240l-40 40-40-40v-240H240v-80l80-80v-280h-40v-80h400v80h-40v280Zm-286 80h252l-46-46v-314H400v314l-46 46Zm126 0Z"/></svg>
+               </div>
+               <p>No pinned games yet.</p>
+               <p style="font-size: 0.85rem; margin-top: 0.5rem;">Click the pin icon on any game to add it here.</p>
+           </div>
+           <div class="games-grid" id="pinnedGrid"></div>
+       </div>
+
+
+
+
        <div id="compiler" class="tab-content">
            <div class="compiler-container">
                <textarea id="editor" placeholder="Paste HTML code here..."></textarea>
@@ -225,12 +279,6 @@
                    <button class="control-btn" onclick="runInFullscreen()">OPEN IN FULLSCREEN</button>
                </div>
            </div>
-       </div>
-       <div id="onefile" class="tab-content">
-           <div class="search-container">
-               <input type="text" id="onefileSearch" placeholder="SEARCH ONEFILE GAMES..." onkeyup="filterOnefileGames()">
-           </div>
-           <div class="games-grid" id="onefileGrid"></div>
        </div>
        
        <!-- Browser Tab -->
@@ -252,7 +300,14 @@
 
 
 
+
 <script>
+
+// Pin icon SVG template
+const pinIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m640-480 80 80v80H520v240l-40 40-40-40v-240H240v-80l80-80v-280h-40v-80h400v80h-40v280Zm-286 80h252l-46-46v-314H400v314l-46 46Zm126 0Z"/></svg>`;
+
+// LocalStorage key for pinned games
+const PINNED_GAMES_STORAGE_KEY = 'untdoc_pinned_games';
 
 // Browser functionality
 function browserNavigate() {
@@ -377,11 +432,10 @@ function openHomeInNewTab() {
 
 
    const BASE_URL = "https://raw.githubusercontent.com/RalphEG/UpdatedUGSOF/refs/heads/main/Untitled%20Document%20Files/";
+   const onefileBaseUrl = 'https://raw.githubusercontent.com/bubbls/ugs-singlefile/refs/heads/main/UGS-Files/';
 
-
-
-
-   const rawGames = [
+   // GitHub Games Data
+   const rawGithubGames = [
        { name: "Snow Rider 3D", file: "SnowRider3D.html" },
        { name: "Paper.io 2", file: "Paper.io2.html" },
        { name: "Slope", file: "Slope.html" },
@@ -418,310 +472,7 @@ function openHomeInNewTab() {
        { name: "Geometry Dash Lite", file: "GeometryDashLite.html" }
    ];
 
-
-
-
-   const sortedGames = rawGames.sort((a, b) => {
-       return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
-   });
-
-
-
-
-   const grid = document.getElementById('gameGrid');
-
-
-
-
-   function renderGames(gameList) {
-       grid.innerHTML = '';
-       gameList.forEach(game => {
-           const card = document.createElement('div');
-           card.className = 'game-card';
-           card.innerHTML = `<h3>> ${game.name}</h3><span style="font-size:0.7rem; opacity:0.5;">SOURCE: GITHUB</span>`;
-           card.onclick = () => launchGame(game.file);
-           grid.appendChild(card);
-       });
-   }
-
-
-
-
-   renderGames(sortedGames);
-
-
-
-
-   function filterGames() {
-       const query = document.getElementById('gameSearch').value.toLowerCase();
-       const filtered = sortedGames.filter(game =>
-           game.name.toLowerCase().includes(query)
-       );
-       renderGames(filtered);
-   }
-
-
-
-
-   function handleFileUpload(event) {
-       const file = event.target.files[0];
-       if (!file) return;
-       const reader = new FileReader();
-       reader.onload = (e) => document.getElementById('editor').value = e.target.result;
-       reader.readAsText(file);
-   }
-
-
-
-
-   function runInFullscreen() {
-       const code = document.getElementById('editor').value;
-       if (!code) return alert("Editor is empty!");
-       const win = window.open('about:blank', '_blank');
-       win.document.open();
-       win.document.write(code);
-       win.document.close();
-   }
-
-
-
-
-   function exportHTML() {
-       const code = document.getElementById('editor').value;
-       if (!code) return alert("Nothing to export!");
-       const blob = new Blob([code], { type: "text/html" });
-       const a = document.createElement("a");
-       a.href = URL.createObjectURL(blob);
-       a.download = "compiled_game.html";
-       a.click();
-   }
-
-
-
-
-   function showTab(tabId) {
-       const newTab = document.getElementById(tabId);
-       const navBtns = document.querySelectorAll('.nav-btn');
-       const clickedBtn = event.currentTarget;
-      
-       // Update indicator immediately
-       updateSectionIndicatorImmediate(clickedBtn);
-      
-       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-       navBtns.forEach(btn => btn.classList.remove('active'));
-      
-       newTab.classList.add('active');
-       clickedBtn.classList.add('active');
-   }
-  
-   function updateSectionIndicatorImmediate(btn) {
-       if (sectionIndicator && btn) {
-           const btnRect = btn.getBoundingClientRect();
-           const navRect = btn.parentElement.getBoundingClientRect();
-           sectionIndicator.style.left = (btnRect.left - navRect.left + 1) + 'px';
-           sectionIndicator.style.width = (btnRect.width - 2) + 'px';
-       }
-   }
-
-
-
-
-   async function launchGame(fileName) {
-       document.getElementById('loader').style.display = 'block';
-       const win = window.open('about:blank', '_blank');
-       try {
-           const response = await fetch(BASE_URL + fileName);
-           const html = await response.text();
-           win.document.open();
-           win.document.write(html);
-           win.document.close();
-       } catch (e) { win.location.href = BASE_URL + fileName; }
-       finally { document.getElementById('loader').style.display = 'none'; }
-   }
-
-
-
-
-   const title = document.getElementById('zaddyTitle');
-   document.addEventListener('mousemove', (e) => {
-       const rect = title.getBoundingClientRect();
-       title.style.transform = `translate(${(e.clientX - (rect.left + rect.width / 2)) / 80}px, ${(e.clientY - (rect.top + rect.height / 2)) / 80}px)`;
-   });
-
-
-
-
-   // Subtle logo flicker (90-100% brightness, frequent)
-   function flickerLogo() {
-       const brightness = 0.9 + Math.random() * 0.1;
-       title.style.filter = `brightness(${brightness})`;
-   }
-   setInterval(flickerLogo, 100);
-  
-   // Section Indicator Logic
-   const sectionIndicator = document.getElementById('sectionIndicator');
-  
-   function updateSectionIndicator() {
-       const activeBtn = document.querySelector('.nav-btn.active');
-       if (activeBtn && sectionIndicator) {
-           const btnRect = activeBtn.getBoundingClientRect();
-           const navRect = activeBtn.parentElement.getBoundingClientRect();
-           sectionIndicator.style.left = (btnRect.left - navRect.left + 1) + 'px';
-           sectionIndicator.style.width = (btnRect.width - 2) + 'px';
-       }
-   }
-  
-   // Initialize indicator on page load
-   setTimeout(updateSectionIndicator, 100);
-  
-   // Update indicator on window resize
-   window.addEventListener('resize', updateSectionIndicator);
-
-
-
-
-   // Custom Accent Color Picker with LocalStorage
-   const STORAGE_KEY = 'untdoc_accent_color';
-   const DEFAULT_ACCENT_COLOR = '#ff2b9e';
-   const root = document.documentElement;
-   const colorPicker = document.getElementById('accentColorPicker');
-
-
-
-
-   function loadAccentColor() {
-       const savedColor = localStorage.getItem(STORAGE_KEY);
-       if (savedColor) {
-           applyAccentColor(savedColor);
-           colorPicker.value = savedColor;
-       } else {
-           colorPicker.value = DEFAULT_ACCENT_COLOR;
-       }
-   }
-
-
-
-
-   function hexToRgb(hex) {
-       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-       return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 43, 158';
-   }
-
-
-
-
-   function applyAccentColor(color) {
-       root.style.setProperty('--accent', color);
-       root.style.setProperty('--text', color);
-       root.style.setProperty('--accent-rgb', hexToRgb(color));
-       updateHomeButtonColor(color);
-   }
-
-function updateHomeButtonColor(color) {
-    const homeButtonIcon = document.querySelector('.home-button-icon');
-    if (homeButtonIcon) {
-        homeButtonIcon.style.backgroundColor = color;
-    }
-}
-
-
-   function saveAccentColor(color) {
-       localStorage.setItem(STORAGE_KEY, color);
-   }
-
-
-
-
-   function handleColorChange(event) {
-       const newColor = event.target.value;
-       applyAccentColor(newColor);
-       saveAccentColor(newColor);
-   }
-
-
-
-
-   // Initialize color picker
-   loadAccentColor();
-   colorPicker.addEventListener('input', handleColorChange);
-   colorPicker.addEventListener('change', handleColorChange);
-
-
-
-
-   // All Animations Toggle
-   const animationsToggle = document.getElementById('animationsToggle');
-   const animationsStorageKey = 'untdoc_animations_enabled';
-   let flickerInterval = null;
-   let sectionIndicatorInterval = null;
-
-
-
-
-   function loadAnimationsSetting() {
-       const savedSetting = localStorage.getItem(animationsStorageKey);
-       if (savedSetting !== null) {
-           animationsToggle.checked = savedSetting === 'true';
-           if (!animationsToggle.checked) {
-               disableAllAnimations();
-           }
-       }
-   }
-
-
-
-
-   function toggleAnimations() {
-       if (animationsToggle.checked) {
-           enableAllAnimations();
-       } else {
-           disableAllAnimations();
-       }
-       localStorage.setItem(animationsStorageKey, animationsToggle.checked);
-   }
-
-
-
-
-   function disableAllAnimations() {
-       document.body.classList.add('no-animations');
-      
-       // Stop JavaScript animations
-       if (flickerInterval) {
-           clearInterval(flickerInterval);
-           flickerInterval = null;
-       }
-      
-       // Stop section indicator updates
-       if (sectionIndicatorInterval) {
-           clearInterval(sectionIndicatorInterval);
-           sectionIndicatorInterval = null;
-       }
-      
-       // Reset title to no filter
-       title.style.filter = 'none';
-   }
-
-
-
-
-   function enableAllAnimations() {
-       document.body.classList.remove('no-animations');
-      
-       // Restart flicker animation
-       flickerInterval = setInterval(flickerLogo, 100);
-      
-       // Restart section indicator updates
-       sectionIndicatorInterval = setTimeout(updateSectionIndicator, 100);
-   }
-
-
-
-
-   animationsToggle.addEventListener('change', toggleAnimations);
-   loadAnimationsSetting();
-   // Onefile Integration
-   const onefileBaseUrl = 'https://raw.githubusercontent.com/bubbls/ugs-singlefile/refs/heads/main/UGS-Files/';
+   // OneFile Games Data
    const rawOnefileGames = [
      'cl1',
      'cl1',
@@ -1107,7 +858,7 @@ function updateHomeButtonColor(color) {
 'cldeadzed',
 'cldeadzed2',
 'cldeathchase',
-'cldeblob2',
+'cldeiblob2',
 'cldecision',
 'cldecision2',
 'cldecision3',
@@ -1393,7 +1144,7 @@ function updateHomeButtonColor(color) {
 'clsonicclassicheroes',
 'clsoniccolors',
 'clsonicdeltaorigins',
-'clsoniceexeog',
+'clsonicexeog',
 'clsonicerazor',
 'clsonicgg',
 'clSonicHellfireSaga',
@@ -1809,49 +1560,396 @@ function updateHomeButtonColor(color) {
 'wilywars'
    ];
 
-   const onefileGames = rawOnefileGames.map(f => {
-     let lower = f.toLowerCase();
-     let name = lower.startsWith('cl') || lower.startsWith('ud') ? f.slice(2) : f;
-     let file = f.includes('.') ? f : f + '.html';
-     return {name, file};
-   }).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+   // Process all games into a single list
+   const allGames = [
+       // GitHub games
+       ...rawGithubGames.map(game => ({
+           name: game.name,
+           file: game.file,
+           baseUrl: BASE_URL
+       })),
+       // OneFile games
+       ...rawOnefileGames.map(f => {
+           let name = f.toLowerCase();
+           name = name.startsWith('cl') || name.startsWith('ud') ? f.slice(2) : f;
+           let file = f.includes('.') ? f : f + '.html';
+           return {
+               name: name,
+               file: file,
+               baseUrl: onefileBaseUrl
+           };
+       })
+   ].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
-   const onefileGrid = document.getElementById('onefileGrid');
+   const grid = document.getElementById('gameGrid');
+   const pinnedGrid = document.getElementById('pinnedGrid');
+   const pinnedEmptyMessage = document.getElementById('pinnedEmptyMessage');
 
-   function renderOnefileGames(gameList) {
-       onefileGrid.innerHTML = '';
-       gameList.forEach(game => {
-           const card = document.createElement('div');
-           card.className = 'game-card';
-           card.innerHTML = `<h3>> ${game.name}</h3><span style="font-size:0.7rem; opacity:0.5;">SOURCE: ONEFILE</span>`;
-           card.onclick = () => launchOnefileGame(game.file);
-           onefileGrid.appendChild(card);
-       });
+   // Load pinned games from localStorage
+   function getPinnedGames() {
+       const stored = localStorage.getItem(PINNED_GAMES_STORAGE_KEY);
+       if (stored) {
+           try {
+               return JSON.parse(stored);
+           } catch (e) {
+               return [];
+           }
+       }
+       return [];
    }
 
-   renderOnefileGames(onefileGames);
+   // Save pinned games to localStorage
+   function savePinnedGames(pinned) {
+       localStorage.setItem(PINNED_GAMES_STORAGE_KEY, JSON.stringify(pinned));
+   }
 
-   function filterOnefileGames() {
-       const query = document.getElementById('onefileSearch').value.toLowerCase();
-       const filtered = onefileGames.filter(game =>
+   // Toggle pin status for a game
+   function togglePin(gameName) {
+       let pinnedGames = getPinnedGames();
+       const index = pinnedGames.indexOf(gameName);
+       
+       if (index === -1) {
+           // Add to pinned
+           pinnedGames.push(gameName);
+       } else {
+           // Remove from pinned
+           pinnedGames.splice(index, 1);
+       }
+       
+       savePinnedGames(pinnedGames);
+       renderAllGames();
+   }
+
+   // Check if a game is pinned
+   function isGamePinned(gameName) {
+       const pinnedGames = getPinnedGames();
+       return pinnedGames.includes(gameName);
+   }
+
+   // Create a game card element
+   function createGameCard(game) {
+       const card = document.createElement('div');
+       card.className = 'game-card';
+       
+       const isPinned = isGamePinned(game.name);
+       
+       card.innerHTML = `
+           <div class="game-card-title-container">
+               <h3>> ${game.name}</h3>
+               <div class="pin-icon ${isPinned ? 'pinned' : ''}" onclick="event.stopPropagation(); togglePin('${game.name.replace(/'/g, "\\'")}')" title="${isPinned ? 'Unpin this game' : 'Pin this game'}">
+                   ${pinIconSVG}
+               </div>
+           </div>
+       `;
+       
+       card.onclick = () => launchGame(game.file, game.baseUrl);
+       return card;
+   }
+
+   // Render all games (main grid and pinned grid)
+   function renderAllGames() {
+       const query = document.getElementById('gameSearch').value.toLowerCase();
+       const filteredGames = allGames.filter(game =>
            game.name.toLowerCase().includes(query)
        );
-       renderOnefileGames(filtered);
+       
+       const pinnedGames = getPinnedGames();
+       
+       // Render main game grid (only unpinned games)
+       const unpinnedGames = filteredGames.filter(game => !pinnedGames.includes(game.name));
+       grid.innerHTML = '';
+       unpinnedGames.forEach(game => {
+           grid.appendChild(createGameCard(game));
+       });
+       
+       // Render pinned games in their own tab
+       const pinnedFilteredGames = filteredGames.filter(game => pinnedGames.includes(game.name));
+       pinnedGrid.innerHTML = '';
+       pinnedFilteredGames.forEach(game => {
+           pinnedGrid.appendChild(createGameCard(game));
+       });
+       
+       // Show/hide empty message for pinned tab
+       if (pinnedFilteredGames.length === 0) {
+           pinnedEmptyMessage.style.display = 'block';
+           pinnedGrid.style.display = 'none';
+       } else {
+           pinnedEmptyMessage.style.display = 'none';
+           pinnedGrid.style.display = 'grid';
+       }
    }
 
-   async function launchOnefileGame(fileName) {
+   renderAllGames();
+
+   function filterGames() {
+       renderAllGames();
+   }
+
+
+
+
+
+   function handleFileUpload(event) {
+       const file = event.target.files[0];
+       if (!file) return;
+       const reader = new FileReader();
+       reader.onload = (e) => document.getElementById('editor').value = e.target.result;
+       reader.readAsText(file);
+   }
+
+
+
+
+
+   function runInFullscreen() {
+       const code = document.getElementById('editor').value;
+       if (!code) return alert("Editor is empty!");
+       const win = window.open('about:blank', '_blank');
+       win.document.open();
+       win.document.write(code);
+       win.document.close();
+   }
+
+
+
+
+
+   function exportHTML() {
+       const code = document.getElementById('editor').value;
+       if (!code) return alert("Nothing to export!");
+       const blob = new Blob([code], { type: "text/html" });
+       const a = document.createElement("a");
+       a.href = URL.createObjectURL(blob);
+       a.download = "compiled_game.html";
+       a.click();
+   }
+
+
+
+
+
+   function showTab(tabId) {
+       const newTab = document.getElementById(tabId);
+       const navBtns = document.querySelectorAll('.nav-btn');
+       const clickedBtn = event.currentTarget;
+      
+       // Update indicator immediately
+       updateSectionIndicatorImmediate(clickedBtn);
+      
+       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+       navBtns.forEach(btn => btn.classList.remove('active'));
+      
+       newTab.classList.add('active');
+       clickedBtn.classList.add('active');
+   }
+  
+   function updateSectionIndicatorImmediate(btn) {
+       if (sectionIndicator && btn) {
+           const btnRect = btn.getBoundingClientRect();
+           const navRect = btn.parentElement.getBoundingClientRect();
+           sectionIndicator.style.left = (btnRect.left - navRect.left + 1) + 'px';
+           sectionIndicator.style.width = (btnRect.width - 2) + 'px';
+       }
+   }
+
+
+
+
+
+   async function launchGame(fileName, baseUrl) {
        document.getElementById('loader').style.display = 'block';
        const win = window.open('about:blank', '_blank');
        try {
-           const response = await fetch(onefileBaseUrl + fileName);
+           const response = await fetch(baseUrl + fileName);
            const html = await response.text();
            win.document.open();
            win.document.write(html);
            win.document.close();
-       } catch (e) { win.location.href = onefileBaseUrl + fileName; }
+       } catch (e) { win.location.href = baseUrl + fileName; }
        finally { document.getElementById('loader').style.display = 'none'; }
    }
+
+
+
+
+   const title = document.getElementById('zaddyTitle');
+   document.addEventListener('mousemove', (e) => {
+       const rect = title.getBoundingClientRect();
+       title.style.transform = `translate(${(e.clientX - (rect.left + rect.width / 2)) / 80}px, ${(e.clientY - (rect.top + rect.height / 2)) / 80}px)`;
+   });
+
+
+
+
+   // Subtle logo flicker (90-100% brightness, frequent)
+   function flickerLogo() {
+       const brightness = 0.9 + Math.random() * 0.1;
+       title.style.filter = `brightness(${brightness})`;
+   }
+   setInterval(flickerLogo, 100);
+  
+   // Section Indicator Logic
+   const sectionIndicator = document.getElementById('sectionIndicator');
+  
+   function updateSectionIndicator() {
+       const activeBtn = document.querySelector('.nav-btn.active');
+       if (activeBtn && sectionIndicator) {
+           const btnRect = activeBtn.getBoundingClientRect();
+           const navRect = activeBtn.parentElement.getBoundingClientRect();
+           sectionIndicator.style.left = (btnRect.left - navRect.left + 1) + 'px';
+           sectionIndicator.style.width = (btnRect.width - 2) + 'px';
+       }
+   }
+  
+   // Initialize indicator on page load
+   setTimeout(updateSectionIndicator, 100);
+  
+   // Update indicator on window resize
+   window.addEventListener('resize', updateSectionIndicator);
+
+
+
+
+   // Custom Accent Color Picker with LocalStorage
+   const STORAGE_KEY = 'untdoc_accent_color';
+   const DEFAULT_ACCENT_COLOR = '#ff2b9e';
+   const root = document.documentElement;
+   const colorPicker = document.getElementById('accentColorPicker');
+
+
+
+
+   function loadAccentColor() {
+       const savedColor = localStorage.getItem(STORAGE_KEY);
+       if (savedColor) {
+           applyAccentColor(savedColor);
+           colorPicker.value = savedColor;
+       } else {
+           colorPicker.value = DEFAULT_ACCENT_COLOR;
+       }
+   }
+
+
+
+
+   function hexToRgb(hex) {
+       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+       return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 43, 158';
+   }
+
+
+
+
+   function applyAccentColor(color) {
+       root.style.setProperty('--accent', color);
+       root.style.setProperty('--text', color);
+       root.style.setProperty('--accent-rgb', hexToRgb(color));
+       updateHomeButtonColor(color);
+   }
+
+   function updateHomeButtonColor(color) {
+       const homeButtonIcon = document.querySelector('.home-button-icon');
+       if (homeButtonIcon) {
+           homeButtonIcon.style.backgroundColor = color;
+       }
+   }
+
+
+   function saveAccentColor(color) {
+       localStorage.setItem(STORAGE_KEY, color);
+   }
+
+
+
+
+   function handleColorChange(event) {
+       const newColor = event.target.value;
+       applyAccentColor(newColor);
+       saveAccentColor(newColor);
+   }
+
+
+
+
+   // Initialize color picker
+   loadAccentColor();
+   colorPicker.addEventListener('input', handleColorChange);
+   colorPicker.addEventListener('change', handleColorChange);
+
+
+
+
+   // All Animations Toggle
+   const animationsToggle = document.getElementById('animationsToggle');
+   const animationsStorageKey = 'untdoc_animations_enabled';
+   let flickerInterval = null;
+   let sectionIndicatorInterval = null;
+
+
+
+
+   function loadAnimationsSetting() {
+       const savedSetting = localStorage.getItem(animationsStorageKey);
+       if (savedSetting !== null) {
+           animationsToggle.checked = savedSetting === 'true';
+           if (!animationsToggle.checked) {
+               disableAllAnimations();
+           }
+       }
+   }
+
+
+
+
+   function toggleAnimations() {
+       if (animationsToggle.checked) {
+           enableAllAnimations();
+       } else {
+           disableAllAnimations();
+       }
+       localStorage.setItem(animationsStorageKey, animationsToggle.checked);
+   }
+
+
+
+
+   function disableAllAnimations() {
+       document.body.classList.add('no-animations');
+      
+       // Stop JavaScript animations
+       if (flickerInterval) {
+           clearInterval(flickerInterval);
+           flickerInterval = null;
+       }
+      
+       // Stop section indicator updates
+       if (sectionIndicatorInterval) {
+           clearInterval(sectionIndicatorInterval);
+           sectionIndicatorInterval = null;
+       }
+      
+       // Reset title to no filter
+       title.style.filter = 'none';
+   }
+
+
+
+
+   function enableAllAnimations() {
+       document.body.classList.remove('no-animations');
+      
+       // Restart flicker animation
+       flickerInterval = setInterval(flickerLogo, 100);
+      
+       // Restart section indicator updates
+       sectionIndicatorInterval = setTimeout(updateSectionIndicator, 100);
+   }
+
+
+
+
+   animationsToggle.addEventListener('change', toggleAnimations);
+   loadAnimationsSetting();
 </script>
 </body>
 </html>
-
