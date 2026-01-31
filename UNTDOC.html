@@ -80,26 +80,26 @@
            height: 48px;
        }
 
-       .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
-       .game-card { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
+       .games-grid { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start; }
+       .game-card { background: var(--card-bg); border: 1px solid var(--border); padding: 0.75rem 1rem; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; display: inline-flex; flex-direction: row; align-items: center; min-width: 0; }
        .game-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px; background: var(--accent); transition: left 0.3s ease; }
        .game-card:hover::before { left: 100%; }
        .game-card:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3); transform: translateY(-5px); }
-       .game-card h3 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1.2rem; }
        .game-card-title-container {
            display: flex;
-           align-items: flex-start;
+           flex-direction: row;
+           align-items: center;
            justify-content: space-between;
-           gap: 10px;
+           gap: 8px;
+           width: 100%;
        }
-       .game-card h3 { margin: 0; flex: 1; }
        .pin-icon {
            cursor: pointer;
-           padding: 4px;
-           border-radius: 4px;
+           padding: 2px;
+           border-radius: 3px;
            transition: all 0.2s ease;
-           flex-shrink: 0;
            opacity: 0.5;
+           flex-shrink: 0;
        }
        .pin-icon:hover {
            opacity: 1;
@@ -109,6 +109,8 @@
            display: block;
            fill: var(--text);
            transition: fill 0.2s ease, filter 0.2s ease;
+           width: 18px;
+           height: 18px;
        }
        .pin-icon:hover svg {
            filter: drop-shadow(0 0 5px var(--accent));
@@ -123,6 +125,7 @@
        .pin-icon.pinned:hover svg {
            filter: drop-shadow(0 0 12px var(--accent));
        }
+       .game-card h3 { color: var(--accent); font-size: 1rem; margin: 0; }
 
 
        .compiler-container { display: flex; flex-direction: column; gap: 15px; }
@@ -914,7 +917,7 @@ function openHomeInNewTab() {
 'cldouchebaglife',
 'cldouchebagworkout',
 'cldownthemountain',
-'cldragonballadvance',
+'cdragonballadvance',
 'clDragonBallZTheLegacyofGoku',
 'clDragonQuestIX',
 'cldrawclimber',
@@ -1144,7 +1147,6 @@ function openHomeInNewTab() {
 'clsonicclassicheroes',
 'clsoniccolors',
 'clsonicdeltaorigins',
-'clsonicexeog',
 'clsonicerazor',
 'clsonicgg',
 'clSonicHellfireSaga',
@@ -1675,7 +1677,7 @@ function openHomeInNewTab() {
            pinnedGrid.style.display = 'none';
        } else {
            pinnedEmptyMessage.style.display = 'none';
-           pinnedGrid.style.display = 'grid';
+           pinnedGrid.style.display = 'flex';
        }
    }
 
@@ -1689,6 +1691,7 @@ function openHomeInNewTab() {
 
 
 
+
    function handleFileUpload(event) {
        const file = event.target.files[0];
        if (!file) return;
@@ -1696,6 +1699,7 @@ function openHomeInNewTab() {
        reader.onload = (e) => document.getElementById('editor').value = e.target.result;
        reader.readAsText(file);
    }
+
 
 
 
@@ -1714,6 +1718,7 @@ function openHomeInNewTab() {
 
 
 
+
    function exportHTML() {
        const code = document.getElementById('editor').value;
        if (!code) return alert("Nothing to export!");
@@ -1723,6 +1728,7 @@ function openHomeInNewTab() {
        a.download = "compiled_game.html";
        a.click();
    }
+
 
 
 
@@ -1756,6 +1762,8 @@ function openHomeInNewTab() {
 
 
 
+
+
    async function launchGame(fileName, baseUrl) {
        document.getElementById('loader').style.display = 'block';
        const win = window.open('about:blank', '_blank');
@@ -1768,6 +1776,8 @@ function openHomeInNewTab() {
        } catch (e) { win.location.href = baseUrl + fileName; }
        finally { document.getElementById('loader').style.display = 'none'; }
    }
+
+
 
 
 
@@ -1787,10 +1797,10 @@ function openHomeInNewTab() {
        title.style.filter = `brightness(${brightness})`;
    }
    setInterval(flickerLogo, 100);
-  
+   
    // Section Indicator Logic
    const sectionIndicator = document.getElementById('sectionIndicator');
-  
+   
    function updateSectionIndicator() {
        const activeBtn = document.querySelector('.nav-btn.active');
        if (activeBtn && sectionIndicator) {
@@ -1800,10 +1810,10 @@ function openHomeInNewTab() {
            sectionIndicator.style.width = (btnRect.width - 2) + 'px';
        }
    }
-  
+   
    // Initialize indicator on page load
    setTimeout(updateSectionIndicator, 100);
-  
+   
    // Update indicator on window resize
    window.addEventListener('resize', updateSectionIndicator);
 
@@ -1815,6 +1825,7 @@ function openHomeInNewTab() {
    const DEFAULT_ACCENT_COLOR = '#ff2b9e';
    const root = document.documentElement;
    const colorPicker = document.getElementById('accentColorPicker');
+
 
 
 
@@ -1832,10 +1843,12 @@ function openHomeInNewTab() {
 
 
 
+
    function hexToRgb(hex) {
        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 43, 158';
    }
+
 
 
 
@@ -1855,9 +1868,13 @@ function openHomeInNewTab() {
    }
 
 
+
+
+
    function saveAccentColor(color) {
        localStorage.setItem(STORAGE_KEY, color);
    }
+
 
 
 
@@ -1867,6 +1884,7 @@ function openHomeInNewTab() {
        applyAccentColor(newColor);
        saveAccentColor(newColor);
    }
+
 
 
 
@@ -1888,6 +1906,7 @@ function openHomeInNewTab() {
 
 
 
+
    function loadAnimationsSetting() {
        const savedSetting = localStorage.getItem(animationsStorageKey);
        if (savedSetting !== null) {
@@ -1901,6 +1920,7 @@ function openHomeInNewTab() {
 
 
 
+
    function toggleAnimations() {
        if (animationsToggle.checked) {
            enableAllAnimations();
@@ -1909,6 +1929,7 @@ function openHomeInNewTab() {
        }
        localStorage.setItem(animationsStorageKey, animationsToggle.checked);
    }
+
 
 
 
@@ -1935,6 +1956,7 @@ function openHomeInNewTab() {
 
 
 
+
    function enableAllAnimations() {
        document.body.classList.remove('no-animations');
       
@@ -1944,6 +1966,7 @@ function openHomeInNewTab() {
        // Restart section indicator updates
        sectionIndicatorInterval = setTimeout(updateSectionIndicator, 100);
    }
+
 
 
 
